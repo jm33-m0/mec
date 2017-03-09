@@ -1,0 +1,17 @@
+PURPLE = u'\033[95m'
+CYAN = u'\033[96m'
+DARKCYAN = u'\033[36m'
+BLUE = u'\033[94m'
+GREEN = u'\033[92m'
+YELLOW = u'\033[93m'
+RED = u'\033[91m'
+BOLD = u'\033[1m'
+UNDERLINE = u'\033[4m'
+END = u'\033[0m'
+
+
+def coloredPrint(msg, colorCode):
+    try:
+        print colorCode + BOLD + msg + END
+    except:
+        print u"\n[-] Error printing with color {}\n".format(colorCode) + msg
