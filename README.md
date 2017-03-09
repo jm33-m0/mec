@@ -12,7 +12,7 @@ a collection of tools with a cli ui
 
 ## requirements
 
-- proxychains4 (in `$PATH`), used by exploiter, requires a working socks5 proxy (you can modify its config in `b0t-br0kr.py`)
+- `proxychains4` (in `$PATH`), used by exploiter, requires a working socks5 proxy (you can modify its config in `b0tBr0kr.py`)
 - python packages:
     - `requests`
     - `bs4`
@@ -25,4 +25,4 @@ a collection of tools with a cli ui
 ## disclaimer
 
 - please use this tool only on **authorized systems**, im not responsible for any damage caused by users who ignore my warning
-- exploits are adapted from other sources, please refer to its author info
+- exploits are adapted from other sources, please refer to their author info
