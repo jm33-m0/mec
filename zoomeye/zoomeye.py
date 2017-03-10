@@ -5,30 +5,32 @@
 # coding: utf-8
 # author  : evilclay
 # datetime: 20160330
+# modified by: jm33_m0
 # http://www.cnblogs.com/anka9080/p/ZoomEyeAPI.html
 
+import time
 import os
 import requests
 import json
+import threading
 import atexit
 import sys
 import colors
 import console
 
 access_token = ''
-ip_list = []
 
 
 def login():
     user = raw_input('[*] enter username :')
     passwd = raw_input('[*] and password :')
     print '''
-    [*] Also, curl is the best way to obtain your token:
+    [*] Also, use curl to obtain your token:
     curl -XPOST https://api.zoomeye.org/user/login -d'{
         "username": "username",
         "password": "password"
     }'
-        '''
+    '''
     data = {
         'username': user,
         'password': passwd
@@ -47,54 +49,64 @@ def login():
 
 
 def saveStrToFile(file, str):
-    with open(file, 'w') as output:
-        output.write(str)
+    with open(file, 'a') as output:
+        output.write(str+'\n')
+        output.close()
 
 
-def saveListToFile(file, list):
-    s = '\n'.join(list)
-    with open(file, 'w') as output:
-        output.write(s)
+def progress(file):
+    lc = 0
+    if not os.path.exists('result.txt'):
+        os.system('touch result.txt')
+    while True:
+        lc = sum(1 for line in open(file))
+        sys.stdout.write(
+            colors.CYAN + '\r[+] Found ' + str(
+                lc) + ' hosts' + colors.END)
+        sys.stdout.flush()
+        time.sleep(.5)
+
+
+def crawler(qry, amnt, page, headers):
+    try:
+        r = requests.get(
+            url='https://api.zoomeye.org/host/search?query=' +
+            qry +
+            '&facet=app,os&page=' +
+            str(page),
+            headers=headers)
+        r_decoded = json.loads(r.text)
+        for x in r_decoded['matches']:
+            saveStrToFile('result.txt', x['ip'])
+    except Exception as e:
+        pass
 
 
 def apiTest():
     qry = raw_input("[*] Your query is: ")
     amnt = int(
         raw_input("[*] How many results do you want? (10 IPs on each page) ").strip())
-    page = 1
     global access_token
+    threads = []
     with open('access_token.txt', 'r') as input:
         access_token = input.read()
     headers = {
         'Authorization': 'JWT ' + access_token,
     }
-    # print headers
-    while(True):
-        try:
-            r = requests.get(
-                url='https://api.zoomeye.org/host/search?query=' +
-                qry +
-                '&facet=app,os&page=' +
-                str(page),
-                headers=headers)
-            r_decoded = json.loads(r.text)
-            for x in r_decoded['matches']:
-                ip_list.append(x['ip'])
-                sys.stdout.write('\r' + colors.BOLD + colors.CYAN +
-                                 '{} targets found'.format(str(page * 10)) + colors.END)
-                sys.stdout.flush()
-
-        except Exception as e:
-            console.print_error(
-                '\nError: Please check if your API key is valid and you have enough credits')
-            console.print_error('Error message: ' + str(e))
-            break
-        else:
-            if page == (amnt / 10):
-                console.print_success(
-                    "\n[+] All done, ip_list.txt has been written")
-                break
-            page += 1
+    status = threading.Thread(target=progress, args=('result.txt',))
+    status.setDaemon(True)
+    status.start()
+    limit = 0
+    for page in range(1, amnt/10):
+        t = threading.Thread(target=crawler, args=(qry, amnt, page, headers,))
+        threads.append(t)
+    for job in threads:
+        job.setDaemon(True)
+        job.start()
+        if limit == 0 or limit == 10:
+            limit = 0
+            job.join()
+        limit += 1
 
 
 def main():
@@ -104,7 +116,6 @@ def main():
         saveStrToFile('access_token.txt', access_token)
 
     apiTest()
-    saveListToFile('ip_list.txt', ip_list)
 
 if __name__ == '__main__':
     try:

@@ -3,8 +3,8 @@
 import sys
 import os
 import time
-# import signal
 import subprocess
+import signal
 import util.console as console
 import util.colors as colors
 import util.webshell as ws
@@ -18,15 +18,12 @@ proxy_conf = str(init_dir) + '/data/proxy.conf'
 ip_list = 'data/ip_list.txt'
 
 
-# in case too many exploits being executed simultaneously, we need to
-# terminate old ones before launching next 100
-'''
+# kill process by name
 def check_kill_process(pstring):
     for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
         fields = line.split()
         pid = fields[0]
         os.kill(int(pid), signal.SIGKILL)
-'''
 
 
 def jexboss(cmd, exploit_path):
@@ -124,8 +121,8 @@ def execute(cmd):
         os.system('tree -f ./exploits')
     elif cmd == 'z' or cmd == "zoomeye":
         try:
-            os.chdir('zoomeye')
-            subprocess.call('zoomeye.py')
+            os.chdir('./zoomeye')
+            subprocess.call(['python', 'zoomeye.py'])
         except Exception as e:
             console.print_error('[-] Cannot start zoomeye.py:\n' + str(e))
     elif cmd == 'x' or cmd == 'clear':
@@ -188,7 +185,7 @@ def weblogic():
         console.print_error('[-] Invalid input')
         return
     jobs = 100
-    #waitTime = 25  # actually it's deprecated
+    # waitTime = 25  # actually it's deprecated
     scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
     scanner(scanner_args)
 
