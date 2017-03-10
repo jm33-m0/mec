@@ -188,8 +188,8 @@ def weblogic():
         console.print_error('[-] Invalid input')
         return
     jobs = 100
-    waitTime = 25  # actually it's deprecated
-    scanner_args = (exploit, work_path, exec_path, custom_args, jobs, waitTime)
+    #waitTime = 25  # actually it's deprecated
+    scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
     scanner(scanner_args)
 
 
@@ -300,8 +300,7 @@ def attack():
             work_path,
             exec_path,
             custom_args,
-            jobs,
-            waitTime)
+            jobs)
         scanner(scanner_args)
     else:
         console.print_error('[-] Invalid input')
@@ -309,8 +308,8 @@ def attack():
 
 def scanner(scanner_args):
     global ip_list
-    exploit, work_path, exec_path, custom_args, jobs, waitTime = scanner_args[
-        0], scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4], scanner_args[5]
+    exploit, work_path, exec_path, custom_args, jobs = scanner_args[
+        0], scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
     e_args = [
         'proxychains4',
         '-q',
