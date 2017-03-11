@@ -13,9 +13,15 @@ from . import colors
 
 
 def writeToFile(line, file):
-    with open(file, 'a') as f:
-        f.write(line + '\n')
-        f.close()
+    if not os.path.exists(file):
+        os.system('touch {}'.format(file))
+    f = open(file)
+    for l in f:
+        if l.strip() == line:
+            return
+    with open(file, 'a') as output:
+        output.write(line + '\n')
+        output.close()
 
 
 def getAndParse(url, page):

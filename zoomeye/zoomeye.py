@@ -49,8 +49,16 @@ def login():
 
 
 def saveStrToFile(file, str):
+    if not os.path.exists(file):
+        os.system('touch {}'.format(file))
+    # check if we are writing duplicate lines to the file
+    f = open(file)
+    for l in f:
+        if l.strip() == str:
+            return
+    # write line to file
     with open(file, 'a') as output:
-        output.write(str+'\n')
+        output.write(str + '\n')
         output.close()
 
 
@@ -79,6 +87,7 @@ def crawler(qry, amnt, page, headers):
         for x in r_decoded['matches']:
             saveStrToFile('result.txt', x['ip'])
     except Exception as e:
+        #console.print_error('[-] Error: ' + str(e))
         pass
 
 
@@ -97,7 +106,7 @@ def apiTest():
     status.setDaemon(True)
     status.start()
     limit = 0
-    for page in range(1, amnt/10):
+    for page in range(1, amnt / 10):
         t = threading.Thread(target=crawler, args=(qry, amnt, page, headers,))
         threads.append(t)
     for job in threads:
@@ -114,7 +123,6 @@ def main():
         print '[-] error : access_token file not found, please login to obtain your token'
         login()
         saveStrToFile('access_token.txt', access_token)
-
     apiTest()
 
 if __name__ == '__main__':
