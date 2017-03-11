@@ -87,7 +87,7 @@ def crawler(qry, amnt, page, headers):
         for x in r_decoded['matches']:
             saveStrToFile('result.txt', x['ip'])
     except Exception as e:
-        #console.print_error('[-] Error: ' + str(e))
+        # console.print_error('[-] Error: ' + str(e))
         pass
 
 

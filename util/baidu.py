@@ -41,6 +41,7 @@ def getAndParse(url, page):
     except:
         pass
 
+
 def progress(file):
     lc = 0
     if not os.path.exists('result.txt'):
@@ -52,6 +53,7 @@ def progress(file):
                 lc) + ' URLs' + colors.END)
         sys.stdout.flush()
         time.sleep(.5)
+
 
 def spider(keyword, count):
     url = 'https://m.baidu.com/s?word={}&pn='.format(keyword)
