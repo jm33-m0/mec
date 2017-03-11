@@ -13,7 +13,7 @@ intro = colors.CYAN + colors.BOLD + '''
 | '_ \| | | | __|____| '_ \| '__| | | | |/ / '__|
 | |_) | |_| | ||_____| |_) | |  | |_| |   <| |
 |_.__/ \___/ \__|    |_.__/|_|   \___/|_|\_\_|
-''' + colors.END + colors.BLUE + '''
+''' + colors.END + colors.GREEN + '''
     by jm33_m0
     https://github.com/jm33-m0/b0t-br0kr
 
@@ -25,7 +25,7 @@ help = '''
  - exploit / exp : `tree -f ./exploits`
  - target : Show current target list
  - proxy : Start ss-proxy (listens on local port 1099, will be used later in our mass exploit)
- - baidu <keyword> <page count>: Search via m.baidu.com
+ - baidu <keyword> <page count> : Search via m.baidu.com
  - zoomeye / z : Run Zoomeye script to generate an IP list matching your query, google 'zoomeye' to know more
  - webshell : Simple webshell manager
  - jexboss <command> : Run jexboss - a JBoss exploitation toolkit (type `jexboss --help` to see help info)
