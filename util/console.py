@@ -16,7 +16,6 @@ intro = colors.CYAN + colors.BOLD + '''
 ''' + colors.END + colors.GREEN + '''
     by jm33_m0
     https://github.com/jm33-m0/b0t-br0kr
-
     type h or help for help\n''' + colors.END
 
 help = '''
@@ -33,6 +32,7 @@ help = '''
  - google <dork> : Fetch URLs from Google using custom dork, requires gecko driver and Firefox
  - clear / x : Clear screen
  - reset / c : Same as clear but wipes previous output
+ - init / i : Return to init directory
  - h / ? : Show this help
  - q / ^C : Quit'''
 
@@ -41,6 +41,7 @@ built_in = colors.GREEN + '''
  [1] Joomla RCE (reverse shell)
  [2] Redis unauth root (write crontab or authorized_keys)
 ''' + colors.END
+
 
 # make our console more usable
 histfile = os.path.join(os.path.expanduser("~"), ".python_history")

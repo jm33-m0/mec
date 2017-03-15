@@ -1,0 +1,20 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import time
+from . import colors
+
+
+def progress(file):
+    lc = 0
+    while True:
+        try:
+            lc = sum(1 for line in open(file))
+        except:
+            return
+        sys.stdout.write(
+            colors.CYAN + '\r[+] Found ' + str(
+                lc) + ' URLs' + colors.END)
+        sys.stdout.flush()
+        time.sleep(.3)

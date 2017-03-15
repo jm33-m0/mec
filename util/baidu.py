@@ -10,18 +10,8 @@ import subprocess
 from bs4 import BeautifulSoup
 from . import console
 from . import colors
-
-
-def writeToFile(line, file):
-    if not os.path.exists(file):
-        os.system('touch {}'.format(file))
-    f = open(file)
-    for l in f:
-        if l.strip() == line:
-            return
-    with open(file, 'a') as output:
-        output.write(line + '\n')
-        output.close()
+from . import vwrite
+from . import wc
 
 
 def getAndParse(url, page):
@@ -37,27 +27,16 @@ def getAndParse(url, page):
         for l in div:
             result = l.get('data-log', '')
             a = eval(result)
-            writeToFile(a['mu'], 'result.txt')
+            vwrite.writeToFile(a['mu'], 'result.txt')
     except:
         pass
 
 
-def progress(file):
-    lc = 0
-    if not os.path.exists('result.txt'):
-        os.system('touch result.txt')
-    while True:
-        lc = sum(1 for line in open(file))
-        sys.stdout.write(
-            colors.CYAN + '\r[+] Found ' + str(
-                lc) + ' URLs' + colors.END)
-        sys.stdout.flush()
-        time.sleep(.5)
-
-
 def spider(keyword, count):
     url = 'https://m.baidu.com/s?word={}&pn='.format(keyword)
-    status = threading.Thread(target=progress, args=('result.txt',))
+    if not os.path.exists('result.txt'):
+        os.system('touch result.txt')
+    status = threading.Thread(target=wc.progress, args=('result.txt',))
     status.setDaemon(True)
     status.start()
     try:
@@ -69,7 +48,7 @@ def spider(keyword, count):
         for t in threads:
             t.setDaemon(True)
             t.start()
-            if jobs == 100:
+            if jobs == 30:
                 jobs = 0
                 t.join()
             jobs += 1

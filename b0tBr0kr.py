@@ -43,19 +43,23 @@ def jexboss(cmd, exploit_path):
 
 def execute(cmd):
     global proxy_conf
+    cmd = str(cmd).lower().strip()
     if cmd == '':
         pass
+    elif cmd == 'init' or cmd == 'i':
+        print(colors.CYAN + '[*] Going back to init_dir...' + colors.END)
+        os.chdir(init_dir)
     elif cmd.startswith('baidu'):
         try:
             command = cmd.strip().split()
             dork = command[1]
             count = int(command[2])
             os.chdir('output')
+            print(colors.PURPLE + '[*] Searching on Baidu...' + colors.END)
             baidu.spider(dork, count)
-            os.chdir(init_dir)
         except Exception as e:
             console.print_error('[-] Error with baidu: ' + str(e))
-    elif cmd.lower() == 'target' or cmd.lower() == 't':
+    elif cmd == 'target' or cmd == 't':
         print(colors.CYAN + ip_list + colors.END)
     elif cmd == 'proxy':
         if not os.path.exists('data/ss.json'):
@@ -70,7 +74,7 @@ def execute(cmd):
                 '[-] Error starting Shadowsocks proxy: ' + str(e))
     elif cmd.startswith('webshell'):
         try:
-            command = cmd.strip().split()
+            command = cmd.split()
             if command[1] == '-b':
                 try:
                     ws.loadShells('webshell.list')
@@ -89,7 +93,7 @@ def execute(cmd):
                     ws.ctrl(shell)
                 except Exception as e:
                     console.print_error('[-] Error with webshell: ' + str(e))
-    elif cmd.lower() == 'redis':
+    elif cmd == 'redis':
         answ = input(
             '[*] Executing redis mass exploit against `targets`, proceed? [y/n] ')
         os.chdir('./exploits/redis/')
@@ -110,11 +114,11 @@ def execute(cmd):
             console.print_error(e)
     elif cmd.startswith('jexboss'):
         jexboss(cmd, './exploits/jexboss/jexboss.py')
-    elif cmd.lower() == 'q':
+    elif cmd == 'q':
         check_kill_process('ss-proxy')
         print("[+] Exiting...")
         sys.exit(0)
-    elif cmd.lower() == 'h' or cmd.lower() == 'help' or cmd == '?':
+    elif cmd == 'h' or cmd == 'help' or cmd == '?':
         print(console.help)
     elif cmd == 'exploits':
         print(colors.CYAN + '[+] Available exploits: ' + colors.END)
@@ -129,7 +133,7 @@ def execute(cmd):
         subprocess.call("clear")
     elif cmd == 'c' or cmd == 'reset':
         subprocess.call("reset")
-    elif cmd.lower() == "exp" or cmd.lower() == "e":
+    elif cmd == "exp" or cmd == "e":
         attack()
     else:
         try:
