@@ -48,7 +48,7 @@ def spider(keyword, count):
         for t in threads:
             t.setDaemon(True)
             t.start()
-            if jobs == 30:
+            if jobs == 30 or jobs == 0:
                 jobs = 0
                 t.join()
             jobs += 1

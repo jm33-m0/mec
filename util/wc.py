@@ -12,7 +12,7 @@ def progress(file):
         try:
             lc = sum(1 for line in open(file))
         except:
-            return
+            lc = 0
         sys.stdout.write(
             colors.CYAN + '\r[+] Found ' + str(
                 lc) + ' URLs' + colors.END)
