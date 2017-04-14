@@ -42,6 +42,7 @@ built_in = colors.GREEN + '''
  [1] Joomla RCE (reverse shell)
  [2] Redis unauth root (write crontab or authorized_keys)
  [3] Struts2 S2-045 exploit (command exec)
+ [4] Witbe RCE exploit (get reverse shell)
 ''' + colors.END
 
 
