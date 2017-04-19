@@ -126,7 +126,7 @@ def execute(cmd):
             console.print_error(e)
     elif cmd.startswith('jexboss'):
         jexboss(cmd, './exploits/jexboss/jexboss.py')
-    elif cmd == 'q':
+    elif cmd == 'q' or cmd == 'quit':
         check_kill_process('ss-proxy')
         print("[+] Exiting...")
         sys.exit(0)
@@ -145,14 +145,14 @@ def execute(cmd):
         subprocess.call("clear")
     elif cmd == 'c' or cmd == 'reset':
         subprocess.call("reset")
-    elif cmd == "exp" or cmd == "e":
+    elif cmd == "attack" or cmd == "e":
         attack()
     else:
         try:
             print(
                 colors.BLUE +
                 colors.BOLD +
-                "[*] Executing shell command: " +
+                "[*] Exec: " +
                 colors.END +
                 colors.GREEN +
                 cmd +
@@ -274,7 +274,7 @@ def witbe():
     custom_args = str('-l ' + rhost + ' -p ' + rport).split()
     jobs = 50
 
-    
+
 
 
 def attack():
@@ -500,6 +500,7 @@ def main():
 if __name__ == "__main__":
     try:
         print(console.intro)
+        #console.ConsoleShell().cmdloop()
         main()
     except Exception as e:
         console.print_error('[-] Error at main: ' + str(e))

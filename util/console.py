@@ -18,10 +18,12 @@ intro = colors.CYAN + colors.BOLD + '''
     https://github.com/jm33-m0/b0t-br0kr
     type h or help for help\n''' + colors.END
 
+commands = ['attack', 'exploits', 'info', 'init', 'target', 'baidu', 'proxy', 'zoomeye', 'redis', 'jexboss', 'google', 'clear', 'reset', 'help', 'webshell', 'quit']
+
 help = '''
  - Any command that cannot be understood will be executed as a shell command
- - exp / e : Start exploiter (guided)
- - exploit / exp : `tree -f ./exploits`
+ - attack / e : Start exploiter (guided)
+ - exploits : `tree -f ./exploits`
  - info : Display current config info
  - target <ip_list> : Change target list, eg. "target ip_list.txt"
  - proxy : Start ss-proxy (listens on local port 1099, will be used later in our mass exploit)
@@ -34,8 +36,8 @@ help = '''
  - clear / x : Clear screen
  - reset / c : Same as clear but wipes previous output
  - init / i : Return to init directory
- - h / ? : Show this help
- - q / ^C : Quit'''
+ - help / ? : Show this help
+ - quit / ^C : Quit'''
 
 built_in = colors.GREEN + '''
  [0] Weblogic Java deserialization exploit (get reverse shell)
@@ -47,6 +49,16 @@ built_in = colors.GREEN + '''
 
 
 # make our console more usable
+def completer(text, state):
+    options = [i for i in commands if i.startswith(text)]
+    if state < len(options):
+        return options[state]
+    else:
+        return None
+
+readline.parse_and_bind("tab: complete")
+readline.set_completer(completer)
+
 histfile = os.path.join(os.path.expanduser("~"), ".python_history")
 try:
     readline.read_history_file(histfile)
