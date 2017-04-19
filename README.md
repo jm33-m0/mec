@@ -1,4 +1,4 @@
-# b0t-br0kr
+# massExploitConsole
 a collection of tools with a cli ui
 
 ## what does it do?
