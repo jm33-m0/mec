@@ -18,12 +18,28 @@ intro = colors.CYAN + colors.BOLD + '''
     https://github.com/jm33-m0/b0t-br0kr
     type h or help for help\n''' + colors.END
 
-commands = ['attack', 'exploits', 'info', 'init', 'target', 'baidu', 'proxy', 'zoomeye', 'redis', 'jexboss', 'google', 'clear', 'reset', 'help', 'webshell', 'quit']
+commands = [
+    'attack',
+    'exploits',
+    'info',
+    'init',
+    'target',
+    'baidu',
+    'proxy',
+    'zoomeye',
+    'redis',
+    'jexboss',
+    'google',
+    'clear',
+    'reset',
+    'help',
+    'webshell',
+    'quit']
 
 help = '''
  - Any command that cannot be understood will be executed as a shell command
  - attack / e : Start exploiter (guided)
- - exploits : `tree -f ./exploits`
+ - exploits : List all executables inside the root directory of your exploits, eg. witbe/witbe.py
  - info : Display current config info
  - target <ip_list> : Change target list, eg. "target ip_list.txt"
  - proxy : Start ss-proxy (listens on local port 1099, will be used later in our mass exploit)
@@ -56,6 +72,7 @@ def completer(text, state):
     else:
         return None
 
+
 readline.parse_and_bind("tab: complete")
 readline.set_completer(completer)
 
@@ -72,9 +89,9 @@ atexit.register(readline.write_history_file, histfile)
 
 def print_and_flush(message, same_line=False):
     if same_line:
-        print (message),
+        print(message),
     else:
-        print (message)
+        print(message)
     if not sys.stdout.isatty():
         sys.stdout.flush()
 

@@ -25,9 +25,12 @@ def loadShells(shell_list):
             shells.update({str(n): shell})
             n += 1
         sys.stdout.flush()
-        sys.stdout.write(
-            '\n' + clr.GREEN + clr.BOLD + '[+] Loaded {} shells from {}'.format(str(n),
-                                                                                shell_list) + clr.END + '\n')
+        sys.stdout.write('\n' +
+                         clr.GREEN +
+                         clr.BOLD +
+                         '[+] Loaded {} shells from {}'.format(str(n), shell_list) +
+                         clr.END +
+                         '\n')
         print(
             clr.BLUE +
             clr.BOLD +
@@ -50,13 +53,13 @@ def exec_shell(target, cmd):
     print(
         '[*] Posting ' +
         clr.CYAN +
-     cmd +
-     clr.END +
-     ' to ' +
-     clr.UNDERLINE +
-     exec_url +
-     clr.END +
-     '...\n')
+        cmd +
+        clr.END +
+        ' to ' +
+        clr.UNDERLINE +
+        exec_url +
+        clr.END +
+        '...\n')
     headers = {
         "User-Agent":
         "Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0",

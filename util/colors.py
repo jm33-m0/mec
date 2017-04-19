@@ -14,5 +14,5 @@ END = '\033[0m'
 def coloredPrint(msg, colorCode):
     try:
         print(colorCode + BOLD + msg + END)
-    except:
+    except BaseException:
         print("\n[-] Error printing with color {}\n".format(colorCode) + msg)

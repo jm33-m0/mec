@@ -28,7 +28,7 @@ def getAndParse(url, page):
             result = l.get('data-log', '')
             a = eval(result)
             vwrite.writeToFile(a['mu'], 'result.txt')
-    except:
+    except BaseException:
         pass
 
 

@@ -11,7 +11,7 @@ def progress(file):
     while True:
         try:
             lc = sum(1 for line in open(file))
-        except:
+        except BaseException:
             lc = 0
         sys.stdout.write(
             colors.CYAN + '\r[+] Found ' + str(
