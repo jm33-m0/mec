@@ -12,8 +12,8 @@ a collection of tools with a cli ui
 
 ## requirements
 
-- `GNU/Linux` or `MacOS`, fully tested under [Kali Linux (Rolling, 2017)](https://www.kali.org) and Ubuntu Linux (16.04 LTS) (it will work on other Debian based distros too)
-- `proxychains4` (in `$PATH`), used by exploiter, requires a working socks5 proxy (you can modify its config in `b0tBr0kr.py`)
+- GNU/Linux or MacOS, fully tested under [Kali Linux (Rolling, 2017)](https://www.kali.org), Ubuntu Linux (16.04 LTS) and Fedora 25 (it will work on other distros too as long as you have dealt with all deps)
+- `proxychains4` (in `$PATH`), used by exploiter, requires a working socks5 proxy (you can modify its config in `mec.py`)
 - python packages:
     - `requests`
     - `bs4`
