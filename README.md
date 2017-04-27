@@ -1,6 +1,11 @@
 # massExploitConsole
 a collection of tools with a cli ui
 
+
+## screenshot
+
+![](/screenshot/main.png)
+
 ## what does it do?
 
 - an easy-to-use user interface (cli)
@@ -17,11 +22,17 @@ a collection of tools with a cli ui
 - python packages:
     - `requests`
     - `bs4`
-    - `pip install` on the go, sometimes `pip2` is needed
+    - `pip3 install` on the go
 
-## screenshot
+## usage
 
-![](/screenshot/main.png)
+- just run `mec.py`, if it complains about missing modules, install them
+- if you want to add your own exploit script (or binary file, whatever):
+    - `cd exploits`, `mkdir <yourExploitDir>`
+    - your exploit should take `sys.argv[2]` as its target, dig into `mec.py` to know more
+    - `chmod 755 <exploitBin>` to make sure it can be executed by current user
+    - use `attack` command then `m` to select your custom exploit
+- type `help` in the console to see all available features
 
 ## disclaimer
 

