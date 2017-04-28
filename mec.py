@@ -439,7 +439,7 @@ def scanner(scanner_args):
     e_args += ['-t']
     f = open(init_dir + '/' + ip_list)
     os.chdir('./exploits/' + work_path)
-    console.print_warning('\n[!] DEBUG: ' + e_args)
+    console.print_warning('\n[!] DEBUG: ' + str(e_args))
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
     time.sleep(3)
     count = 0
