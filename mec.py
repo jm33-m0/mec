@@ -250,7 +250,7 @@ def weblogic():
             return
 
     # start scanner
-    exploit = 'weblogic.py'
+    exploit = 'weblogic-new.py'
     work_path = '/weblogic/'
     exec_path = exploit
     jobs = 100
@@ -307,6 +307,15 @@ def witbe():
     exec_path = exploit
     custom_args = str('-l ' + rhost + ' -p ' + rport).split()
     jobs = 50
+    print(
+        colors.BLUE +
+        '[*] Your exploit will be executed like\n' +
+        colors.END,
+        'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(exec_path),
+        ' '.join(custom_args))
+    # start scanner
+    scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
+    scanner(scanner_args)
 
 
 def attack():
@@ -349,6 +358,8 @@ def attack():
             weblogic()
         elif answ == 3:
             s2_045()
+        elif answ == 4:
+            witbe()
         else:
             console.print_error('\n[-] Invalid input!')
     elif answ == 'm':
