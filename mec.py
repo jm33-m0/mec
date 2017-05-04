@@ -164,7 +164,6 @@ def execute(cmd):
         print(console.help)
     elif cmd == 'exploits':
         print(colors.CYAN + '[+] Available exploits: ' + colors.END)
-        #os.system('tree -f ./exploits')
         list_exp()
     elif cmd == 'z' or cmd == "zoomeye":
         try:
@@ -254,7 +253,7 @@ def weblogic():
     work_path = '/weblogic/'
     exec_path = exploit
     jobs = 100
-    # waitTime = 25  # actually it's deprecated
+    # waitTime = 25  # deprecated
     scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
     scanner(scanner_args)
 
