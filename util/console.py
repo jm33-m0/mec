@@ -8,11 +8,11 @@ import atexit
 
 
 intro = colors.CYAN + colors.BOLD + '''
- _ __ ___   ___  ___ 
+ _ __ ___   ___  ___
 | '_ ` _ \ / _ \/ __|
-| | | | | |  __/ (__ 
+| | | | | |  __/ (__
 |_| |_| |_|\___|\___|
-                     
+
 ''' + colors.END + colors.GREEN + '''
     by jm33_m0
     https://github.com/jm33-m0/massExpConsole
@@ -35,6 +35,12 @@ commands = [
     'help',
     'webshell',
     'quit']
+
+histfile = os.path.join(os.path.expanduser("~"), ".python_history")
+with open(histfile) as f:
+    for line in f:
+        for item in line.strip().split():
+            commands.append(item)
 
 help = '''
  - Any command that cannot be understood will be executed as a shell command
@@ -76,7 +82,7 @@ def completer(text, state):
 readline.parse_and_bind("tab: complete")
 readline.set_completer(completer)
 
-histfile = os.path.join(os.path.expanduser("~"), ".python_history")
+# histfile = os.path.join(os.path.expanduser("~"), ".python_history")
 try:
     readline.read_history_file(histfile)
     # default history len is -1 (infinite), which may grow unruly
