@@ -34,6 +34,7 @@ commands = [
     'reset',
     'help',
     'webshell',
+    'inurl:""'
     'quit']
 
 histfile = os.path.join(os.path.expanduser("~"), ".python_history")
@@ -41,6 +42,10 @@ with open(histfile) as f:
     for line in f:
         for item in line.strip().split():
             commands.append(item)
+
+# List ./data
+for item in os.listdir('data'):
+    commands.append(item)
 
 help = '''
  - Any command that cannot be understood will be executed as a shell command

