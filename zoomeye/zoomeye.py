@@ -64,8 +64,8 @@ def saveStrToFile(file, str):
 
 def progress(file):
     lc = 0
-    if not os.path.exists('result.txt'):
-        os.system('touch result.txt')
+    if not os.path.exists(outfile):
+        os.system('touch {}'.format(outfile))
     while True:
         lc = sum(1 for line in open(file))
         sys.stdout.write(
@@ -85,14 +85,13 @@ def crawler(qry, amnt, page, headers):
             headers=headers)
         r_decoded = json.loads(r.text)
         for x in r_decoded['matches']:
-            saveStrToFile('result.txt', x['ip'])
+            saveStrToFile(outfile, x['ip'])
     except Exception as e:
         # console.print_error('[-] Error: ' + str(e))
         pass
 
 
 def apiTest():
-    qry = raw_input("[*] Your query is: ")
     amnt = int(
         raw_input("[*] How many results do you want? (10 IPs on each page) ").strip())
     global access_token
@@ -102,7 +101,7 @@ def apiTest():
     headers = {
         'Authorization': 'JWT ' + access_token,
     }
-    status = threading.Thread(target=progress, args=('result.txt',))
+    status = threading.Thread(target=progress, args=(outfile,))
     status.setDaemon(True)
     status.start()
     limit = 0
@@ -127,7 +126,9 @@ def main():
 
 if __name__ == '__main__':
     try:
+        qry = raw_input("[*] Your query is: ")
+        outfile = '../data/zoomeye-{}.txt'.format('-'.join(qry.split()))
         main()
-        os.system('rm access_token.txt')
+        #os.system('rm access_token.txt')
     except KeyboardInterrupt:
         print '\n[*] Exiting...'

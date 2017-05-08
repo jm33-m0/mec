@@ -43,9 +43,9 @@ def input_check(prompt, type=None, choices=None):
                     continue
                 if type is None:
                     return user_input
-                return type(user_input)
+                return str(type(user_input))
             elif type is not None and choices is None:
-                return type(user_input)
+                return str(type(user_input))
             else:
                 return user_input
         except:
@@ -365,15 +365,15 @@ def attack():
                      '2',
                      '3',
                      '4'])
-        if answ == 2:
+        if answ == '2':
             redis()
-        elif answ == 1:
+        elif answ == '1':
             console.print_error('\n[-] Under development')
-        elif answ == 0:
+        elif answ == '0':
             weblogic()
-        elif answ == 3:
+        elif answ == '3':
             s2_045()
-        elif answ == 4:
+        elif answ == '4':
             witbe()
         else:
             console.print_error('\n[-] Invalid input!')
@@ -468,7 +468,7 @@ def scanner(scanner_args):
     e_args += ['-t']
     f = open(init_dir + '/' + ip_list)
     os.chdir('./exploits/' + work_path)
-    console.print_warning('\n[!] DEBUG: ' + str(e_args))
+    console.print_warning('\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
     time.sleep(3)
     count = 0
