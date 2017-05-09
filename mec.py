@@ -388,7 +388,7 @@ def attack():
         list_exp()
         exploit = input(
             "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ").strip()
-        jobs = input_check("[?] How many processes each time? ", type=int)
+        jobs = int(input_check("[?] How many processes each time? ", type=int))
         custom_args = []
         answ = input_check(
             "[?] Do you need a reverse shell [y/n]? ", choices=['y', 'n'])
