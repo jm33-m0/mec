@@ -25,11 +25,11 @@ class SessionParameters:
     defines some global parameters
     '''
 
-    init_dir = os.getcwd()
-    proxy_conf = init_dir + \
+    INIT_DIR = os.getcwd()
+    PROXY_CONF = INIT_DIR + \
         '/data/proxy.conf'
-    use_proxy = True
-    ip_list = 'data/ip_list.txt'
+    USE_PROXY = True
+    IP_LIST = 'data/ip_list.txt'
 
 
 def debug_except():
@@ -57,6 +57,9 @@ def list_exp():
     list all executables under the root of your exploit dir
     '''
     def is_executable(path):
+        '''
+        check if executable
+        '''
         return os.path.isfile(path) and os.access(path, os.X_OK)
 
     for root, _, files in os.walk('exploits'):
@@ -81,7 +84,7 @@ def jexboss(cmd, exploit_path):
         try:
             args = cmd[1:]
             subprocess.call(['proxychains4', '-q', '-f',
-                             SessionParameters.proxy_conf, exploit_path] + args)
+                             SessionParameters.PROXY_CONF, exploit_path] + args)
         except BaseException:
             subprocess.call(['python', exploit_path, '-h'])
     except BaseException as err:
@@ -102,9 +105,9 @@ def execute(cmd):
         print(
             colors.CYAN +
             '[*] Init directory: {}\n[*] Target: {}\n[*] Proxy config: {}'.format(
-                SessionParameters.init_dir,
+                SessionParameters.INIT_DIR,
                 SessionParameters.ip_list,
-                SessionParameters.proxy_conf))
+                SessionParameters.PROXY_CONF))
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         print(colors.BLUE + '[i] Target changed to {}'.format(target))
@@ -112,7 +115,7 @@ def execute(cmd):
     elif cmd == 'init' or cmd == 'i':
         print(colors.CYAN +
               '[*] Going back to init_dir...' + colors.END)
-        os.chdir(SessionParameters.init_dir)
+        os.chdir(SessionParameters.INIT_DIR)
     elif cmd.startswith('baidu'):
         try:
             command = cmd.strip().split()
@@ -160,14 +163,7 @@ def execute(cmd):
                     console.print_error('[-] Error with webshell: ' + str(err))
                     debug_except()
     elif cmd == 'redis':
-        answ = input(
-            '[*] Executing redis mass exploit against `targets`, proceed? [y/n] ')
-        os.chdir('./exploits/redis/')
-        if answ.lower() == 'y':
-            subprocess.call(['proxychains4', '-q', '-f',
-                             SessionParameters.proxy_conf, 'python', 'massAttack.py'])
-        else:
-            pass
+        console.print_error('[-] Under development')
     elif cmd.startswith('google'):
         try:
             cmd = cmd.strip().split()
@@ -225,11 +221,15 @@ def attack():
     '''
 
     if input_check('[?] Do you wish to use proxychains? [y/n] ', choices=['y', 'n']) == 'y':
-        SessionParameters.use_proxy = True
+        SessionParameters.USE_PROXY = True
     else:
-        SessionParameters.use_proxy = False
+        SessionParameters.USE_PROXY = False
     answ = input_check(
-        '\n[?] Do you wish to use\n\n    [a] built-in exploits\n    [m] or launch your own manually?\n\n[=] Your choice: ', choices=['a', 'm'])
+        '\n[?] Do you wish to use\
+        \n\n    [a] built-in exploits\
+        \n    [m] or launch your own manually?\
+        \n\n[=] Your choice: ',
+        choices=['a', 'm'])
     if answ == 'a':
         print(
             colors.CYAN +
@@ -246,18 +246,23 @@ def attack():
                      '2',
                      '3',
                      '4'])
-        if answ == '2':
-            console.print_error("\n[-] Under development")
-        elif answ == '1':
-            console.print_error('\n[-] Under development')
-        elif answ == '0':
-            scanner(ExecExp.weblogic())
-        elif answ == '3':
-            scanner(ExecExp.s2_045())
-        elif answ == '4':
-            scanner(ExecExp.witbe())
-        else:
-            console.print_error('\n[-] Invalid input!')
+        try:
+            if answ == '2':
+                console.print_error("\n[-] Under development")
+            elif answ == '1':
+                console.print_error('\n[-] Under development')
+            elif answ == '0':
+                scanner(ExecExp.weblogic())
+            elif answ == '3':
+                scanner(ExecExp.s2_045())
+            elif answ == '4':
+                scanner(ExecExp.witbe())
+            else:
+                console.print_error('\n[-] Invalid input!')
+        except BaseException:
+            console.print_error("[-] We have an error")
+            debug_except()
+
     elif answ == 'm':
         print(
             colors.CYAN +
@@ -338,19 +343,19 @@ def scanner(scanner_args):
     '''
     _, work_path, exec_path, custom_args, jobs = scanner_args[
         0], scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
-    if SessionParameters.use_proxy:
+    if SessionParameters.USE_PROXY:
         e_args = [
             'proxychains4',
             '-q',
             '-f',
-            SessionParameters.proxy_conf,
+            SessionParameters.PROXY_CONF,
             './' + exec_path]
     else:
         e_args = ['./' + exec_path]
     e_args += custom_args
     e_args += ['-t']
     target_list = open(
-        SessionParameters.init_dir + '/' + SessionParameters.ip_list)
+        SessionParameters.INIT_DIR + '/' + SessionParameters.ip_list)
     os.chdir('./exploits/' + work_path)
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
@@ -392,7 +397,7 @@ def scanner(scanner_args):
         except BaseException:
             pass
     os.system('clear')
-    os.chdir(SessionParameters.init_dir)
+    os.chdir(SessionParameters.INIT_DIR)
     console.print_success('\n[+] All done!\n')
     print(console.intro)
 
