@@ -37,16 +37,6 @@ commands = [
     'inurl:""'
     'quit']
 
-histfile = os.path.join(os.path.expanduser("~"), ".python_history")
-with open(histfile) as f:
-    for line in f:
-        for item in line.strip().split():
-            commands.append(item)
-
-# List ./data
-for item in os.listdir('data'):
-    commands.append(item)
-
 help = '''
  - Any command that cannot be understood will be executed as a shell command
  - attack / e : Start exploiter (guided)
@@ -75,7 +65,21 @@ built_in = colors.GREEN + '''
 ''' + colors.END
 
 
+histfile = os.path.join(os.path.expanduser("~"), ".python_history")
+if not os.path.exists(histfile):
+    os.system('touch {}'.format(histfile))
+with open(histfile) as f:
+    for line in f:
+        for item in line.strip().split():
+            commands.append(item)
+
+# List ./data
+for item in os.listdir('data'):
+    commands.append(item)
+
 # make our console more usable
+
+
 def completer(text, state):
     options = [i for i in commands if i.startswith(text)]
     if state < len(options):
