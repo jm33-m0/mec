@@ -1,10 +1,13 @@
 #!/usr/bin/python3
-from . import colors
-import subprocess
-import sys
+
+"""
+Handles console related stuff
+"""
+
 import os
 import readline
 import atexit
+from . import colors
 
 
 intro = colors.CYAN + colors.BOLD + '''
@@ -18,26 +21,7 @@ intro = colors.CYAN + colors.BOLD + '''
     https://github.com/jm33-m0/massExpConsole
     type h or help for help\n''' + colors.END
 
-commands = [
-    'attack',
-    'exploits',
-    'info',
-    'init',
-    'target',
-    'baidu',
-    'proxy',
-    'zoomeye',
-    'redis',
-    'jexboss',
-    'google',
-    'clear',
-    'reset',
-    'help',
-    'webshell',
-    'inurl:""'
-    'quit']
-
-help = '''
+help_info = '''
  - Any command that cannot be understood will be executed as a shell command
  - attack / e : Start exploiter (guided)
  - exploits : List all executables inside the root directory of your exploits, eg. witbe/witbe.py
@@ -65,6 +49,25 @@ built_in = colors.GREEN + '''
 ''' + colors.END
 
 
+commands = [
+    'attack',
+    'exploits',
+    'info',
+    'init',
+    'target',
+    'baidu',
+    'proxy',
+    'zoomeye',
+    'redis',
+    'jexboss',
+    'google',
+    'clear',
+    'reset',
+    'help',
+    'webshell',
+    'inurl:""'
+    'quit']
+
 histfile = os.path.join(os.path.expanduser("~"), ".python_history")
 if not os.path.exists(histfile):
     os.system('touch {}'.format(histfile))
@@ -91,7 +94,6 @@ def completer(text, state):
 readline.parse_and_bind("tab: complete")
 readline.set_completer(completer)
 
-# histfile = os.path.join(os.path.expanduser("~"), ".python_history")
 try:
     readline.read_history_file(histfile)
     # default history len is -1 (infinite), which may grow unruly
@@ -102,13 +104,33 @@ except FileNotFoundError:
 atexit.register(readline.write_history_file, histfile)
 
 
-def print_and_flush(message, same_line=False):
-    if same_line:
-        print(message),
-    else:
-        print(message)
-    if not sys.stdout.isatty():
-        sys.stdout.flush()
+def input_check(prompt, allow_blank=True, check_type=None, choices=None):
+    '''
+    checks user input
+    '''
+    while True:
+        user_input = str(
+            input(
+                colors.BLUE +
+                prompt +
+                colors.END)).strip().lower()
+        try:
+            if allow_blank is False and user_input == '':
+                continue
+            if choices is not None:
+                if user_input not in choices:
+                    print_error("[-] Invalid input")
+                    continue
+                if check_type is None:
+                    return user_input
+                return str(check_type(user_input))
+            elif check_type is not None and choices is None:
+                return str(check_type(user_input))
+            else:
+                return user_input
+        except BaseException:
+            print_error("[-] Invalid input")
+            continue
 
 
 def print_error(msg):
