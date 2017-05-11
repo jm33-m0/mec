@@ -27,8 +27,10 @@ proxy = True
 ip_list = 'data/ip_list.txt'
 
 
-# Display traceback?
 def debug_except():
+    '''
+    Display traceback?
+    '''
     if input(colors.CYAN + '[?] Display traceback? [y/n] ').strip() == 'y':
         trace_back = traceback.format_exc()
         console.print_error(str(trace_back))
@@ -36,6 +38,9 @@ def debug_except():
 
 # kill process by name
 def check_kill_process(pstring):
+    '''
+    not used anywhere, but might be useful anyway
+    '''
     for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
         fields = line.split()
         pid = fields[0]
@@ -43,6 +48,9 @@ def check_kill_process(pstring):
 
 
 def list_exp():
+    '''
+    list all executables under the root of your exploit dir
+    '''
     def is_executable(path):
         return os.path.isfile(path) and os.access(path, os.X_OK)
 
@@ -79,6 +87,10 @@ def jexboss(cmd, exploit_path):
 
 
 def execute(cmd):
+    '''
+    handles user input in console
+    '''
+
     global proxy_conf
     global ip_list
     global init_dir
@@ -418,10 +430,6 @@ def main():
                 execute(cmd)
             except (KeyboardInterrupt, EOFError, SystemExit):
                 sys.exit(0)
-            else:
-                print(
-                    colors.RED + "[-] Error with command: ", colors.END)
-                debug_except()
         except KeyboardInterrupt:
             try:
                 answ = input("\n[?] Are you sure to exit? [y/n] ")

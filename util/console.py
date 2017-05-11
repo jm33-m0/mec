@@ -22,23 +22,23 @@ intro = colors.CYAN + colors.BOLD + '''
     type h or help for help\n''' + colors.END
 
 help_info = '''
- - Any command that cannot be understood will be executed as a shell command
- - attack / e : Start exploiter (guided)
- - exploits : List all executables inside the root directory of your exploits, eg. witbe/witbe.py
- - info : Display current config info
- - target <ip_list> : Change target list, eg. "target ip_list.txt"
- - proxy : Start ss-proxy (listens on local port 1099, will be used later in our mass exploit)
- - baidu <keyword> <page count> : Search via m.baidu.com
- - zoomeye / z : Run Zoomeye script to generate an IP list matching your query, google 'zoomeye' to know more
- - webshell : Simple webshell manager
- - jexboss <command> : Run jexboss - a JBoss exploitation toolkit (type `jexboss --help` to see help info)
- - redis : Run redis exploit to get root from unauthed redis servers
- - google <dork> : Fetch URLs from Google using custom dork, requires gecko driver and Firefox
- - clear / x : Clear screen
- - reset / c : Same as clear but wipes previous output
- - init / i : Return to init directory
- - help / ? : Show this help
- - quit / ^C : Quit'''
+ * Any command that cannot be understood will be executed as a shell command
+ * attack / e : Start exploiter (guided)
+ * exploits : List all executables inside the root directory of your exploits, eg. witbe/witbe.py
+ * info : Display current config info
+ * target <ip_list> : Change target list, eg. "target ip_list.txt"
+ * proxy : Start ss-proxy (listens on local port 1099, will be used later in our mass exploit)
+ * baidu <keyword> <page count> : Search via m.baidu.com
+ * zoomeye / z : Run Zoomeye script to generate an IP list matching your query, google 'zoomeye' to know more
+ * webshell : Simple webshell manager
+ * jexboss <command> : Run jexboss: a JBoss exploitation toolkit (type `jexboss --help` to see help info)
+ * redis : Run redis exploit to get root from unauthed redis servers
+ * google <dork> : Fetch URLs from Google using custom dork, requires gecko driver and Firefox
+ * clear / x : Clear screen
+ * reset / c : Same as clear but wipes previous output
+ * init / i : Return to init directory
+ * help / ? : Show this help
+ * quit / ^C : Quit'''
 
 built_in = colors.GREEN + '''
  [0] Weblogic Java deserialization exploit (get reverse shell)
@@ -84,6 +84,9 @@ for item in os.listdir('data'):
 
 
 def completer(text, state):
+    '''
+    completer for readline, used in console
+    '''
     options = [i for i in commands if i.startswith(text)]
     if state < len(options):
         return options[state]

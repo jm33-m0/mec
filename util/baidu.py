@@ -30,7 +30,7 @@ def get_and_parse(url, page):
         for line in div:
             result = line.get('data-log', '')
             res = eval(result)
-            vwrite.writeToFile(res['mu'], 'result.txt')
+            vwrite.write_to_file(res['mu'], 'result.txt')
     except BaseException:
         pass
 

@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+
+'''
+some frequently used colors
+'''
+
 PURPLE = '\033[95m'
 CYAN = '\033[96m'
 DARKCYAN = '\033[36m'
@@ -11,8 +16,11 @@ UNDERLINE = '\033[4m'
 END = '\033[0m'
 
 
-def coloredPrint(msg, colorCode):
+def colored_print(msg, color_code):
+    '''
+    not used anywhere
+    '''
     try:
-        print(colorCode + BOLD + msg + END)
+        print(color_code + BOLD + msg + END)
     except BaseException:
-        print("\n[-] Error printing with color {}\n".format(colorCode) + msg)
+        print("\n[-] Error printing with color {}\n".format(color_code) + msg)
