@@ -18,13 +18,18 @@ import util.baidu as baidu
 import util.exploits as ExecExp
 from util.console import input_check
 
-# mark home for our way back
-init_dir = os.getcwd()
-proxy_conf = str(init_dir) + '/data/proxy.conf'
-proxy = True
 
-# default target list
-ip_list = 'data/ip_list.txt'
+class SessionParameters:
+
+    '''
+    defines some global parameters
+    '''
+
+    init_dir = os.getcwd()
+    proxy_conf = init_dir + \
+        '/data/proxy.conf'
+    use_proxy = True
+    ip_list = 'data/ip_list.txt'
 
 
 def debug_except():
@@ -71,13 +76,12 @@ def jexboss(cmd, exploit_path):
     '''
     planning for removal
     '''
-    global proxy_conf
     try:
         cmd = cmd.split()
         try:
             args = cmd[1:]
             subprocess.call(['proxychains4', '-q', '-f',
-                             proxy_conf, exploit_path] + args)
+                             SessionParameters.proxy_conf, exploit_path] + args)
         except BaseException:
             subprocess.call(['python', exploit_path, '-h'])
     except BaseException as err:
@@ -91,9 +95,6 @@ def execute(cmd):
     handles user input in console
     '''
 
-    global proxy_conf
-    global ip_list
-    global init_dir
     cmd = str(cmd).lower().strip()
     if cmd == '':
         pass
@@ -101,16 +102,17 @@ def execute(cmd):
         print(
             colors.CYAN +
             '[*] Init directory: {}\n[*] Target: {}\n[*] Proxy config: {}'.format(
-                init_dir,
-                ip_list,
-                proxy_conf))
+                SessionParameters.init_dir,
+                SessionParameters.ip_list,
+                SessionParameters.proxy_conf))
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         print(colors.BLUE + '[i] Target changed to {}'.format(target))
-        ip_list = 'data/' + target
+        SessionParameters.ip_list = 'data/' + target
     elif cmd == 'init' or cmd == 'i':
-        print(colors.CYAN + '[*] Going back to init_dir...' + colors.END)
-        os.chdir(init_dir)
+        print(colors.CYAN +
+              '[*] Going back to init_dir...' + colors.END)
+        os.chdir(SessionParameters.init_dir)
     elif cmd.startswith('baidu'):
         try:
             command = cmd.strip().split()
@@ -163,7 +165,7 @@ def execute(cmd):
         os.chdir('./exploits/redis/')
         if answ.lower() == 'y':
             subprocess.call(['proxychains4', '-q', '-f',
-                             proxy_conf, 'python', 'massAttack.py'])
+                             SessionParameters.proxy_conf, 'python', 'massAttack.py'])
         else:
             pass
     elif cmd.startswith('google'):
@@ -218,12 +220,14 @@ def execute(cmd):
 
 
 def attack():
-    global proxy_conf
-    global proxy
+    '''
+    handles attack command
+    '''
+
     if input_check('[?] Do you wish to use proxychains? [y/n] ', choices=['y', 'n']) == 'y':
-        proxy = True
+        SessionParameters.use_proxy = True
     else:
-        proxy = False
+        SessionParameters.use_proxy = False
     answ = input_check(
         '\n[?] Do you wish to use\n\n    [a] built-in exploits\n    [m] or launch your own manually?\n\n[=] Your choice: ', choices=['a', 'm'])
     if answ == 'a':
@@ -332,22 +336,21 @@ def scanner(scanner_args):
     '''
     Execute exploit against given ip list
     '''
-    global ip_list
-    global proxy
     _, work_path, exec_path, custom_args, jobs = scanner_args[
         0], scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
-    if proxy:
+    if SessionParameters.use_proxy:
         e_args = [
             'proxychains4',
             '-q',
             '-f',
-            proxy_conf,
+            SessionParameters.proxy_conf,
             './' + exec_path]
     else:
         e_args = ['./' + exec_path]
     e_args += custom_args
     e_args += ['-t']
-    target_list = open(init_dir + '/' + ip_list)
+    target_list = open(
+        SessionParameters.init_dir + '/' + SessionParameters.ip_list)
     os.chdir('./exploits/' + work_path)
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
@@ -389,7 +392,7 @@ def scanner(scanner_args):
         except BaseException:
             pass
     os.system('clear')
-    os.chdir(init_dir)
+    os.chdir(SessionParameters.init_dir)
     console.print_success('\n[+] All done!\n')
     print(console.intro)
 
@@ -398,7 +401,7 @@ def main():
     '''
     manage procedure
     '''
-    global ip_list
+
     answ = str(
         input(
             colors.CYAN +
@@ -406,12 +409,12 @@ def main():
             colors.END)).strip()
     if answ.lower() == 'n':
         os.system("ls data")
-        ip_list = 'data/' + str(
+        SessionParameters.ip_list = 'data/' + str(
             input(
                 colors.CYAN +
                 '[=] Choose your target IP list (must be in ./data) ')).strip()
-        if ip_list == 'data/':
-            ip_list = 'data/ip_list.txt'
+        if SessionParameters.ip_list == 'data/':
+            SessionParameters.ip_list = 'data/ip_list.txt'
     else:
         pass
     while True:
