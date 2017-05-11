@@ -10,7 +10,7 @@ import readline
 
 import colors
 
-intro = colors.CYAN + colors.BOLD + '''
+INTRO = colors.CYAN + colors.BOLD + r'''
  _ __ ___   ___  ___
 | '_ ` _ \ / _ \/ __|
 | | | | | |  __/ (__
