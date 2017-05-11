@@ -7,11 +7,11 @@ by jm33_m0
 
 import os
 import threading
+
 import requests
 from bs4 import BeautifulSoup
-from . import console
-from . import vwrite
-from . import wc
+
+from . import console, vwrite, wc
 
 
 def get_and_parse(url, page):
@@ -21,7 +21,8 @@ def get_and_parse(url, page):
     try:
         headers = {
             "User-Agent":
-                "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+                "Mozilla/5.0 (Windows NT 6.1) \
+                AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
         }
         url += str(page)
         rget = requests.get(url, headers=headers)

@@ -4,11 +4,11 @@
 Handles console related stuff
 """
 
+import atexit
 import os
 import readline
-import atexit
-from . import colors
 
+from . import colors
 
 intro = colors.CYAN + colors.BOLD + '''
  _ __ ___   ___  ___
@@ -21,7 +21,7 @@ intro = colors.CYAN + colors.BOLD + '''
     https://github.com/jm33-m0/massExpConsole
     type h or help for help\n''' + colors.END
 
-help_info = '''
+HELP_INFO = '''
  * Any command that cannot be understood will be executed as a shell command
  * attack / e : Start exploiter (guided)
  * exploits : List all executables inside the root directory of your exploits, eg. witbe/witbe.py
@@ -40,7 +40,7 @@ help_info = '''
  * help / ? : Show this help
  * quit / ^C : Quit'''
 
-built_in = colors.GREEN + '''
+BUILT_IN = colors.GREEN + '''
  [0] Weblogic Java deserialization exploit (get reverse shell)
  [1] Joomla RCE (reverse shell)
  [2] Redis unauth root (write crontab or authorized_keys)
@@ -49,7 +49,7 @@ built_in = colors.GREEN + '''
 ''' + colors.END
 
 
-commands = [
+COMMANDS = [
     'attack',
     'exploits',
     'info',
@@ -68,17 +68,17 @@ commands = [
     'inurl:""'
     'quit']
 
-histfile = os.path.join(os.path.expanduser("~"), ".python_history")
-if not os.path.exists(histfile):
-    os.system('touch {}'.format(histfile))
-with open(histfile) as f:
+HISTFILE = os.path.join(os.path.expanduser("~"), ".python_history")
+if not os.path.exists(HISTFILE):
+    os.system('touch {}'.format(HISTFILE))
+with open(HISTFILE) as f:
     for line in f:
         for item in line.strip().split():
-            commands.append(item)
+            COMMANDS.append(item)
 
 # List ./data
 for item in os.listdir('data'):
-    commands.append(item)
+    COMMANDS.append(item)
 
 # make our console more usable
 
@@ -87,7 +87,7 @@ def completer(text, state):
     '''
     completer for readline, used in console
     '''
-    options = [i for i in commands if i.startswith(text)]
+    options = [i for i in COMMANDS if i.startswith(text)]
     if state < len(options):
         return options[state]
     else:
@@ -98,13 +98,13 @@ readline.parse_and_bind("tab: complete")
 readline.set_completer(completer)
 
 try:
-    readline.read_history_file(histfile)
+    readline.read_history_file(HISTFILE)
     # default history len is -1 (infinite), which may grow unruly
     readline.set_history_length(1000)
 except FileNotFoundError:
     pass
 
-atexit.register(readline.write_history_file, histfile)
+atexit.register(readline.write_history_file, HISTFILE)
 
 
 def input_check(prompt, allow_blank=True, check_type=None, choices=None):

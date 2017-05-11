@@ -6,6 +6,7 @@ measure file length, and display progress
 
 import sys
 import time
+
 from . import colors
 
 

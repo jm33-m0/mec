@@ -5,9 +5,11 @@ this module is deprecated, expect no further updates
 '''
 
 import sys
+
 import requests as r
-from . import console as csl
+
 from . import colors as clr
+from . import console as csl
 
 shells = {}
 

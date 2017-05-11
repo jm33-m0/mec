@@ -129,6 +129,6 @@ if __name__ == '__main__':
         qry = raw_input("[*] Your query is: ")
         outfile = '../data/zoomeye-{}.txt'.format('-'.join(qry.split()))
         main()
-        #os.system('rm access_token.txt')
+        # os.system('rm access_token.txt')
     except KeyboardInterrupt:
         print '\n[*] Exiting...'

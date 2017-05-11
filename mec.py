@@ -5,24 +5,25 @@ mass exploit console
 by jm33-ng
 '''
 
-import sys
 import os
-import time
-import subprocess
 import signal
+import subprocess
+import sys
+import time
 import traceback
-import util.console as console
-import util.colors as colors
-import util.webshell as ws
+
 import util.baidu as baidu
+import util.colors as colors
+import util.console as console
 import util.exploits as ExecExp
+import util.webshell as ws
 from util.console import input_check
 
 
 class SessionParameters:
 
     '''
-    defines some global parameters
+    define some global parameters
     '''
 
     INIT_DIR = os.getcwd()
@@ -180,7 +181,7 @@ def execute(cmd):
         check_kill_process('ss-proxy')
         sys.exit(0)
     elif cmd == 'h' or cmd == 'help' or cmd == '?':
-        print(console.help_info)
+        print(console.HELP_INFO)
     elif cmd == 'exploits':
         print(colors.CYAN + '[+] Available exploits: ' + colors.END)
         list_exp()
@@ -237,7 +238,7 @@ def attack():
             '\n[?] Choose a module from: ' +
             colors.END +
             '\n')
-        print(console.built_in)
+        print(console.BUILT_IN)
         answ = input_check(
             '[=] Your choice: ',
             check_type=int,
@@ -257,10 +258,8 @@ def attack():
                 scanner(ExecExp.s2_045())
             elif answ == '4':
                 scanner(ExecExp.witbe())
-            else:
-                console.print_error('\n[-] Invalid input!')
         except BaseException:
-            console.print_error("[-] We have an error")
+            console.print_error("[-] We have an error executing exploit")
             debug_except()
 
     elif answ == 'm':
