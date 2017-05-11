@@ -28,9 +28,12 @@ a collection of tools with a cli ui
 - GNU/Linux or MacOS, fully tested under [Kali Linux (Rolling, 2017)](https://www.kali.org), Ubuntu Linux (16.04 LTS) and Fedora 25 (it will work on other distros too as long as you have dealt with all deps)
 - `proxychains4` (in `$PATH`), used by exploiter, requires a working socks5 proxy (you can modify its config in `mec.py`)
 - Java is required when using Java deserialization exploits, you might want to install `openjdk-8-jre` if you haven't installed it yet
-- python packages:
+- python packages (not complete, as some third-party scripts might need other deps as well):
     - `requests`
     - `bs4`
+    - `beautifulsoup4`
+    - `html5lib`
+    - `docopt`
     - `pip3 install` on the go
 - **note** that you have to install all the deps of your exploits or tools as well
 

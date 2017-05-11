@@ -125,8 +125,10 @@ def execute(cmd):
             os.chdir('output')
             print(colors.PURPLE + '[*] Searching on Baidu...' + colors.END)
             baidu.spider(dork, count)
-        except BaseException as err:
-            console.print_error('[-] Error with baidu: ' + str(err))
+        except (EOFError, KeyboardInterrupt, SystemExit):
+            return
+        else:
+            console.print_error('[-] Error with baidu: ')
             debug_except()
     elif cmd == 'proxy':
         if not os.path.exists('data/ss.json'):
@@ -189,8 +191,10 @@ def execute(cmd):
         try:
             os.chdir('./zoomeye')
             subprocess.call(['python', 'zoomeye.py'])
-        except BaseException as err:
-            console.print_error('[-] Cannot start zoomeye.py:\n' + str(err))
+        except (EOFError, KeyboardInterrupt, SystemExit):
+            pass
+        else:
+            console.print_error('[-] Cannot start zoomeye.py:')
             debug_except()
     elif cmd == 'x' or cmd == 'clear':
         subprocess.call("clear")
@@ -210,9 +214,11 @@ def execute(cmd):
                 colors.END +
                 '\n')
             os.system(cmd)
-        except BaseException as err:
+        except (EOFError, KeyboardInterrupt, SystemExit):
+            pass
+        else:
             console.print_error(
-                "[-] Error executing shell command `{}`: ".format(cmd) + str(err))
+                "[-] Error executing shell command `{}`: ".format(cmd))
             debug_except()
 
 
@@ -393,8 +399,11 @@ def scanner(scanner_args):
                 continue
             sys.stdout.flush()
             os.system('clear')
-        except BaseException:
-            pass
+        except (EOFError, KeyboardInterrupt, SystemExit):
+            sys.exit(1)
+        else:
+            console.print_error('[-] Error when running scanner')
+            debug_except()
     os.system('clear')
     os.chdir(SessionParameters.INIT_DIR)
     console.print_success('\n[+] All done!\n')
