@@ -134,7 +134,7 @@ def input_check(prompt, allow_blank=True, check_type=None, choices=None):
 
 
 def print_error(msg):
-    print(colors.RED, msg, colors.END)
+    print(colors.RED + msg + colors.END)
 
 
 def print_warning(msg):

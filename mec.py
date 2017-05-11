@@ -1,5 +1,10 @@
 #!/usr/bin/python3
 
+'''
+mass exploit console
+by jm33-ng
+'''
+
 import sys
 import os
 import time
@@ -25,8 +30,8 @@ ip_list = 'data/ip_list.txt'
 # Display traceback?
 def debug_except():
     if input(colors.CYAN + '[?] Display traceback? [y/n] ').strip() == 'y':
-        tb = traceback.format_exc()
-        console.print_error(str(tb))
+        trace_back = traceback.format_exc()
+        console.print_error(str(trace_back))
 
 
 # kill process by name
@@ -55,6 +60,9 @@ def list_exp():
 
 
 def jexboss(cmd, exploit_path):
+    '''
+    planning for removal
+    '''
     global proxy_conf
     try:
         cmd = cmd.split()
@@ -327,7 +335,7 @@ def scanner(scanner_args):
         e_args = ['./' + exec_path]
     e_args += custom_args
     e_args += ['-t']
-    f = open(init_dir + '/' + ip_list)
+    target_list = open(init_dir + '/' + ip_list)
     os.chdir('./exploits/' + work_path)
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
@@ -336,8 +344,8 @@ def scanner(scanner_args):
     count = 0
     tested = count
     rnd = 1
-    for line in f:
-        ip = line.strip()
+    for line in target_list:
+        target_ip = line.strip()
         progress = colors.BLUE + colors.BOLD + 'ROUND.' + \
             str(rnd) + colors.END + '  ' + colors.CYAN + colors.BOLD + \
             str(tested + 1) + colors.END + ' targets found\n'
@@ -349,12 +357,12 @@ def scanner(scanner_args):
         count += 1
         tested += 1
         try:
-            e_args += [ip]
+            e_args += [target_ip]
             print(colors.CYAN + ' '.join(e_args) + colors.END + '\n')
             proc = subprocess.Popen(e_args)
 
             # continue to next target
-            e_args.remove(ip)
+            e_args.remove(target_ip)
             time.sleep(.1)
 
             if count == jobs or count == 0:
@@ -375,6 +383,9 @@ def scanner(scanner_args):
 
 
 def main():
+    '''
+    manage procedure
+    '''
     global ip_list
     answ = str(
         input(
