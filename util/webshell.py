@@ -1,10 +1,13 @@
 #!/usr/bin/python3
 
+'''
+this module is deprecated, expect no further updates
+'''
+
+import sys
+import requests as r
 from . import console as csl
 from . import colors as clr
-import requests as r
-import sys
-import os
 
 shells = {}
 
