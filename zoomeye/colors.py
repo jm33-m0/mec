@@ -1,17 +1,26 @@
-PURPLE = u'\033[95m'
-CYAN = u'\033[96m'
-DARKCYAN = u'\033[36m'
-BLUE = u'\033[94m'
-GREEN = u'\033[92m'
-YELLOW = u'\033[93m'
-RED = u'\033[91m'
-BOLD = u'\033[1m'
-UNDERLINE = u'\033[4m'
-END = u'\033[0m'
+#!/usr/bin/python3
+
+'''
+some frequently used colors
+'''
+
+PURPLE = '\033[95m'
+CYAN = '\033[96m'
+DARKCYAN = '\033[36m'
+BLUE = '\033[94m'
+GREEN = '\033[92m'
+YELLOW = '\033[93m'
+RED = '\033[91m'
+BOLD = '\033[1m'
+UNDERLINE = '\033[4m'
+END = '\033[0m'
 
 
-def coloredPrint(msg, colorCode):
+def colored_print(msg, color_code):
+    '''
+    not used anywhere
+    '''
     try:
-        print colorCode + BOLD + msg + END
-    except:
-        print u"\n[-] Error printing with color {}\n".format(colorCode) + msg
+        print(color_code + BOLD + msg + END)
+    except BaseException:
+        print("\n[-] Error printing with color {}\n".format(color_code) + msg)

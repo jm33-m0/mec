@@ -190,12 +190,9 @@ def execute(cmd):
     elif cmd == 'z' or cmd == "zoomeye":
         try:
             os.chdir('./zoomeye')
-            subprocess.call(['python', 'zoomeye.py'])
+            subprocess.call(['python3', 'zoomeye.py'])
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass
-        else:
-            console.print_error('[-] Cannot start zoomeye.py:')
-            debug_except()
     elif cmd == 'x' or cmd == 'clear':
         subprocess.call("clear")
     elif cmd == 'c' or cmd == 'reset':
@@ -407,7 +404,7 @@ def scanner(scanner_args):
     os.system('clear')
     os.chdir(SessionParameters.INIT_DIR)
     console.print_success('\n[+] All done!\n')
-    print(console.intro)
+    print(console.INTRO)
 
 
 def main():
@@ -462,7 +459,7 @@ def main():
 
 if __name__ == "__main__":
     try:
-        print(console.intro)
+        print(console.INTRO)
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
         console.print_error('[-] Exiting...')

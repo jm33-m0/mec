@@ -1,5 +1,6 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
+'''
 # -*- coding: UTF-8 -*-
 
 # coding: utf-8
@@ -7,107 +8,152 @@
 # datetime: 20160330
 # modified by: jm33_m0
 # http://www.cnblogs.com/anka9080/p/ZoomEyeAPI.html
+'''
 
-import time
-import os
-import requests
 import json
-import threading
-import atexit
+import os
 import sys
+import threading
+import time
+import traceback
+
+import requests
+
 import colors
 import console
 
-access_token = ''
 
+class ZoomEyeAPI:
 
-def login():
-    user = raw_input('[*] enter username :')
-    passwd = raw_input('[*] and password :')
-    print '''
-    [*] Also, use curl to obtain your token:
-    curl -XPOST https://api.zoomeye.org/user/login -d'{
-        "username": "username",
-        "password": "password"
-    }'
     '''
-    data = {
-        'username': user,
-        'password': passwd
-    }
-    data_encoded = json.dumps(data)
-    try:
-        r = requests.post(
-            url='https://api.zoomeye.org/user/login',
-            data=data_encoded)
-        r_decoded = json.loads(r.text)
-        global access_token
-        access_token = r_decoded['access_token']
-    except Exception as e:
-        print '[-] invalid username or password, try again with curl'
-        exit()
+    gain API key
+    '''
+
+    QRY = ""
+    OUTFILE = '../data/zoomeye-{}.txt'.format('-'.join(QRY.split()))
+
+    def __init__(self, conf):
+        try:
+            cred_file = open(conf)
+            for line in cred_file:
+                line = line.strip()
+                if line.startswith('user'):
+                    self.user = line.split(':')[1]
+                elif line.startswith('password'):
+                    self.passwd = line.split(':')[1]
+        except FileNotFoundError:
+            console.print_error('[-] Please look into zoomeye.conf first')
+        else:
+            pass
+
+    def login(self):
+        '''
+        login using given username and password
+        '''
+
+        data = {
+            'username': self.user,
+            'password': self.passwd
+        }
+        print(data)
+        data_encoded = json.dumps(data)
+        try:
+            r_post = requests.post(
+                url='https://api.zoomeye.org/user/login',
+                data=data_encoded)
+            r_decoded = json.loads(r_post.text)
+            return r_decoded['access_token']
+        except (EOFError, KeyboardInterrupt, SystemExit):
+            pass
+        else:
+            console.print_error(
+                '[-] invalid username or password, try again with curl')
+        sys.exit(1)
 
 
-def saveStrToFile(file, str):
+def debug_traceback():
+    '''
+    display traceback info
+    '''
+    answ = console.input_check("[?] Display traceback? [y/n] ",
+                               choices=['y', 'n'])
+    if answ == 'y':
+        console.print_error(traceback.format_exc())
+
+
+def save_str_to_file(file, string):
+    '''
+    save str to file
+    '''
     if not os.path.exists(file):
         os.system('touch {}'.format(file))
     # check if we are writing duplicate lines to the file
-    f = open(file)
-    for l in f:
-        if l.strip() == str:
+    f_hand = open(file)
+    for line in f_hand:
+        if line.strip() == string:
             return
     # write line to file
     with open(file, 'a') as output:
-        output.write(str + '\n')
+        output.write(string + '\n')
         output.close()
 
 
 def progress(file):
-    lc = 0
-    if not os.path.exists(outfile):
-        os.system('touch {}'.format(outfile))
+    '''
+    display progress
+    '''
+    l_count = 0
+    if not os.path.exists(file):
+        os.system('touch {}'.format(file))
     while True:
-        lc = sum(1 for line in open(file))
+        l_count = sum(1 for line in open(file))
         sys.stdout.write(
             colors.CYAN + '\r[+] Found ' + str(
-                lc) + ' hosts' + colors.END)
+                l_count) + ' hosts' + colors.END)
         sys.stdout.flush()
         time.sleep(.5)
 
 
-def crawler(qry, amnt, page, headers):
+def crawler(qery, _, page, headers):
+    '''
+    fetch result from zoomeye
+    '''
     try:
-        r = requests.get(
+        r_get = requests.get(
             url='https://api.zoomeye.org/host/search?query=' +
-            qry +
+            qery +
             '&facet=app,os&page=' +
             str(page),
             headers=headers)
-        r_decoded = json.loads(r.text)
-        for x in r_decoded['matches']:
-            saveStrToFile(outfile, x['ip'])
-    except Exception as e:
-        # console.print_error('[-] Error: ' + str(e))
+        r_decoded = json.loads(r_get.text)
+        for item in r_decoded['matches']:
+            save_str_to_file(ZoomEyeAPI.OUTFILE, item['ip'])
+    except BaseException:
         pass
 
 
-def apiTest():
+def api_test():
+    '''
+    get verified with zoomeye
+    '''
     amnt = int(
-        raw_input("[*] How many results do you want? (10 IPs on each page) ").strip())
-    global access_token
+        console.input_check(
+            "[*] How many results do you want? (10 IPs on each page) ",
+            check_type=int).strip())
     threads = []
-    with open('access_token.txt', 'r') as input:
-        access_token = input.read()
+    api = ZoomEyeAPI('zoomeye.conf')
+    access_token = api.login()
     headers = {
         'Authorization': 'JWT ' + access_token,
     }
-    status = threading.Thread(target=progress, args=(outfile,))
+    status = threading.Thread(target=progress, args=(ZoomEyeAPI.OUTFILE,))
     status.setDaemon(True)
     status.start()
     limit = 0
-    for page in range(1, amnt / 10):
-        t = threading.Thread(target=crawler, args=(qry, amnt, page, headers,))
-        threads.append(t)
+    for page in range(1, int(amnt / 10)):
+        thd = threading.Thread(
+            target=crawler, args=(ZoomEyeAPI.QRY, amnt, page, headers,))
+        threads.append(thd)
     for job in threads:
         job.setDaemon(True)
         job.start()
@@ -118,17 +164,25 @@ def apiTest():
 
 
 def main():
-    if not os.path.isfile('access_token.txt'):
-        print '[-] error : access_token file not found, please login to obtain your token'
-        login()
-        saveStrToFile('access_token.txt', access_token)
-    apiTest()
+    '''
+    put things together
+    '''
+    try:
+        api_test()
+    except (EOFError, KeyboardInterrupt, SystemExit):
+        pass
+    else:
+        console.print_error('[-] Error with api_test')
+        debug_traceback()
 
 if __name__ == '__main__':
     try:
-        qry = raw_input("[*] Your query is: ")
-        outfile = '../data/zoomeye-{}.txt'.format('-'.join(qry.split()))
+        ZoomEyeAPI.QRY = console.input_check(
+            "[*] Your query is: ", allow_blank=False)
+        ZoomEyeAPI.OUTFILE = '../data/zoomeye-{}.txt'.format(
+            '-'.join(ZoomEyeAPI.QRY.split()))
         main()
-        # os.system('rm access_token.txt')
     except KeyboardInterrupt:
-        print '\n[*] Exiting...'
+        print('\n[*] Exiting...')
+    else:
+        debug_traceback()

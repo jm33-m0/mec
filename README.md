@@ -10,6 +10,7 @@ a collection of tools with a cli ui
 ## disclaimer
 
 - please use this tool only on **authorized systems**, im not responsible for any damage caused by users who ignore my warning
+- i **do not own** the code of adapted exploits or tools
 - exploits are adapted from other sources, please refer to their author info
 
 
