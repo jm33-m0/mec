@@ -175,7 +175,7 @@ def main():
         console.print_error('[-] Error with api_test')
         debug_traceback()
 
-if __name__ == '__main__':
+
     try:
         ZoomEyeAPI.QRY = console.input_check(
             "[*] Your query is: ", allow_blank=False)

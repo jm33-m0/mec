@@ -1,6 +1,7 @@
-# massExploitConsole
+# massExploitConsole - Windows
 a collection of tools with a cli ui
 
+> **NOTE** that `readline` doesn't work on Windows. thus this branch will not work unless you put it into WSL
 
 ## screenshot
 
