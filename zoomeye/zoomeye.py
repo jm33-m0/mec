@@ -86,7 +86,7 @@ def save_str_to_file(file, string):
     save str to file
     '''
     if not os.path.exists(file):
-        os.system('touch {}'.format(file))
+        open(file, 'w').close()
     # check if we are writing duplicate lines to the file
     f_hand = open(file)
     for line in f_hand:
@@ -104,7 +104,7 @@ def progress(file):
     '''
     l_count = 0
     if not os.path.exists(file):
-        os.system('touch {}'.format(file))
+        open(file, 'w').close()
     while True:
         l_count = sum(1 for line in open(file))
         sys.stdout.write(
@@ -174,7 +174,6 @@ def main():
     else:
         console.print_error('[-] Error with api_test')
         debug_traceback()
-
 
     try:
         ZoomEyeAPI.QRY = console.input_check(

@@ -6,7 +6,6 @@ by jm33-ng
 '''
 
 import os
-import signal
 import subprocess
 import sys
 import time
@@ -42,17 +41,6 @@ def debug_except():
         console.print_error(str(trace_back))
 
 
-# kill process by name
-def check_kill_process(pstring):
-    '''
-    not used anywhere, but might be useful anyway
-    '''
-    for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
-        fields = line.split()
-        pid = fields[0]
-        os.kill(int(pid), signal.SIGKILL)
-
-
 def list_exp():
     '''
     list all executables under the root of your exploit dir
@@ -74,6 +62,18 @@ def list_exp():
                 continue
             if is_executable(pathname):
                 print(colors.BLUE + poc + colors.END)
+
+
+def check_kill_process(process_name):
+    '''
+    cross platform way of killing process by name
+    '''
+    import psutil
+
+    for proc in psutil.process_iter():
+        # check whether the process name matches
+        if proc.name() == process_name:
+            proc.kill()
 
 
 def jexboss(cmd, exploit_path):
@@ -105,14 +105,19 @@ def execute(cmd):
     elif cmd == 'info':
         print(
             colors.CYAN +
-            '[*] Init directory: {}\n[*] Target: {}\n[*] Proxy config: {}'.format(
+            '''[*] Current directory: {}\n
+            [*] Init directory: {}\n
+            [*] Target: {}\n
+            [*] Proxy config: {}
+            '''.format(
+                os.getcwd(),
                 SessionParameters.INIT_DIR,
-                SessionParameters.ip_list,
+                SessionParameters.IP_LIST,
                 SessionParameters.PROXY_CONF))
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         print(colors.BLUE + '[i] Target changed to {}'.format(target))
-        SessionParameters.ip_list = 'data/' + target
+        SessionParameters.IP_LIST = 'data/' + target
     elif cmd == 'init' or cmd == 'i':
         print(colors.CYAN +
               '[*] Going back to init_dir...' + colors.END)
@@ -194,9 +199,9 @@ def execute(cmd):
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass
     elif cmd == 'x' or cmd == 'clear':
-        subprocess.call("clear")
+        os.system("cls")
     elif cmd == 'c' or cmd == 'reset':
-        subprocess.call("reset")
+        os.system("cls")
     elif cmd == "attack" or cmd == "e":
         attack()
     else:
@@ -213,10 +218,6 @@ def execute(cmd):
             os.system(cmd)
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass
-        else:
-            console.print_error(
-                "[-] Error executing shell command `{}`: ".format(cmd))
-            debug_except()
 
 
 def attack():
@@ -357,7 +358,7 @@ def scanner(scanner_args):
     e_args += custom_args
     e_args += ['-t']
     target_list = open(
-        SessionParameters.INIT_DIR + '/' + SessionParameters.ip_list)
+        SessionParameters.INIT_DIR + '/' + SessionParameters.IP_LIST, encoding='utf-8')
     os.chdir('./exploits/' + work_path)
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
@@ -395,13 +396,13 @@ def scanner(scanner_args):
                     proc.kill()
                 continue
             sys.stdout.flush()
-            os.system('clear')
+            os.system('cls')
         except (EOFError, KeyboardInterrupt, SystemExit):
             sys.exit(1)
         else:
             console.print_error('[-] Error when running scanner')
             debug_except()
-    os.system('clear')
+    os.system('cls')
     os.chdir(SessionParameters.INIT_DIR)
     console.print_success('\n[+] All done!\n')
     print(console.INTRO)
@@ -419,12 +420,12 @@ def main():
             colors.END)).strip()
     if answ.lower() == 'n':
         os.system("ls data")
-        SessionParameters.ip_list = 'data/' + str(
+        SessionParameters.IP_LIST = 'data/' + str(
             input(
                 colors.CYAN +
                 '[=] Choose your target IP list (must be in ./data) ')).strip()
-        if SessionParameters.ip_list == 'data/':
-            SessionParameters.ip_list = 'data/ip_list.txt'
+        if SessionParameters.IP_LIST == 'data/':
+            SessionParameters.IP_LIST = 'data/ip_list.txt'
     else:
         pass
     while True:

@@ -70,7 +70,8 @@ COMMANDS = [
 
 HISTFILE = os.path.join(os.path.expanduser("~"), ".python_history")
 if not os.path.exists(HISTFILE):
-    os.system('touch {}'.format(HISTFILE))
+    open(HISTFILE, 'w').close()
+
 with open(HISTFILE) as f:
     for line in f:
         for item in line.strip().split():

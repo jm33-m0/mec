@@ -1,12 +1,16 @@
 # massExploitConsole - Windows
 a collection of tools with a cli ui
 
-> **NOTE** that `readline` doesn't work on Windows. thus this branch will not work unless you put it into WSL
+> <s>**NOTE** that `readline` doesn't work on Windows. thus this branch will not work unless you put it into WSL</s> problem solved by using `pyreadline`
 
 ## screenshot
 
 ![](/screenshot/main.png)
 
+## known issues
+
+- `proxychains4` is currently not available, you can compile your own if you want
+- some *nix related stuff might not work, ive fixed some, but do expect more bugs
 
 ## disclaimer
 
