@@ -180,7 +180,7 @@ if __name__ == '__main__':
         ZoomEyeAPI.QRY = console.input_check(
             "[*] Your query is: ", allow_blank=False)
         ZoomEyeAPI.OUTFILE = '../data/zoomeye-{}.txt'.format(
-            '-'.join(ZoomEyeAPI.QRY.split()))
+                '-'.join(ZoomEyeAPI.QRY.replace(':', '_').split()))
         main()
     except KeyboardInterrupt:
         print('\n[*] Exiting...')
