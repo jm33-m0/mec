@@ -1,7 +1,9 @@
 # massExploitConsole - Windows
 a collection of tools with a cli ui
 
-> <s>**NOTE** that `readline` doesn't work on Windows. thus this branch will not work unless you put it into WSL</s> problem solved by using `pyreadline`
+> <s>**NOTE** that `readline` doesn't work on Windows. thus this branch will not work unless you put it into WSL</s> 
+
+> problem solved by using `pyreadline`, but it's nearly **unusable** due to **slowness**
 
 ## screenshot
 
@@ -15,7 +17,7 @@ a collection of tools with a cli ui
 ## disclaimer
 
 - please use this tool only on **authorized systems**, im not responsible for any damage caused by users who ignore my warning
-- i **do not own** the code of adapted exploits or tools
+- **i do not own** the code of adapted exploits or tools
 - exploits are adapted from other sources, please refer to their author info
 
 
