@@ -1,10 +1,6 @@
 # massExploitConsole - Windows
 a collection of tools with a cli ui
 
-> <s>**NOTE** that `readline` doesn't work on Windows. thus this branch will not work unless you put it into WSL</s> 
-
-> problem solved by using `pyreadline`, but it's nearly **unusable** due to **slowness**
-
 ## screenshot
 
 ![](/screenshot/main.png)
@@ -13,6 +9,9 @@ a collection of tools with a cli ui
 
 - `proxychains4` is currently not available, you can compile your own if you want
 - some *nix related stuff might not work, ive fixed some, but do expect more bugs
+- <s>**NOTE** that `readline` doesn't work on Windows. thus this branch will not work unless you put it into WSL</s> 
+- problem solved by using `pyreadline`, <s>but it's nearly **unusable** due to **slowness**</s>
+- found the problem with `pyreadline`: `.python_history` is malformed somehow, causing `pyreadline`'s slowness
 
 ## disclaimer
 

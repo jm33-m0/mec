@@ -31,8 +31,6 @@ HELP_INFO = '''
  * baidu <keyword> <page count> : Search via m.baidu.com
  * zoomeye / z : Run Zoomeye script to generate an IP list matching your query, google 'zoomeye' to know more
  * webshell : Simple webshell manager
- * jexboss <command> : Run jexboss: a JBoss exploitation toolkit (type `jexboss --help` to see help info)
- * redis : Run redis exploit to get root from unauthed redis servers
  * google <dork> : Fetch URLs from Google using custom dork, requires gecko driver and Firefox, dig into mec.py to know more
  * clear / x : Clear screen
  * reset / c : Same as clear but wipes previous output

