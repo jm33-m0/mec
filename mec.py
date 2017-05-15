@@ -30,7 +30,8 @@ class SessionParameters:
     PROXY_CONF = INIT_DIR + \
         '/data/proxy.conf'
     USE_PROXY = True
-    IP_LIST = 'data/ip_list.txt'
+    IP_LIST = INIT_DIR + \
+            '/data/ip_list.txt'
 
 
 def debug_except():
@@ -105,14 +106,18 @@ def execute(cmd):
     elif cmd == 'info':
         print(
             colors.CYAN +
-            '[*] Init directory: {}\n[*] Target: {}\n[*] Proxy config: {}'.format(
+            '[*] Current directory: {}\
+            \n[*] Init directory: {}\
+            \n[*] Target: {}\
+            \n[*] Proxy config: {}'.format(
+                os.getcwd(),
                 SessionParameters.INIT_DIR,
-                SessionParameters.ip_list,
+                SessionParameters.IP_LIST,
                 SessionParameters.PROXY_CONF))
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         print(colors.BLUE + '[i] Target changed to {}'.format(target))
-        SessionParameters.ip_list = 'data/' + target
+        SessionParameters.IP_LIST = INIT_DIR + '/data/' + target
     elif cmd == 'init' or cmd == 'i':
         print(colors.CYAN +
               '[*] Going back to init_dir...' + colors.END)
@@ -213,10 +218,6 @@ def execute(cmd):
             os.system(cmd)
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass
-        else:
-            console.print_error(
-                "[-] Error executing shell command `{}`: ".format(cmd))
-            debug_except()
 
 
 def attack():
@@ -356,8 +357,7 @@ def scanner(scanner_args):
         e_args = ['./' + exec_path]
     e_args += custom_args
     e_args += ['-t']
-    target_list = open(
-        SessionParameters.INIT_DIR + '/' + SessionParameters.ip_list)
+    target_list = open(SessionParameters.IP_LIST)
     os.chdir('./exploits/' + work_path)
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
@@ -419,14 +419,9 @@ def main():
             colors.END)).strip()
     if answ.lower() == 'n':
         os.system("ls data")
-        SessionParameters.ip_list = 'data/' + str(
-            input(
-                colors.CYAN +
-                '[=] Choose your target IP list (must be in ./data) ')).strip()
-        if SessionParameters.ip_list == 'data/':
-            SessionParameters.ip_list = 'data/ip_list.txt'
-    else:
-        pass
+        SessionParameters.IP_LIST = console.input_check(
+                '[=] Choose your target IP list, eg. ip_list.txt ',
+                allow_blank=False)
     while True:
         try:
             cmd = input(
