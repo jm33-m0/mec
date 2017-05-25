@@ -12,6 +12,8 @@ a collection of tools with a cli ui
 - <s>**NOTE** that `readline` doesn't work on Windows. thus this branch will not work unless you put it into WSL</s> 
 - problem solved by using `pyreadline`, <s>but it's nearly **unusable** due to **slowness**</s>
 - found the problem with `pyreadline`: `.python_history` is malformed somehow, causing `pyreadline`'s slowness
+- windows console doesn't support `colors.UNDERLINE` and `input()` method can't display any colors
+- to avoid that, i replaced all `input()` prompt with `print()`, not a perfect solution, though
 
 ## disclaimer
 
@@ -32,10 +34,10 @@ a collection of tools with a cli ui
 
 ## requirements
 
-- GNU/Linux or MacOS, fully tested under [Kali Linux (Rolling, 2017)](https://www.kali.org), Ubuntu Linux (16.04 LTS) and Fedora 25 (it will work on other distros too as long as you have dealt with all deps)
 - `proxychains4` (in `$PATH`), used by exploiter, requires a working socks5 proxy (you can modify its config in `mec.py`)
-- Java is required when using Java deserialization exploits, you might want to install `openjdk-8-jre` if you haven't installed it yet
+- Java is required when using Java deserialization exploits
 - python packages (not complete, as some third-party scripts might need other deps as well):
+    - `pyreadline`
     - `requests`
     - `bs4`
     - `beautifulsoup4`
@@ -51,6 +53,6 @@ a collection of tools with a cli ui
 - if you want to add your own exploit script (or binary file, whatever):
     - `cd exploits`, `mkdir <yourExploitDir>`
     - your exploit should take the last argument passed to it as its target, dig into `mec.py` to know more
-    - `chmod 755 <exploitBin>` to make sure it can be executed by current user
+    - make sure your exploit can be directly executed by system, or you have to modify `mec.py` a little bit
     - use `attack` command then `m` to select your custom exploit
 - type `help` in the console to see all available features

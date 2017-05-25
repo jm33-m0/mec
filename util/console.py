@@ -16,12 +16,12 @@ INTRO = colors.CYAN + colors.BOLD + r'''
 | | | | | |  __/ (__
 |_| |_| |_|\___|\___|
 
-''' + colors.END + colors.GREEN + '''
+''' + colors.END + colors.RED + '''
     by jm33_m0
     https://github.com/jm33-m0/massExpConsole
     type h or help for help\n''' + colors.END
 
-HELP_INFO = '''
+HELP_INFO = colors.CYAN + '''
  * Any command that cannot be understood will be executed as a shell command
  * attack / e : Start exploiter (guided)
  * exploits : List all executables inside the root directory of your exploits, eg. witbe/witbe.py
@@ -33,10 +33,9 @@ HELP_INFO = '''
  * webshell : Simple webshell manager
  * google <dork> : Fetch URLs from Google using custom dork, requires gecko driver and Firefox, dig into mec.py to know more
  * clear / x : Clear screen
- * reset / c : Same as clear but wipes previous output
  * init / i : Return to init directory
  * help / ? : Show this help
- * quit / ^C : Quit'''
+ * quit / ^C : Quit''' + colors.END
 
 BUILT_IN = colors.GREEN + '''
  [0] Weblogic Java deserialization exploit (get reverse shell)
@@ -112,10 +111,7 @@ def input_check(prompt, allow_blank=True, check_type=None, choices=None):
     '''
     while True:
         user_input = str(
-            input(
-                colors.BLUE +
-                prompt +
-                colors.END)).strip().lower()
+            input(prompt)).strip().lower()
         try:
             if allow_blank is False and user_input == '':
                 continue

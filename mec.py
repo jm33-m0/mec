@@ -36,7 +36,8 @@ def debug_except():
     '''
     Display traceback?
     '''
-    if input(colors.CYAN + '[?] Display traceback? [y/n] ').strip() == 'y':
+    print(colors.CYAN + '[?] Display traceback? [y/n] ', end='')
+    if input().strip() == 'y':
         trace_back = traceback.format_exc()
         console.print_error(str(trace_back))
 
@@ -415,28 +416,18 @@ def main():
     manage procedure
     '''
 
-    answ = str(
-        input(
-            colors.CYAN +
-            '[?] Use ip_list.txt as target list? [y/n] ' +
-            colors.END)).strip()
+    print(colors.CYAN +
+          '[?] Use ip_list.txt as target list? [y/n] ' +
+          colors.END, end='')
+    answ = input()
     if answ.lower() == 'n':
         os.system("dir data")
-        SessionParameters.IP_LIST = SessionParameters.INIT_DIR + '\\data\\' +\
+        SessionParameters.IP_LIST = SessionParameters.INIT_DIR + '\\data\\' + \
             console.input_check(
                 '[=] Choose your target IP list (must be in ./data) ', allow_blank=False)
     while True:
         try:
-            cmd = input(
-                colors.CYAN +
-                colors.BOLD +
-                colors.UNDERLINE +
-                "\nmec" +
-                colors.END +
-                colors.CYAN +
-                colors.BOLD +
-                " > " +
-                colors.END)
+            cmd = input("\nmec > ")
             try:
                 execute(cmd)
             except (KeyboardInterrupt, EOFError, SystemExit):
