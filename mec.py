@@ -6,7 +6,6 @@ by jm33-ng
 '''
 
 import os
-import signal
 import subprocess
 import sys
 import time
@@ -31,7 +30,7 @@ class SessionParameters:
         '/data/proxy.conf'
     USE_PROXY = True
     IP_LIST = INIT_DIR + \
-            '/data/ip_list.txt'
+        '/data/ip_list.txt'
 
 
 def debug_except():
@@ -46,12 +45,13 @@ def debug_except():
 # kill process by name
 def check_kill_process(pstring):
     '''
-    not used anywhere, but might be useful anyway
+    cross-platform way of killing process by name
     '''
-    for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
-        fields = line.split()
-        pid = fields[0]
-        os.kill(int(pid), signal.SIGKILL)
+    import psutil
+
+    for proc in psutil.process_iter():
+        if proc.name == pstring:
+            proc.kill()
 
 
 def list_exp():
@@ -117,7 +117,8 @@ def execute(cmd):
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         print(colors.BLUE + '[i] Target changed to {}'.format(target))
-        SessionParameters.IP_LIST = INIT_DIR + '/data/' + target
+        SessionParameters.IP_LIST = SessionParameters.INIT_DIR + \
+            '/data/' + target
     elif cmd == 'init' or cmd == 'i':
         print(colors.CYAN +
               '[*] Going back to init_dir...' + colors.END)
@@ -420,8 +421,8 @@ def main():
     if answ.lower() == 'n':
         os.system("ls data")
         SessionParameters.IP_LIST = console.input_check(
-                '[=] Choose your target IP list, eg. ip_list.txt ',
-                allow_blank=False)
+            '[=] Choose your target IP list, eg. ip_list.txt ',
+            allow_blank=False)
     while True:
         try:
             cmd = input(
