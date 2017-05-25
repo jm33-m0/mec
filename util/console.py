@@ -11,11 +11,16 @@ import readline
 from . import colors
 
 INTRO = colors.CYAN + colors.BOLD + r'''
- _ __ ___   ___  ___
-| '_ ` _ \ / _ \/ __|
-| | | | | |  __/ (__
-|_| |_| |_|\___|\___|
-
+ ███▄ ▄███▓▓█████  ▄████▄
+▓██▒▀█▀ ██▒▓█   ▀ ▒██▀ ▀█
+▓██    ▓██░▒███   ▒▓█    ▄
+▒██    ▒██ ▒▓█  ▄ ▒▓▓▄ ▄██▒
+▒██▒   ░██▒░▒████▒▒ ▓███▀ ░
+░ ▒░   ░  ░░░ ▒░ ░░ ░▒ ▒  ░
+░  ░      ░ ░ ░  ░  ░  ▒
+░      ░      ░   ░
+       ░      ░  ░░ ░
+                  ░
 ''' + colors.END + colors.RED + '''
     by jm33_m0
     https://github.com/jm33-m0/massExpConsole
