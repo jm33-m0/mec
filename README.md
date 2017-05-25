@@ -1,6 +1,7 @@
 # massExploitConsole
 a collection of tools with a cli ui
 
+> check out [Windows version](https://github.com/jm33-m0/massExpConsole/tree/win) if you are using Windows
 
 ## screenshot
 
