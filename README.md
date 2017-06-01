@@ -21,6 +21,7 @@ a collection of tools with a cli ui
 - an easy-to-use cli ui
 - execute any adpated exploits with **process-level concurrency**
 - some built-in exploits (automated)
+- hide your ip addr using `proxychains4` and `ss-proxy` (built-in)
 - zoomeye host scan (10 threads)
 - google page crawler with gecko and firefox (not fully working)
 - a simple baidu crawler (multi-threaded)
@@ -39,6 +40,7 @@ cd massExpConsole
 - if you ran `mec.py` and saw missing python modules, please run `pip3 install -r requirements.txt` (if anything is not listed, please leave a comment)
 - now you should be good to go
 - install any dependencies
+- type `proxy` command to run a pre-configured [Shadowsocks](https://github.com/shadowsocks/shadowsocks-go) socks5 proxy in the background, `vim ./data/ss.json` to edit proxy config. and, `ss-proxy` exits with `mec.py`
 
 
 ## requirements
