@@ -13,6 +13,7 @@ a collection of tools with a cli ui
 - please use this tool only on **authorized systems**, im not responsible for any damage caused by users who ignore my warning
 - **i do not own** the code of adapted exploits or tools
 - exploits are adapted from other sources, please refer to their author info
+- please **note**, due to my limited programming experience (it's my first Python project), you can expect some silly bugs
 
 
 ## what does it do?

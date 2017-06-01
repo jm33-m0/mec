@@ -9,14 +9,13 @@ import os
 import subprocess
 import sys
 import time
-import traceback
 
 import util.baidu as baidu
 import util.colors as colors
 import util.console as console
 import util.exploits as ExecExp
 import util.webshell as ws
-from util.console import input_check
+from util.console import debug_except, input_check
 
 
 class SessionParameters:
@@ -31,15 +30,6 @@ class SessionParameters:
     USE_PROXY = True
     IP_LIST = INIT_DIR + \
         '/data/ip_list.txt'
-
-
-def debug_except():
-    '''
-    Display traceback?
-    '''
-    if input(colors.CYAN + '[?] Display traceback? [y/n] ').strip() == 'y':
-        trace_back = traceback.format_exc()
-        console.print_error(str(trace_back))
 
 
 # kill process by name
@@ -195,10 +185,11 @@ def execute(cmd):
         list_exp()
     elif cmd == 'z' or cmd == "zoomeye":
         try:
-            os.chdir('./zoomeye')
             subprocess.call(['python3', 'zoomeye.py'])
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass
+        else:
+            debug_except()
     elif cmd == 'x' or cmd == 'clear':
         subprocess.call("clear")
     elif cmd == 'c' or cmd == 'reset':

@@ -7,6 +7,7 @@ Handles console related stuff
 import atexit
 import os
 import readline
+import traceback
 
 from . import colors
 
@@ -108,6 +109,19 @@ except FileNotFoundError:
     pass
 
 atexit.register(readline.write_history_file, HISTFILE)
+
+
+def debug_except():
+    '''
+    display traceback info
+    '''
+    tcbk = traceback.format_exc()
+    if 'NoneType: None' in tcbk:
+        return
+    answ = input_check("[?] Display traceback? [y/n] ",
+                       choices=['y', 'n'])
+    if answ == 'y':
+        print_error(tcbk)
 
 
 def input_check(prompt, allow_blank=True, check_type=None, choices=None):
