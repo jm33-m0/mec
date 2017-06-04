@@ -62,6 +62,7 @@ cd massExpConsole
     - `chmod +x <exploit>` to make sure it can be executed by current user
     - use `attack` command then `m` to select your custom exploit
 - type `help` in the console to see all available features
+- `zoomeye` requires a valid user account config file `zoomeye.conf`
 
 
 ## how to contribute
