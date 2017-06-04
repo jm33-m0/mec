@@ -103,7 +103,8 @@ def execute(cmd):
                 os.getcwd(),
                 SessionParameters.INIT_DIR,
                 SessionParameters.IP_LIST,
-                SessionParameters.PROXY_CONF))
+                SessionParameters.PROXY_CONF) +
+            colors.END)
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         print(colors.BLUE + '[i] Target changed to {}'.format(target))
