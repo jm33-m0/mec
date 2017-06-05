@@ -30,7 +30,7 @@ class ZoomEyeAPI:
     '''
 
     QRY = ""
-    OUTFILE = './data/zoomeye-{}.txt'.format('-'.join(QRY.split()))
+    OUTFILE = ""
 
     def __init__(self, conf):
         try:
@@ -68,32 +68,32 @@ class ZoomEyeAPI:
             pass
 
 
-def save_str_to_file(file, string):
+def save_str_to_file(target_file, string):
     '''
     save str to file
     '''
-    if not os.path.exists(file):
-        os.system('touch {}'.format(file))
+    if not os.path.exists(target_file):
+        os.system('touch {}'.format(target_file))
     # check if we are writing duplicate lines to the file
-    f_hand = open(file)
+    f_hand = open(target_file)
     for line in f_hand:
         if line.strip() == string:
             return
     # write line to file
-    with open(file, 'a') as output:
+    with open(target_file, 'a') as output:
         output.write(string + '\n')
         output.close()
 
 
-def progress(file):
+def progress(target_file):
     '''
     display progress
     '''
     l_count = 0
-    if not os.path.exists(file):
-        os.system('touch {}'.format(file))
+    if not os.path.exists(target_file):
+        os.system('touch {}'.format(target_file))
     while True:
-        l_count = sum(1 for line in open(file))
+        l_count = sum(1 for line in open(target_file))
         sys.stdout.write(
             colors.CYAN + '\r[+] Found ' + str(
                 l_count) + ' hosts' + colors.END)
@@ -170,8 +170,13 @@ if __name__ == '__main__':
     try:
         ZoomEyeAPI.QRY = console.input_check(
             "[*] Your query is: ", allow_blank=False)
+        # remove special characters that may cause naming problem
+        OUTFILE_NAME = ZoomEyeAPI.QRY
+        for special_ch in ['"', "'", ':', '!', '\\', '/']:
+            if special_ch in OUTFILE_NAME:
+                OUTFILE_NAME = OUTFILE_NAME.replace(special_ch, ' ')
         ZoomEyeAPI.OUTFILE = './data/zoomeye-{}.txt'.format(
-            '-'.join(ZoomEyeAPI.QRY.replace(':', '_').split()))
+            '-'.join(OUTFILE_NAME.split()))
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
         print('\n[*] Exiting...')
