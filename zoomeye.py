@@ -31,6 +31,7 @@ class ZoomEyeAPI:
 
     QRY = ""
     OUTFILE = ""
+    SEARCH_TYPE = ""
 
     def __init__(self, conf):
         try:
@@ -101,20 +102,33 @@ def progress(target_file):
         time.sleep(.5)
 
 
-def crawler(qery, _, page, headers):
+def crawler(qery, page, headers):
     '''
     fetch result from zoomeye
     '''
+    if ZoomEyeAPI.SEARCH_TYPE == 'h':
+        url = 'https://api.zoomeye.org/host/search?query=' + \
+            qery + \
+            '&facet=app,os&page=' + \
+            str(page)
+    else:  # for web service search
+        url = 'https://api.zoomeye.org/web/search?query=' + \
+            qery + \
+            '&facet=app,os&page=' + \
+            str(page)
     try:
         r_get = requests.get(
-            url='https://api.zoomeye.org/host/search?query=' +
-            qery +
-            '&facet=app,os&page=' +
-            str(page),
+            url=url,
             headers=headers)
+        if 'credits_insufficient' in r_get.text:
+            return 'credits_err'
         r_decoded = json.loads(r_get.text)
         for item in r_decoded['matches']:
-            save_str_to_file(ZoomEyeAPI.OUTFILE, item['ip'])
+            if ZoomEyeAPI.SEARCH_TYPE == 'h':
+                save_str_to_file(ZoomEyeAPI.OUTFILE, item['ip'])
+                return
+            # web service search, saves url instead
+            save_str_to_file(ZoomEyeAPI.OUTFILE, item['webapp'][0]['url'])
     except BaseException:
         pass
 
@@ -139,13 +153,18 @@ def api_test():
     except TypeError:
         console.print_error('[-] Invalid access token')
         return
+    # test if we have permission to zoomeye api
+    if crawler(ZoomEyeAPI.QRY, 1, headers) == 'credits_err':
+        console.print_error(
+            '[-] Credits insufficient, please try with another account if possible')
+        return
     status = threading.Thread(target=progress, args=(ZoomEyeAPI.OUTFILE,))
     status.setDaemon(True)
     status.start()
     limit = 0
     for page in range(1, int(amnt / 10)):
         thd = threading.Thread(
-            target=crawler, args=(ZoomEyeAPI.QRY, amnt, page, headers,))
+            target=crawler, args=(ZoomEyeAPI.QRY, page, headers,))
         threads.append(thd)
     for job in threads:
         job.setDaemon(True)
@@ -170,6 +189,10 @@ if __name__ == '__main__':
     try:
         ZoomEyeAPI.QRY = console.input_check(
             "[*] Your query is: ", allow_blank=False)
+        ZoomEyeAPI.SEARCH_TYPE = console.input_check(
+            "[?] Search for public devices (h) or web services (w)? [h/w] ",
+            choices=['h', 'w']
+        )
         # remove special characters that may cause naming problem
         OUTFILE_NAME = ZoomEyeAPI.QRY
         for special_ch in ['"', "'", ':', '!', '\\', '/']:
