@@ -120,9 +120,10 @@ def crawler(qery, page, headers):
         r_get = requests.get(
             url=url,
             headers=headers)
-        if 'credits_insufficient' in r_get.text:
-            return 'credits_err'
         r_decoded = json.loads(r_get.text)
+        # returns error message
+        if 'message' in r_get.text:
+            return r_decoded['message']
         for item in r_decoded['matches']:
             if ZoomEyeAPI.SEARCH_TYPE == 'h':
                 save_str_to_file(ZoomEyeAPI.OUTFILE, item['ip'])
@@ -133,9 +134,9 @@ def crawler(qery, page, headers):
         pass
 
 
-def api_test():
+def login_and_crawl():
     '''
-    get verified with zoomeye
+    get verified with zoomeye, and start thread pool for crawling
     '''
     amnt = int(
         console.input_check(
@@ -154,15 +155,16 @@ def api_test():
         console.print_error('[-] Invalid access token')
         return
     # test if we have permission to zoomeye api
-    if crawler(ZoomEyeAPI.QRY, 1, headers) == 'credits_err':
-        console.print_error(
-            '[-] Credits insufficient, please try with another account if possible')
+    test_crawl = crawler(ZoomEyeAPI.QRY, 1, headers)
+    if test_crawl != None and test_crawl != '':
+        console.print_error(test_crawl)
         return
     status = threading.Thread(target=progress, args=(ZoomEyeAPI.OUTFILE,))
     status.setDaemon(True)
     status.start()
+
     limit = 0
-    for page in range(1, int(amnt / 10)):
+    for page in range(1, int(amnt)):
         thd = threading.Thread(
             target=crawler, args=(ZoomEyeAPI.QRY, page, headers,))
         threads.append(thd)
@@ -180,7 +182,7 @@ def main():
     put things together
     '''
     try:
-        api_test()
+        login_and_crawl()
         print('\n')
     except BaseException:
         pass
