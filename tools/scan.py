@@ -7,7 +7,7 @@ multi-threaded scanner for server fingerprinting
 import nmap
 import requests
 
-from util import vwrite, wc
+from util import vwrite, wc, console
 
 NMAP = nmap.PortScanner()
 
@@ -46,8 +46,8 @@ class FingerprintScanner:
                 url = 'http://' + self.target + ':' + port
                 req_get = requests.get(url)
                 if 'X-Powered-By: Servlet/2.5 JSP/2.1' in req_get.text:
-                    vwrite.write_to_file(host + ':' + port,
-                                         'weblogic_scan-{}.txt'.format(self.NOW_TIME))
+                    return True
+            return False
 
     def jboss_scan(self):
         '''
@@ -72,5 +72,30 @@ def batch_scan(list_file):
     '''
     put things together
     '''
+    # display progress
+    import threading
+    outfile = '{}.txt'.format(FingerprintScanner.NOW_TIME)
+    status = threading.Thread(target=wc.progress(outfile))
+    status.setDaemon(True)
+    status.start()
 
+    # parallel exec
     from concurrent import futures
+    with futures.ThreadPoolExecutor(max_workers=100) as executor:
+        list_open = open(list_file)
+        future_targets = {}
+        for line in list_open:
+            host = line.strip()
+            scanner = FingerprintScanner(host)
+            future_targets.update(
+                {executor.submit(scanner.weblogic_scan): host})
+        for future in futures.as_completed(future_targets):
+            job = future_targets[future]
+            try:
+                ret_val = future.result()  # return value of app scanner method
+                if ret_val:
+                    vwrite.write_to_file(job, outfile)
+            except (EOFError, KeyboardInterrupt, SystemExit):
+                pass
+            else:
+                console.debug_except()
