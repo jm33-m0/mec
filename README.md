@@ -67,6 +67,7 @@ cd massExpConsole
 ## how to contribute
 
 - if you had any issues, please report them to *[https://github.com/jm33-m0/massExpConsole/issues](https://github.com/jm33-m0/massExpConsole/issues)*
+- **report any unhandled exceptions** you encounter, 'coz i haven't fully tested it
 - open a pull request when you have fixed any bugs or added any features
 - i would appreciate you adding your own adapted exploits to this repo
 - any suggestions are welcomed
