@@ -260,7 +260,7 @@ def attack():
         print(colors.CYAN + '[*] Here are available exploits:\n' + colors.END)
         for poc in list_exp():
             print(colors.BLUE + poc + colors.END)
-        exploit = console.input_check(
+        exploit = input_check(
             "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ", choices=list_exp())
         jobs = int(
             input_check("[?] How many processes each time? ", check_type=int))
@@ -346,7 +346,7 @@ def scanner(scanner_args):
         target_list = open(SessionParameters.IP_LIST)
     except BaseException as exc:
         console.print_error('[-] Error occured: {}\n'.format(exc))
-        console.debug_except()
+        debug_except()
         return
     os.chdir('./exploits/' + work_path)
     console.print_warning(
@@ -409,7 +409,7 @@ def main():
             colors.END)).strip()
     if answ.lower() == 'n':
         os.system("ls data")
-        SessionParameters.IP_LIST = console.input_check(
+        SessionParameters.IP_LIST = input_check(
             '[=] Choose your target IP list, eg. ip_list.txt ',
             allow_blank=False)
     while True:
