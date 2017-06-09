@@ -28,21 +28,31 @@ INTRO = colors.CYAN + colors.BOLD + r'''
     type h or help for help\n''' + colors.END
 
 HELP_INFO = colors.CYAN + '''
- * Any command that cannot be understood will be executed as a shell command
- * attack / e : Start exploiter (guided)
- * exploits : List all executables inside the root directory of your exploits, eg. witbe/witbe.py
- * info : Display current config info
- * target <ip_list> : Change target list, eg. "target ip_list.txt"
- * proxy : Start ss-proxy (listens on local port 1099, will be used later in our mass exploit)
- * baidu <keyword> <page count> : Search via m.baidu.com (might not work because of Baidu's restrictions)
- * zoomeye / z : Run Zoomeye script to generate an IP list matching your query, google 'zoomeye' to know more
- * webshell : Simple webshell manager (deprecated)
- * google <dork> : Fetch URLs from Google using custom dork, requires gecko driver and Firefox, dig into mec.py to know more
- * clear / x : Clear screen
- * reset / c : Same as clear but wipes previous output
- * init / i : Return to init directory so everything will work again (can be useful after certain operations)
- * help / ? : Display this help info
- * quit / ^C : Quit''' + colors.END
+Core Commands
+=============
+
+    Command                       Description
+    -------                       -----------
+
+    clear (x)                     Clear screen
+    reset (c)                     Terminal reset
+    init (i)                      Return to init directory
+    help (?)                      Display this help info
+    quit (^C)                     Quit
+    attack (e)                    Start exploiter (guided)
+    exploits                      List all usable exploits
+    info                          Display current config
+    target <ip_list>              Change target list,
+    proxy                         Start ss-proxy on port 1099
+    baidu <keyword> <page count>  Search via m.baidu.com
+    webshell                      Simple webshell manager (deprecated)
+    google <dork>                 Fetch URLs from Google using custom dork
+    zoomeye (z)                   Crawler for ZoomEye
+
+Notice
+======
+
+    - Any command that cannot be understood will be executed as a shell command''' + colors.END
 
 BUILT_IN = colors.GREEN + '''
  [0] Weblogic Java deserialization exploit (get reverse shell)
