@@ -22,7 +22,7 @@ INTRO = colors.CYAN + colors.BOLD + r'''
 ░      ░      ░   ░
        ░      ░  ░░ ░
                   ░
-''' + colors.END + colors.RED + '''
+''' + colors.END + colors.GREEN + colors.BOLD + '''
     by jm33_m0
     https://github.com/jm33-m0/massExpConsole
     type h or help for help\n''' + colors.END
@@ -34,14 +34,14 @@ HELP_INFO = colors.CYAN + '''
  * info : Display current config info
  * target <ip_list> : Change target list, eg. "target ip_list.txt"
  * proxy : Start ss-proxy (listens on local port 1099, will be used later in our mass exploit)
- * baidu <keyword> <page count> : Search via m.baidu.com
+ * baidu <keyword> <page count> : Search via m.baidu.com (might not work because of Baidu's restrictions)
  * zoomeye / z : Run Zoomeye script to generate an IP list matching your query, google 'zoomeye' to know more
- * webshell : Simple webshell manager
+ * webshell : Simple webshell manager (deprecated)
  * google <dork> : Fetch URLs from Google using custom dork, requires gecko driver and Firefox, dig into mec.py to know more
  * clear / x : Clear screen
  * reset / c : Same as clear but wipes previous output
- * init / i : Return to init directory
- * help / ? : Show this help
+ * init / i : Return to init directory so everything will work again (can be useful after certain operations)
+ * help / ? : Display this help info
  * quit / ^C : Quit''' + colors.END
 
 BUILT_IN = colors.GREEN + '''
@@ -63,13 +63,12 @@ COMMANDS = [
     'proxy',
     'zoomeye',
     'redis',
-    'jexboss',
     'google',
     'clear',
     'reset',
     'help',
     'webshell',
-    'inurl:""'
+    'inurl:"',
     'quit']
 
 HISTFILE = os.path.join(os.path.expanduser("~"), ".python_history")
