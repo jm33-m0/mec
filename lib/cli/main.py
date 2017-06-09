@@ -60,6 +60,7 @@ def list_exp():
         '''
         return os.path.isfile(path) and os.access(path, os.X_OK)
 
+    pocs = []  # save poc in a list
     for root, _, files in os.walk('exploits'):
         paths = []
         for filename in files:
@@ -70,25 +71,9 @@ def list_exp():
             if len(pathname.split('/')) > 4:
                 continue
             if is_executable(pathname):
-                print(colors.BLUE + poc + colors.END)
-
-
-def jexboss(cmd, exploit_path):
-    '''
-    planning for removal
-    '''
-    try:
-        cmd = cmd.split()
-        try:
-            args = cmd[1:]
-            subprocess.call(['proxychains4', '-q', '-f',
-                             SessionParameters.PROXY_CONF, exploit_path] + args)
-        except BaseException:
-            subprocess.call(['python', exploit_path, '-h'])
-    except BaseException as err:
-        console.print_error(
-            "[-] Error starting {}: ".format(exploit_path) + str(err))
-        debug_except()
+                pocs.append(poc)
+                # print(colors.BLUE + poc + colors.END)
+    return pocs
 
 
 def execute(cmd):
@@ -181,8 +166,6 @@ def execute(cmd):
         except BaseException as err:
             console.print_error(str(err))
             debug_except()
-    elif cmd.startswith('jexboss'):
-        jexboss(cmd, './exploits/jexboss/jexboss.py')
     elif cmd == 'q' or cmd == 'quit':
         check_kill_process('ss-proxy')
         sys.exit(0)
@@ -190,7 +173,8 @@ def execute(cmd):
         print(console.HELP_INFO)
     elif cmd == 'exploits':
         print(colors.CYAN + '[+] Available exploits: ' + colors.END)
-        list_exp()
+        for poc in list_exp():
+            print(colors.BLUE + poc + colors.END)
     elif cmd == 'z' or cmd == "zoomeye":
         try:
             zoomeye.run()
@@ -274,9 +258,10 @@ def attack():
             "\nWelcome, in here you can choose your own exploit\n" +
             colors.END)
         print(colors.CYAN + '[*] Here are available exploits:\n' + colors.END)
-        list_exp()
-        exploit = input(
-            "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ").strip()
+        for poc in list_exp():
+            print(colors.BLUE + poc + colors.END)
+        exploit = console.input_check(
+            "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ", choices=list_exp())
         jobs = int(
             input_check("[?] How many processes each time? ", check_type=int))
         custom_args = []
