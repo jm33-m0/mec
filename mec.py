@@ -10,11 +10,11 @@ import subprocess
 import sys
 import time
 
-import util.baidu as baidu
+import tools.baidu as baidu
+import tools.exploits as ExecExp
+import tools.webshell as ws
 import util.colors as colors
 import util.console as console
-import util.exploits as ExecExp
-import util.webshell as ws
 from util.console import debug_except, input_check
 
 

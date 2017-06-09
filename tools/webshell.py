@@ -8,8 +8,8 @@ import sys
 
 import requests as r
 
-from . import colors as clr
-from . import console as csl
+from util import colors as clr
+from util import console as csl
 
 shells = {}
 

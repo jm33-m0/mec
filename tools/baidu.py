@@ -11,7 +11,7 @@ import threading
 import requests
 from bs4 import BeautifulSoup
 
-from . import console, vwrite, wc
+from util import console, vwrite, wc
 
 
 def get_and_parse(url, page):

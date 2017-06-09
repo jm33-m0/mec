@@ -200,7 +200,7 @@ if __name__ == '__main__':
         for special_ch in ['"', "'", ':', '!', '\\', '/']:
             if special_ch in OUTFILE_NAME:
                 OUTFILE_NAME = OUTFILE_NAME.replace(special_ch, ' ')
-        ZoomEyeAPI.OUTFILE = './data/zoomeye-{}.txt'.format(
+        ZoomEyeAPI.OUTFILE = '../data/zoomeye-{}.txt'.format(
             '-'.join(OUTFILE_NAME.split()))
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
