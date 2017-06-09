@@ -26,6 +26,7 @@ class SessionParameters:
     '''
 
     INIT_DIR = os.getcwd()
+    OUT_DIR = INIT_DIR + '/out'
     PROXY_CONF = INIT_DIR + \
         '/data/proxy.conf'
     USE_PROXY = True
@@ -126,14 +127,11 @@ def execute(cmd):
             command = cmd.strip().split()
             dork = command[1]
             count = int(command[2])
-            os.chdir('output')
+            os.chdir(SessionParameters.OUT_DIR)
             print(colors.PURPLE + '[*] Searching on Baidu...' + colors.END)
             baidu.spider(dork, count)
         except (IndexError, EOFError, KeyboardInterrupt, SystemExit):
             return
-        else:
-            console.print_error('[-] Error with baidu: ')
-            debug_except()
     elif cmd == 'proxy':
         if not os.path.exists(SessionParameters.SS_CONFIG):
             console.print_error(
