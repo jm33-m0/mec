@@ -33,7 +33,7 @@ class SessionParameters:
     IP_LIST = INIT_DIR + \
         '/data/ip_list.txt'
     PROXY_BIN = INIT_DIR + \
-        '/lib/tools/ss-proxy'
+        '/tools/ss-proxy'
     SS_CONFIG = INIT_DIR + \
         '/data/ss.json'
 
