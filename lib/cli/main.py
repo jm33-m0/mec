@@ -329,8 +329,10 @@ def scanner(scanner_args):
     '''
     Execute exploit against given ip list
     '''
-    _, work_path, exec_path, custom_args, jobs = scanner_args[
-        0], scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
+
+    # looks ugly, but since it works well, im not planning to rewrite this
+    _, work_path, exec_path, custom_args, jobs = scanner_args[0], \
+        scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
     if SessionParameters.USE_PROXY:
         e_args = [
             'proxychains4',
