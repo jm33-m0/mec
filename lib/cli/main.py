@@ -330,7 +330,7 @@ def scanner(scanner_args):
     Execute exploit against given ip list
     '''
 
-    # looks ugly, but since it works well, im not planning to rewrite this
+    # looks ugly, but since it works well, im not planning a rewrite
     _, work_path, exec_path, custom_args, jobs = scanner_args[0], \
         scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
     if SessionParameters.USE_PROXY:
@@ -353,8 +353,10 @@ def scanner(scanner_args):
     os.chdir('./exploits/' + work_path)
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
+    if input_check('[?] Proceed? [y/n] ', choices=['y', 'n']) == 'n':
+        return
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
-    time.sleep(3)
+    time.sleep(2)
     count = 0
     tested = count
     rnd = 1
