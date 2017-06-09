@@ -413,9 +413,10 @@ def main():
             colors.END)).strip()
     if answ.lower() == 'n':
         os.system("ls data")
-        SessionParameters.IP_LIST = input_check(
-            '[=] Choose your target IP list, eg. ip_list.txt ',
-            allow_blank=False)
+        SessionParameters.IP_LIST = SessionParameters.INIT_DIR + '/data/' + \
+            input_check(
+                '[=] Choose your target IP list, eg. ip_list.txt ',
+                allow_blank=False)
     while True:
         try:
             cmd = input(
