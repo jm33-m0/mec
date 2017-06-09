@@ -73,4 +73,4 @@ def batch_scan(list_file):
     put things together
     '''
 
-    import threading
+    from concurrent import futures

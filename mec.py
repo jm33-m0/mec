@@ -186,6 +186,7 @@ def execute(cmd):
         list_exp()
     elif cmd == 'z' or cmd == "zoomeye":
         try:
+            os.chdir('tools')
             subprocess.call(['python3', 'zoomeye.py'])
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass
