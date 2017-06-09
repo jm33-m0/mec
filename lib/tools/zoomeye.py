@@ -138,7 +138,7 @@ def login_and_crawl():
     '''
     amnt = int(
         console.input_check(
-            "[*] How many results do you want? (10 IPs on each page) ",
+            "[*] How many pages to crawl? (10 IPs on each page) ",
             check_type=int).strip())
     threads = []
     api = ZoomEyeAPI('zoomeye.conf')
@@ -157,8 +157,8 @@ def login_and_crawl():
     if test_crawl != None and test_crawl != '':
         console.print_error(test_crawl)
         return
-    status = threading.Thread(target=progress, args=(ZoomEyeAPI.OUTFILE,))
-    status.setDaemon(True)
+    from multiprocessing import Process
+    status = Process(target=progress, args=(ZoomEyeAPI.OUTFILE,))
     status.start()
 
     limit = 0
@@ -173,6 +173,9 @@ def login_and_crawl():
             limit = 0
             job.join()
         limit += 1
+
+    # stop progress monitoring when we are done
+    status.terminate()
 
 
 def main():

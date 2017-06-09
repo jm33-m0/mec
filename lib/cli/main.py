@@ -26,7 +26,7 @@ class SessionParameters:
     '''
 
     INIT_DIR = os.getcwd()
-    OUT_DIR = INIT_DIR + '/out'
+    OUT_DIR = INIT_DIR + '/output'
     PROXY_CONF = INIT_DIR + \
         '/data/proxy.conf'
     USE_PROXY = True

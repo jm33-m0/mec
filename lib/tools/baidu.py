@@ -43,8 +43,8 @@ def spider(keyword, count):
     url = 'https://m.baidu.com/s?word={}&pn='.format(keyword)
     if not os.path.exists('result.txt'):
         os.system('touch result.txt')
-    status = threading.Thread(target=wc.progress, args=('result.txt',))
-    status.setDaemon(True)
+    from multiprocessing import Process
+    status = Process(target=wc.progress, args=('result.txt',))
     status.start()
     try:
         threads = []
@@ -63,3 +63,6 @@ def spider(keyword, count):
         console.print_error('[-] Error with crawler: ' + str(err))
     else:
         pass
+
+    # exit progress monitoring when we are done
+    status.terminate()
