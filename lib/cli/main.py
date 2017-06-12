@@ -83,7 +83,7 @@ def execute(cmd):
 
     cmd = str(cmd).lower().strip()
     if cmd == '':
-        pass
+        return
     elif cmd == 'info':
         print(
             colors.CYAN +
