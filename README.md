@@ -43,5 +43,6 @@ a collection of tools with a cli ui
     - `cd exploits`, `mkdir <dir of your exploit>`
     - your exploit should take the last argument passed to it as its target, dig into `mec.py` to know more
     - make sure your exploit can be directly executed by system, or you have to modify `mec.py` a little bit
+    - if your exploits were some scripts, make sure py3 scripts have their filenames end with `-3.py`
     - use `attack` command then `m` to select your custom exploit
 - type `help` in the console to see all available features
