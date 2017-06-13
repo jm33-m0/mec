@@ -14,7 +14,6 @@ import lib.cli.colors as colors
 import lib.cli.console as console
 import lib.tools.baidu as baidu
 import lib.tools.exploits as ExecExp
-import lib.tools.webshell as ws
 from lib.cli.console import debug_except, input_check
 from lib.tools import zoomeye
 
@@ -131,29 +130,6 @@ def execute(cmd):
             console.print_error(
                 '[-] Error starting Shadowsocks proxy: ' + str(err))
             debug_except()
-    elif cmd.startswith('webshell'):
-        try:
-            command = cmd.split()
-            if command[1] == '-b':
-                try:
-                    ws.loadShells('webshell.list')
-                    cmd = input(colors.CYAN + 'CMD >> ' + colors.END)
-                    ws.broadcast(cmd)
-                except BaseException as err:
-                    console.print_error(
-                        '[-] Error with webshell broadcasting: ' + str(err))
-                    debug_except()
-            else:
-                pass
-        except BaseException:
-            if cmd == 'webshell':
-                try:
-                    ws.loadShells('webshell.list')
-                    shell = input('[*] Select a shell: ').strip()
-                    ws.ctrl(shell)
-                except BaseException as err:
-                    console.print_error('[-] Error with webshell: ' + str(err))
-                    debug_except()
     elif cmd == 'redis':
         console.print_error('[-] Under development')
     elif cmd.startswith('google'):
@@ -183,9 +159,9 @@ def execute(cmd):
         else:
             debug_except()
     elif cmd == 'x' or cmd == 'clear':
-        subprocess.call("clear")
+        os.system("clear")
     elif cmd == 'c' or cmd == 'reset':
-        subprocess.call("reset")
+        os.system("reset")
     elif cmd == "attack" or cmd == "e":
         attack()
     else:
