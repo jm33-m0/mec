@@ -31,6 +31,7 @@ a collection of tools with a cli ui
 ## requirements
 
 - `proxychains4` (in `$PATH`), used by exploiter, requires a working socks5 proxy (you can modify its config in `mec.py`)
+- Python2.7+ and Python3.5+
 - Java is required when using Java deserialization exploits
 - python packages can be installed via `python3 -m pip install -r requirements.txt`(not complete, as some third-party scripts might need other deps as well)
 

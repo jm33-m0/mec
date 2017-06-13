@@ -51,13 +51,8 @@ def check_kill_process(pstring):
 
 def list_exp():
     '''
-    list all executables under the root of your exploit dir
+    list all labeled exploits under the root of your exploit dir
     '''
-    def is_executable(path):
-        '''
-        check if executable
-        '''
-        return os.path.isfile(path) and os.access(path, os.X_OK)
 
     pocs = []  # save poc in a list
     for root, _, files in os.walk('exploits'):
@@ -69,9 +64,8 @@ def list_exp():
             poc = '\\'.join(pathname.split('\\')[2:])
             if len(pathname.split('\\')) > 4:
                 continue
-            if is_executable(pathname):
+            if '-poc' in pathname:
                 pocs.append(poc)
-                # print(colors.BLUE + poc + colors.END)
     return pocs
 
 
@@ -309,12 +303,25 @@ def scanner(scanner_args):
     # looks ugly, but since it works well, im not planning a rewrite
     _, work_path, exec_path, custom_args, jobs = scanner_args[0], \
         scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
+
+    # decide which interpreter to use
+    if exec_path.endswith('.py'):
+        interpreter_bin = 'python.exe'
+    elif exec_path.endswith('-3.py'):
+        # this handles py3 scripts
+        interpreter_bin = 'python3.exe'
+    elif exec_path.endswith('.rb'):
+        interpreter_bin = 'ruby.exe'
+    else:
+        interpreter_bin = ''
+
     if SessionParameters.USE_PROXY:
         e_args = [
             'proxychains4',
             '-q',
             '-f',
             SessionParameters.PROXY_CONF,
+            interpreter_bin,
             '.\\' + exec_path]
     else:
         e_args = ['.\\' + exec_path]
