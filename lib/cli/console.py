@@ -119,6 +119,18 @@ except FileNotFoundError:
 atexit.register(readline.write_history_file, HISTFILE)
 
 
+# kill process by name
+def check_kill_process(pstring):
+    '''
+    cross-platform way of killing process by name
+    '''
+    import psutil
+
+    for proc in psutil.process_iter():
+        if pstring in str(proc.cmdline):
+            proc.kill()
+
+
 def debug_except():
     '''
     display traceback info
