@@ -46,7 +46,7 @@ def check_kill_process(pstring):
     import psutil
 
     for proc in psutil.process_iter():
-        if proc.name == pstring:
+        if pstring in str(proc.cmdline):
             proc.kill()
 
 
