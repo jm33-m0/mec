@@ -45,7 +45,6 @@ Core Commands
     target <ip_list>              Change target list,
     proxy                         Start ss-proxy on port 1099
     baidu <keyword> <page count>  Search via m.baidu.com
-    webshell                      Simple webshell manager (deprecated)
     google <dork>                 Fetch URLs from Google using custom dork
     zoomeye (z)                   Crawler for ZoomEye
 

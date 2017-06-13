@@ -24,7 +24,6 @@ a collection of tools with a cli ui
 - zoomeye host scan (10 threads)
 - google page crawler with gecko and firefox (not fully working)
 - a simple baidu crawler (multi-threaded)
-- webshell manager (deprecated)
 - more to come...
 
 
