@@ -136,7 +136,7 @@ def debug_except():
     display traceback info
     '''
     tcbk = traceback.format_exc()
-    if 'NoneType: None' in tcbk:
+    if 'NoneType' in tcbk:
         return
     answ = input_check("[?] Display traceback? [y/n] ",
                        choices=['y', 'n'])
