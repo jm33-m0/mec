@@ -14,7 +14,7 @@ import lib.cli.colors as colors
 import lib.cli.console as console
 import lib.tools.baidu as baidu
 import lib.tools.exploits as ExecExp
-from lib.cli.console import debug_except, input_check, check_kill_process
+from lib.cli.console import debug_except, input_check
 from lib.tools import zoomeye
 
 
@@ -35,6 +35,18 @@ class SessionParameters:
         '/tools/ss-proxy'
     SS_CONFIG = INIT_DIR + \
         '/data/ss.json'
+
+
+# kill process by name
+def check_kill_process(pstring):
+    '''
+    cross-platform way of killing process by name
+    '''
+    import psutil
+
+    for proc in psutil.process_iter():
+        if pstring in str(proc.cmdline):
+            proc.kill()
 
 
 def list_exp():
@@ -59,6 +71,7 @@ def list_exp():
                 continue
             if is_executable(pathname):
                 pocs.append(poc)
+                # print(colors.BLUE + poc + colors.END)
     return pocs
 
 
