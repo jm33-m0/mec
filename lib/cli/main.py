@@ -97,7 +97,7 @@ def execute(cmd):
             colors.END)
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
-        if not target.endswith('.txt'):
+        if not target in os.listdir(SessionParameters.INIT_DIR + '/data'):
             return
         print(colors.BLUE + '[i] Target changed to {}'.format(target))
         SessionParameters.IP_LIST = SessionParameters.INIT_DIR + \
@@ -392,7 +392,7 @@ def main():
         SessionParameters.IP_LIST = SessionParameters.INIT_DIR + '/data/' + \
             input_check(
                 '[=] Choose your target IP list, eg. ip_list.txt ',
-                allow_blank=False)
+                choices=os.listdir('data'))
     while True:
         try:
             cmd = input(
