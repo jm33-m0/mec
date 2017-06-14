@@ -59,8 +59,9 @@ def spider(keyword, count):
                 jobs = 0
                 thd.join()
             jobs += 1
-    except BaseException as err:
-        console.print_error('[-] Error with crawler: ' + str(err))
+    except (EOFError, KeyboardInterrupt, SystemExit):
+        status.terminate()
+        return
     else:
         pass
 

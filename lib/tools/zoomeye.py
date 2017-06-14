@@ -166,13 +166,19 @@ def login_and_crawl():
         thd = threading.Thread(
             target=crawler, args=(ZoomEyeAPI.QRY, page, headers,))
         threads.append(thd)
-    for job in threads:
-        job.setDaemon(True)
-        job.start()
-        if limit == 0 or limit == 10:
-            limit = 0
-            job.join()
-        limit += 1
+    try:
+        for job in threads:
+            job.setDaemon(True)
+            job.start()
+            if limit == 0 or limit == 10:
+                limit = 0
+                job.join()
+            limit += 1
+    except (EOFError, KeyboardInterrupt, SystemExit):
+        status.terminate()
+        return
+    else:
+        pass
 
     # stop progress monitoring when we are done
     status.terminate()
