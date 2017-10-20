@@ -28,8 +28,6 @@ a collection of tools with a cli ui
     - [ ] web server fingerprinting
     - [ ] scanning hundreds of targets simultaneously
     - [ ] custom scanning rules
-- more to come...
-
 
 ## getting started
 
