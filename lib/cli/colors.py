@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 '''
-some frequently used colors
+some frequently-used colors
 '''
 
 PURPLE = '\033[95m'

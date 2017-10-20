@@ -10,12 +10,10 @@ import subprocess
 import sys
 import time
 
-import lib.cli.colors as colors
-import lib.cli.console as console
-import lib.tools.baidu as baidu
-import lib.tools.exploits as ExecExp
+import lib.tools.exploits as exploit_exec
+from lib.cli import colors, console
+from lib.tools import zoomeye, baidu
 from lib.cli.console import debug_except, input_check, check_kill_process
-from lib.tools import zoomeye
 
 
 class SessionParameters:
@@ -24,17 +22,22 @@ class SessionParameters:
     define some global parameters
     '''
 
-    INIT_DIR = os.getcwd()
-    OUT_DIR = INIT_DIR + '/output'
-    PROXY_CONF = INIT_DIR + \
-        '/data/proxy.conf'
-    USE_PROXY = True
-    IP_LIST = INIT_DIR + \
-        '/data/ip_list.txt'
-    PROXY_BIN = INIT_DIR + \
-        '/tools/ss-proxy'
-    SS_CONFIG = INIT_DIR + \
-        '/data/ss.json'
+    def __init__(self):
+        self.init_dir = os.getcwd()
+        self.out_dir = self.init_dir + '/output'
+        self.proxy_conf = self.init_dir + \
+            '/data/proxy.conf'
+        self.use_proxy = True
+        self.ip_list = self.init_dir + \
+            '/data/ip_list.txt'
+        self.proxy_bin = self.init_dir + \
+            '/tools/ss-proxy'
+        self.ss_config = self.init_dir + \
+            '/data/ss.json'
+
+
+# Needed for scanner session later
+SESSION = SessionParameters()
 
 
 def list_exp():
@@ -78,40 +81,40 @@ def execute(cmd):
             \n[*] Target: {}\
             \n[*] Proxy config: {}'.format(
                 os.getcwd(),
-                SessionParameters.INIT_DIR,
-                SessionParameters.IP_LIST,
-                SessionParameters.PROXY_CONF) +
+                SESSION.init_dir,
+                SESSION.ip_list,
+                SESSION.proxy_conf) +
             colors.END)
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
-        if not target in os.listdir(SessionParameters.INIT_DIR + '/data'):
+        if not target in os.listdir(SESSION.init_dir + '/data'):
             return
         print(colors.BLUE + '[i] Target changed to {}'.format(target))
-        SessionParameters.IP_LIST = SessionParameters.INIT_DIR + \
+        SESSION.ip_list = SESSION.init_dir + \
             '/data/' + target
     elif cmd == 'init' or cmd == 'i':
         print(colors.CYAN +
               '[*] Going back to init_dir...' + colors.END)
-        os.chdir(SessionParameters.INIT_DIR)
+        os.chdir(SESSION.init_dir)
     elif cmd.startswith('baidu'):
         try:
             command = cmd.strip().split()
             dork = command[1]
             count = int(command[2])
-            os.chdir(SessionParameters.OUT_DIR)
+            os.chdir(SESSION.out_dir)
             print(colors.PURPLE + '[*] Searching on Baidu...' + colors.END)
             baidu.spider(dork, count)
         except (IndexError, EOFError, KeyboardInterrupt, SystemExit):
             return
     elif cmd == 'proxy':
-        if not os.path.exists(SessionParameters.SS_CONFIG):
+        if not os.path.exists(SESSION.ss_config):
             console.print_error(
-                '[-] Please make sure {} exists'.format(SessionParameters.SS_CONFIG))
+                '[-] Please make sure {} exists'.format(SESSION.ss_config))
         try:
             subprocess.Popen(
-                [SessionParameters.PROXY_BIN,
+                [SESSION.proxy_bin,
                  '-c',
-                 SessionParameters.SS_CONFIG],
+                 SESSION.ss_config],
                 stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=False)
         except BaseException as err:
             console.print_error(
@@ -171,11 +174,8 @@ def attack():
     '''
     handles attack command
     '''
-
-    if input_check('[?] Do you wish to use proxychains? [y/n] ', choices=['y', 'n']) == 'y':
-        SessionParameters.USE_PROXY = True
-    else:
-        SessionParameters.USE_PROXY = False
+    SESSION.use_proxy = input_check(
+        '[?] Do you wish to use proxychains? [y/n] ', choices=['y', 'n']) == 'y'
     answ = input_check(
         '\n[?] Do you wish to use\
         \n\n    [a] built-in exploits\
@@ -204,11 +204,11 @@ def attack():
             elif answ == '1':
                 console.print_error('\n[-] Under development')
             elif answ == '0':
-                scanner(ExecExp.weblogic())
+                scanner(exploit_exec.weblogic())
             elif answ == '3':
-                scanner(ExecExp.s2_045())
+                scanner(exploit_exec.s2_045())
             elif answ == '4':
-                scanner(ExecExp.witbe())
+                scanner(exploit_exec.witbe())
         except BaseException:
             console.print_error("[-] We have an error executing exploit")
             debug_except()
@@ -296,19 +296,19 @@ def scanner(scanner_args):
     # looks ugly, but since it works well, im not planning a rewrite
     _, work_path, exec_path, custom_args, jobs = scanner_args[0], \
         scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
-    if SessionParameters.USE_PROXY:
+    if SESSION.use_proxy:
         e_args = [
             'proxychains4',
             '-q',
             '-f',
-            SessionParameters.PROXY_CONF,
+            SESSION.proxy_conf,
             './' + exec_path]
     else:
         e_args = ['./' + exec_path]
     e_args += custom_args
     e_args += ['-t']
     try:
-        target_list = open(SessionParameters.IP_LIST)
+        target_list = open(SESSION.ip_list)
     except BaseException as exc:
         console.print_error('[-] Error occured: {}\n'.format(exc))
         debug_except()
@@ -359,7 +359,7 @@ def scanner(scanner_args):
             console.print_error('[-] Error when running scanner')
             debug_except()
     os.system('clear')
-    os.chdir(SessionParameters.INIT_DIR)
+    os.chdir(SESSION.init_dir)
     console.print_success('\n[+] All done!\n')
     print(console.INTRO)
 
@@ -376,7 +376,7 @@ def main():
             colors.END)).strip()
     if answ.lower() == 'n':
         os.system("ls data")
-        SessionParameters.IP_LIST = SessionParameters.INIT_DIR + '/data/' + \
+        SESSION.ip_list = SESSION.init_dir + '/data/' + \
             input_check(
                 '[=] Choose your target IP list, eg. ip_list.txt ',
                 choices=os.listdir('data'))
