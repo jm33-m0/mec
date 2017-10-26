@@ -209,9 +209,8 @@ def attack():
                 scanner(exploit_exec.s2_045())
             elif answ == '4':
                 scanner(exploit_exec.witbe())
-        except BaseException:
-            console.print_error("[-] We have an error executing exploit")
-            debug_except()
+        except (EOFError, KeyboardInterrupt, SystemExit):
+            return
 
     elif answ == 'm':
         print(
@@ -355,9 +354,7 @@ def scanner(scanner_args):
             os.system('clear')
         except (EOFError, KeyboardInterrupt, SystemExit):
             sys.exit(1)
-        else:
-            console.print_error('[-] Error when running scanner')
-            debug_except()
+
     os.system('clear')
     os.chdir(SESSION.init_dir)
     console.print_success('\n[+] All done!\n')
