@@ -11,7 +11,7 @@ import threading
 import requests
 from bs4 import BeautifulSoup
 
-from lib.cli import console, vwrite, wc
+from lib.cli import vwrite, wc
 
 
 def get_and_parse(url, page):
@@ -22,7 +22,8 @@ def get_and_parse(url, page):
         headers = {
             "User-Agent":
                 "Mozilla/5.0 (Windows NT 6.1) \
-                AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+                AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/41.0.2228.0 Safari/537.36"
         }
         url += str(page)
         rget = requests.get(url, headers=headers)

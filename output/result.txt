@@ -1,0 +1,2 @@
+usage: weblogic.py [-h] -t HOST -P PORT -os {win,linux} -T {verify,exploit,reverse_shell} [-c CMD] [-l LHOST] [-p LPORT] [--silent]
+weblogic.py: error: argument -P/--port is required

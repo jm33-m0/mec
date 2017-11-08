@@ -9,8 +9,10 @@ import os
 import subprocess
 import sys
 import time
+import select
 
 import lib.tools.exploits as exploit_exec
+from multiprocessing import Process
 from lib.cli import colors, console
 from lib.cli.colors import colored_print
 from lib.tools import zoomeye, baidu
@@ -39,6 +41,28 @@ class SessionParameters:
 
 # Needed for scanner session later
 SESSION = SessionParameters()
+
+
+def tailf(filepath):
+    '''
+    tail -f to peek the stdout of your exploit
+    '''
+
+    log_stream = subprocess.Popen(['tail',
+                                   '-F',
+                                   filepath],
+                                  stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE)
+    pol = select.poll()
+    pol.register(log_stream.stdout)
+    while True:
+        if pol.poll(1):
+            sys.stdout.write('\r' +
+                             colors.BLUE +
+                             str(log_stream.stdout.readline()) +
+                             colors.END)
+            sys.stdout.flush()
+            time.sleep(.5)
 
 
 def list_exp():
@@ -326,7 +350,11 @@ def scanner(scanner_args):
         debug_except()
         return
 
-    os.chdir('./exploits/' + work_path)
+    try:
+        os.chdir('./exploits/' + work_path)
+    except FileNotFoundError:
+        console.print_error("[-] Can't chdir to " + work_path)
+        debug_except()
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
 
@@ -342,6 +370,9 @@ def scanner(scanner_args):
     tested = count
     rnd = 1
 
+    # save stdout to logfile
+    logfile = open(SESSION.init_dir + "/output/logfile.txt", "a+")
+
     for line in target_list:
         target_ip = line.strip()
 
@@ -355,6 +386,14 @@ def scanner(scanner_args):
         except KeyboardInterrupt:
             exit()
 
+        # start a thread in backgroud to display tailf info
+        log = SESSION.init_dir + '/output/logfile.txt'
+        status = Process(target=tailf, args=(log,))
+        try:
+            status.start()
+        except (SystemExit, KeyboardInterrupt, EOFError):
+            status.terminate()
+
         # mark this loop as done
         count += 1
         tested += 1
@@ -363,7 +402,7 @@ def scanner(scanner_args):
             # start and display current process
             e_args += [target_ip]
             print(colors.CYAN + ' '.join(e_args) + colors.END + '\n')
-            proc = subprocess.Popen(e_args)
+            proc = subprocess.Popen(e_args, stdout=logfile, stderr=logfile)
 
             # continue to next target
             e_args.remove(target_ip)
@@ -379,13 +418,13 @@ def scanner(scanner_args):
                     proc.kill()
                 continue
 
-            # clear screen for next loop
-            sys.stdout.flush()
             os.system('clear')
 
         except (EOFError, KeyboardInterrupt, SystemExit):
             sys.exit(1)
 
+    # close logfile
+    logfile.close()
     os.system('clear')
     os.chdir(SESSION.init_dir)
     console.print_success('\n[+] All done!\n')

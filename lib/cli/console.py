@@ -6,6 +6,7 @@ Handles console related stuff
 
 import atexit
 import os
+import sys
 import readline
 import traceback
 
@@ -136,6 +137,8 @@ def debug_except():
                        choices=['y', 'n'])
     if answ == 'y':
         print_error(tcbk)
+
+    sys.exit(1)
 
 
 def input_check(prompt, allow_blank=True, check_type=None, choices=None):
