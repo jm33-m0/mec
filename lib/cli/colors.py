@@ -18,9 +18,9 @@ END = '\033[0m'
 
 def colored_print(msg, color_code):
     '''
-    not used anywhere
+    print message with color
     '''
     try:
-        print(color_code + BOLD + msg + END)
+        print(color_code + msg + END)
     except BaseException:
         print("\n[-] Error printing with color {}\n".format(color_code) + msg)

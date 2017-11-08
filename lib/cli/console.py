@@ -47,11 +47,7 @@ Core Commands
     baidu <keyword> <page count>  Search via m.baidu.com
     google <dork>                 Fetch URLs from Google using custom dork
     zoomeye (z)                   Crawler for ZoomEye
-
-Notice
-======
-
-    - Any command that cannot be understood will be executed as a shell command''' + colors.END
+    (others)                      Treated as shell command''' + colors.END
 
 BUILT_IN = colors.GREEN + '''
  [0] Weblogic Java deserialization exploit (get reverse shell)
@@ -91,8 +87,6 @@ with open(HISTFILE) as f:
 # List ./data
 for item in os.listdir('data'):
     COMMANDS.append(item)
-
-# make our console more usable
 
 
 def completer(text, state):
