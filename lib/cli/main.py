@@ -37,6 +37,9 @@ class SessionParameters:
             '/tools/ss-proxy'
         self.ss_config = self.init_dir + \
             '/data/ss.json'
+        self.logfile = self.init_dir + \
+            '/output/' + \
+            time.strftime("%Y_%m_%d_%H_%M_%S.log")
 
 
 # Needed for scanner session later
@@ -48,21 +51,24 @@ def tailf(filepath):
     tail -f to peek the stdout of your exploit
     '''
 
-    log_stream = subprocess.Popen(['tail',
-                                   '-F',
-                                   filepath],
-                                  stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
+    fstream = subprocess.Popen(['tail',
+                                '-F',
+                                filepath],
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
     pol = select.poll()
-    pol.register(log_stream.stdout)
-    while True:
-        if pol.poll(1):
-            sys.stdout.write('\r' +
-                             colors.BLUE +
-                             str(log_stream.stdout.readline()) +
-                             colors.END)
-            sys.stdout.flush()
-            time.sleep(.5)
+    pol.register(fstream.stdout)
+    try:
+        while True:
+            if pol.poll(1):
+                sys.stdout.write('\r' +
+                                 colors.BLUE +
+                                 fstream.stdout.readline().decode('utf-8') +
+                                 colors.END)
+                sys.stdout.flush()
+                time.sleep(.5)
+    except (EOFError, KeyboardInterrupt, SystemExit):
+        return
 
 
 def list_exp():
@@ -104,10 +110,12 @@ def execute(cmd):
         colored_print(
             '[*] Current directory: {}\
             \n[*] Init directory: {}\
+            \n[*] Log file: {}\
             \n[*] Target: {}\
             \n[*] Proxy config: {}'.format(
                 os.getcwd(),
                 SESSION.init_dir,
+                SESSION.logfile,
                 SESSION.ip_list,
                 SESSION.proxy_conf),
             colors.CYAN)
@@ -371,28 +379,28 @@ def scanner(scanner_args):
     rnd = 1
 
     # save stdout to logfile
-    logfile = open(SESSION.init_dir + "/output/logfile.txt", "a+")
+    logfile = open(SESSION.logfile, "a+")
+
+    # start a thread in backgroud to display tailf info
+    log = SESSION.logfile
+    status = Process(target=tailf, args=(log,))
+    try:
+        status.start()
+    except (SystemExit, KeyboardInterrupt, EOFError):
+        status.terminate()
 
     for line in target_list:
         target_ip = line.strip()
 
         # display progress info on top
-        progress = colors.BLUE + colors.BOLD + 'ROUND.' + \
-            str(rnd) + colors.END + '  ' + colors.CYAN + colors.BOLD + \
+        progress = colors.CYAN + colors.BOLD + \
             str(tested + 1) + colors.END + ' targets found\n'
         try:
+            os.system('clear')
             sys.stdout.write('\r' + progress)
             sys.stdout.flush()
         except KeyboardInterrupt:
             exit()
-
-        # start a thread in backgroud to display tailf info
-        log = SESSION.init_dir + '/output/logfile.txt'
-        status = Process(target=tailf, args=(log,))
-        try:
-            status.start()
-        except (SystemExit, KeyboardInterrupt, EOFError):
-            status.terminate()
 
         # mark this loop as done
         count += 1
@@ -401,12 +409,20 @@ def scanner(scanner_args):
         try:
             # start and display current process
             e_args += [target_ip]
-            print(colors.CYAN + ' '.join(e_args) + colors.END + '\n')
-            proc = subprocess.Popen(e_args, stdout=logfile, stderr=logfile)
+            sys.stdout.write(
+                '\r' +
+                colors.CYAN +
+                ' '.join(e_args) +
+                colors.END + '\n')
+            sys.stdout.flush()
+            try:
+                proc = subprocess.Popen(e_args, stdout=logfile, stderr=logfile)
+            except (KeyboardInterrupt, EOFError, SystemExit):
+                proc.kill()
 
             # continue to next target
             e_args.remove(target_ip)
-            time.sleep(.1)
+            time.sleep(.13)
 
             # process pool
             if count == jobs or count == 0:
@@ -417,8 +433,6 @@ def scanner(scanner_args):
                 if proc.returncode is not None:
                     proc.kill()
                 continue
-
-            os.system('clear')
 
         except (EOFError, KeyboardInterrupt, SystemExit):
             sys.exit(1)
