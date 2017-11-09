@@ -7,12 +7,12 @@ by jm33-ng
 
 import os
 import subprocess
-import sys
 import time
 import select
+import sys
+from multiprocessing import Process
 
 import lib.tools.exploits as exploit_exec
-from multiprocessing import Process
 from lib.cli import colors, console
 from lib.cli.colors import colored_print
 from lib.tools import zoomeye, baidu

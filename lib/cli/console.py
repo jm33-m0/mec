@@ -97,8 +97,8 @@ def completer(text, state):
     options = [i for i in COMMANDS if i.startswith(text)]
     if state < len(options):
         return options[state]
-    else:
-        return None
+
+    return None
 
 
 readline.parse_and_bind("tab: complete")
@@ -171,12 +171,21 @@ def input_check(prompt, allow_blank=True, check_type=None, choices=None):
 
 
 def print_error(msg):
+    '''
+    print error msg in red
+    '''
     print(colors.RED + msg + colors.END)
 
 
 def print_warning(msg):
+    '''
+    print warning msg in yellow
+    '''
     print(colors.YELLOW, msg, colors.END)
 
 
 def print_success(msg):
+    '''
+    print success msg in green
+    '''
     print(colors.GREEN + colors.BOLD, msg, colors.END)
