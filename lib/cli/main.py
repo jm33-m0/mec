@@ -427,10 +427,13 @@ def scanner(scanner_args):
             curses.endwin()
             for item in procs:
                 if item.pid is not None:
-                    item.terminate()
+                    item.kill()
             logfile.close()
             console.print_error("[-] Task aborted")
-            sys.exit(1)
+
+            # killall running processes
+            check_kill_process(exec_path)
+            return
 
     # close logfile, exit curses window, and print done flag
     curses.endwin()
