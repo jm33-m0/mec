@@ -8,9 +8,7 @@ by jm33-ng
 import os
 import subprocess
 import time
-import select
 import sys
-from multiprocessing import Process
 
 import lib.tools.exploits as exploit_exec
 from lib.cli import colors, console
@@ -19,7 +17,7 @@ from lib.tools import zoomeye, baidu
 from lib.cli.console import debug_except, input_check, check_kill_process
 
 
-class SessionParameters:
+class SessionParameters(object):
 
     '''
     define some global parameters
@@ -46,29 +44,22 @@ class SessionParameters:
 SESSION = SessionParameters()
 
 
-def tailf(filepath):
+def tail(filepath):
     '''
     tail -f to peek the stdout of your exploit
     '''
+    last_lines = ""
 
-    fstream = subprocess.Popen(['tail',
-                                '-F',
-                                filepath],
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    pol = select.poll()
-    pol.register(fstream.stdout)
     try:
-        while True:
-            if pol.poll(1):
-                sys.stdout.write('\r' +
-                                 colors.BLUE +
-                                 fstream.stdout.readline().decode('utf-8') +
-                                 colors.END)
-                sys.stdout.flush()
-                time.sleep(.5)
-    except (EOFError, KeyboardInterrupt, SystemExit):
-        return
+        filed = open(filepath)
+        last_lines = ''.join(filed.readlines()[-20:])
+        filed.close()
+    except IndexError:
+        pass
+    except BaseException:
+        debug_except()
+
+    return last_lines
 
 
 def list_exp():
@@ -315,11 +306,9 @@ def attack():
             ' '.join(custom_args))
 
         # args as parameter for scanner
-        scanner_args = (
-            work_path,
-            exec_path,
-            custom_args,
-            jobs)
+        scanner_args = console.ScannerArgs(work_path, exec_path,
+                                           custom_args,
+                                           jobs)
         # start scanner
         scanner(scanner_args)
 
@@ -333,8 +322,8 @@ def scanner(scanner_args):
     '''
 
     # looks ugly, but since it works well, im not planning a rewrite
-    work_path, exec_path, custom_args, jobs = scanner_args[
-        0], scanner_args[1], scanner_args[2], scanner_args[3]
+    work_path, exec_path = scanner_args.work_path, scanner_args.exec_path
+    custom_args, jobs = scanner_args.custom_args, scanner_args.jobs
 
     if SESSION.use_proxy:
         e_args = [
@@ -373,76 +362,81 @@ def scanner(scanner_args):
     console.print_warning('\n[!] It might be messy, get ready!' + '\n')
     time.sleep(2)
 
-    # needed for the loop
-    count = 0
-    tested = count
-    rnd = 1
-
     # save stdout to logfile
-    logfile = open(SESSION.logfile, "a+")
-
-    # start a thread in backgroud to display tailf info
-    log = SESSION.logfile
-    status = Process(target=tailf, args=(log,))
     try:
-        status.start()
-    except (SystemExit, KeyboardInterrupt, EOFError):
-        status.terminate()
+        logfile = open(SESSION.logfile, "a+")
+    except FileNotFoundError:
+        console.print_error("[-] Log file not found")
+
+    # needed for the loop
+    procs = []
+    count = len(procs)
+    tested = count
+
+    # use curses to display output
+    import curses
+    stdscr = curses.initscr()
+    curses.start_color()
+    curses.use_default_colors()
+    curses.init_pair(1, curses.COLOR_CYAN, -1)
+    curses.init_pair(2, curses.COLOR_WHITE, -1)
+    curses.init_pair(3, curses.COLOR_GREEN, -1)
 
     for line in target_list:
         target_ip = line.strip()
 
+        # clear screen for each output
+        stdscr.refresh()
+
         # display progress info on top
-        progress = colors.CYAN + colors.BOLD + \
-            str(tested + 1) + colors.END + ' targets found\n'
-        try:
-            os.system('clear')
-            sys.stdout.write('\r' + progress)
-            sys.stdout.flush()
-        except KeyboardInterrupt:
-            exit()
+        progress = str(tested) + ' targets found'
+
+        # tail to get the last line of log file
+        status = tail(SESSION.logfile)
 
         # mark this loop as done
-        count += 1
+        count = len(procs)
         tested += 1
 
         try:
             # start and display current process
             e_args += [target_ip]
-            sys.stdout.write(
-                '\r' +
-                colors.CYAN +
-                ' '.join(e_args) +
-                colors.END + '\n')
-            sys.stdout.flush()
-            try:
-                proc = subprocess.Popen(e_args, stdout=logfile, stderr=logfile)
-            except (KeyboardInterrupt, EOFError, SystemExit):
-                proc.kill()
+
+            stdscr.addstr(0, 0, progress +
+                          '\n', curses.A_BOLD | curses.color_pair(1))
+            stdscr.addstr(2, 0, ' '.join(e_args) + '\n', curses.color_pair(3))
+            stdscr.addstr(4, 0, status, curses.color_pair(2))
+
+            proc = subprocess.Popen(e_args, stdout=logfile, stderr=logfile)
+            procs.append(proc)
 
             # continue to next target
             e_args.remove(target_ip)
-            time.sleep(.13)
+            time.sleep(.11)
 
             # process pool
-            if count == jobs or count == 0:
-                count = 0
-                rnd += 1
-                _, _ = proc.communicate()
+            if count == jobs:
                 # if returned any exit code, consider the process as done
-                if proc.returncode is not None:
-                    proc.kill()
-                continue
+                for item in procs:
+                    item.communicate()
+                    if item.returncode is not None:
+                        item.kill()
+                procs = []
 
         except (EOFError, KeyboardInterrupt, SystemExit):
+            curses.endwin()
+            for item in procs:
+                if item.pid is not None:
+                    item.terminate()
+            logfile.close()
+            console.print_error("[-] Task aborted")
             sys.exit(1)
 
-    # close logfile
+    # close logfile, exit curses window, and print done flag
+    curses.endwin()
     logfile.close()
-    os.system('clear')
     os.chdir(SESSION.init_dir)
     console.print_success('\n[+] All done!\n')
-    print(console.INTRO)
 
 
 def main():

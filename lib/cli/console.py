@@ -114,6 +114,25 @@ except FileNotFoundError:
 atexit.register(readline.write_history_file, HISTFILE)
 
 
+class ScannerArgs(object):
+
+    '''
+    for scanner_args
+
+        scanner_args = (
+            work_path,
+            exec_path,
+            custom_args,
+            jobs)
+    '''
+
+    def __init__(self, work_path, exec_path, custom_args, jobs):
+        self.work_path = work_path
+        self.exec_path = exec_path
+        self.custom_args = custom_args
+        self.jobs = jobs
+
+
 # kill process by name
 def check_kill_process(pstring):
     '''
