@@ -23,6 +23,7 @@ a collection of tools with a cli ui
 - [x] hide your ip addr using `proxychains4` and `ss-proxy` (built-in)
 - [x] zoomeye host scan (10 threads)
 - [x] a simple baidu crawler (multi-threaded)
+- [x] censys host scan
 - [ ] <s>google page crawler with gecko and firefox (not fully working)</s>
 - [ ] an independent scanner that supports
     - [ ] web server fingerprinting
@@ -32,10 +33,7 @@ a collection of tools with a cli ui
 ## getting started
 
 ```bash
-git clone https://github.com/jm33-m0/massExpConsole.git
-cd massExpConsole
-python3 -m pip install -r requirements.txt
-./mec.py
+git clone https://github.com/jm33-m0/massExpConsole.git && cd massExpConsole && ./install.py
 ```
 
 - when installing pypi deps, `apt-get install libncurses5-dev` (for Debian-based distros) might be needed

@@ -124,7 +124,7 @@ def crawler(qery, page, headers):
             return r_decoded['message']
         for item in r_decoded['matches']:
             if ZoomEyeAPI.SEARCH_TYPE == 'h':
-                save_str_to_file(ZoomEyeAPI.OUTFILE, item['ip'])
+                save_str_to_file(ZoomEyeAPI.OUTFILE, item['ip']+":"+item['port'])
                 return
             # web service search, saves url instead
             save_str_to_file(ZoomEyeAPI.OUTFILE, item['webapp'][0]['url'])
@@ -141,7 +141,7 @@ def login_and_crawl():
             "[*] How many pages to crawl? (10 IPs on each page) ",
             check_type=int).strip())
     threads = []
-    api = ZoomEyeAPI('zoomeye.conf')
+    api = ZoomEyeAPI('conf/zoomeye.conf')
     try:
         print(colors.BLUE +
               '[*] Crawling fetched pages from ZoomEye...' + colors.END)

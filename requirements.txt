@@ -1,8 +1,0 @@
-readline
-requests
-beautifulsoup4
-html5lib
-docopt
-bs4
-python-nmap
-psutil

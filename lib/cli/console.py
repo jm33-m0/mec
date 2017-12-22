@@ -48,6 +48,7 @@ Core Commands
     baidu <keyword> <page count>  Search via m.baidu.com
     google <dork>                 Fetch URLs from Google using custom dork
     zoomeye (z)                   Crawler for ZoomEye
+    censys                        Crawler for Censys.io
     (others)                      Treated as shell command''' + colors.END
 
 BUILT_IN = colors.GREEN + '''
