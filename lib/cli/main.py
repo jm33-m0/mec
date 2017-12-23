@@ -13,7 +13,7 @@ import sys
 import lib.tools.exploits as exploit_exec
 from lib.cli import colors, console
 from lib.cli.colors import colored_print
-from lib.tools import zoomeye, baidu
+from lib.tools import zoomeye, baidu, censys
 from lib.cli.console import debug_except, input_check, check_kill_process
 
 
@@ -42,6 +42,20 @@ class SessionParameters(object):
 
 # Needed for scanner session later
 SESSION = SessionParameters()
+
+def yes_no(quest,default):
+    if(default == "yes"):
+        res = str(input(quest + " (Yes/no) ")).lower()
+        if(res == "yes" or res == "y"):
+            return True
+        else:
+            return False
+    if(default == "no"):
+        res = str(input(quest + " (yes/No) ")).lower()
+        if(res == "no" or res == "n"):
+            return False
+        else:
+            return True
 
 
 def tail(filepath):
@@ -114,6 +128,7 @@ def execute(cmd):
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         if target not in os.listdir(SESSION.init_dir + '/data'):
+            print(target+colors.RED(' file not found.'))
             return
         colored_print('[i] Target changed to {}'.format(target), colors.BLUE)
         SESSION.ip_list = SESSION.init_dir + \
@@ -131,6 +146,11 @@ def execute(cmd):
             os.chdir(SESSION.out_dir)
             colored_print('[*] Searching on Baidu...', colors.PURPLE)
             baidu.spider(dork, count)
+
+            if(yes_no("Use collected URL's as target?","yes")):
+                SESSION.ip_list = SESSION.init_dir+"result.txt"
+
+
         except (IndexError, EOFError, KeyboardInterrupt, SystemExit):
             return
 
@@ -184,7 +204,15 @@ def execute(cmd):
             pass
         else:
             debug_except()
-
+    elif cmd == "censys":
+        try:
+            output = censys.start()
+            if(yes_no("Use collected URL's as target?","yes")):
+                SESSION.ip_list = SESSION.init_dir+"/"+output
+                colored_print('[i] Target changed to {}'.format(SESSION.ip_list), colors.BLUE)
+        
+        except:
+            return
     elif cmd == 'x' or cmd == 'clear':
         os.system("clear")
 
@@ -498,6 +526,7 @@ def run():
     start mec
     '''
     try:
+        os.system('clear')
         print(console.INTRO)
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
