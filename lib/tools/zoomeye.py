@@ -33,7 +33,7 @@ class ZoomEyeAPI:
 
     def __init__(self, conf):
         try:
-            cred_file = open(conf)
+            cred_file = open(conf).read().split('\n')
             for line in cred_file:
                 line = line.strip()
                 if line.startswith('user'):
