@@ -87,7 +87,7 @@ with open(HISTFILE) as f:
             COMMANDS.append(item)
 
 # List ./data
-for item in os.listdir('data'):
+for item in os.listdir('/usr/share/mec/data'):
     COMMANDS.append(item)
 
 

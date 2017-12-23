@@ -481,11 +481,11 @@ def main():
             '[?] Use ip_list.txt as target list? [y/n] ' +
             colors.END)).strip()
     if answ.lower() == 'n':
-        os.system("ls data")
+        os.system("ls /usr/share/mec/data")
         SESSION.ip_list = SESSION.init_dir + '/data/' + \
             input_check(
                 '[=] Choose your target IP list, eg. ip_list.txt ',
-                choices=os.listdir('data'))
+                choices=os.listdir('/usr/share/mec/data'))
 
     while True:
         try:
