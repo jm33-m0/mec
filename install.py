@@ -162,14 +162,12 @@ def start_install():
 
     print(colors.BLUE + "Installation completed. try: $ mec")
 
-    return
-
 
 os.system('clear')
 print(INTRO)
 if os.path.exists('/usr/share/mec/mec.py'):
 
-        # MEC already installed
+    # MEC already installed
     print(colors.BLUE + 'MEC is already installed.')
 
     # Choose action

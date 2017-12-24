@@ -43,19 +43,16 @@ class SessionParameters(object):
 # Needed for scanner session later
 SESSION = SessionParameters()
 
-def yes_no(quest,default):
-    if(default == "yes"):
-        res = str(input(quest + " (Yes/no) ")).lower()
-        if(res == "yes" or res == "y"):
-            return True
-        else:
-            return False
-    if(default == "no"):
-        res = str(input(quest + " (yes/No) ")).lower()
-        if(res == "no" or res == "n"):
-            return False
-        else:
-            return True
+
+def yes_no(quest):
+    '''
+    ask a yes_no question
+    '''
+
+    res = str(input(quest + " (Yes/no) ")).lower()
+    if(res == "yes" or res == "y"):
+        return True
+    return False
 
 
 def tail(filepath):
@@ -128,7 +125,7 @@ def execute(cmd):
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         if target not in os.listdir(SESSION.init_dir + '/data'):
-            print(target+colors.RED(' file not found.'))
+            print(target + colors.RED(' file not found.'))
             return
         colored_print('[i] Target changed to {}'.format(target), colors.BLUE)
         SESSION.ip_list = SESSION.init_dir + \
@@ -147,9 +144,8 @@ def execute(cmd):
             colored_print('[*] Searching on Baidu...', colors.PURPLE)
             baidu.spider(dork, count)
 
-            if(yes_no("Use collected URL's as target?","yes")):
-                SESSION.ip_list = SESSION.init_dir+"result.txt"
-
+            if(yes_no("Use collected URL's as target?")):
+                SESSION.ip_list = SESSION.init_dir + "result.txt"
 
         except (IndexError, EOFError, KeyboardInterrupt, SystemExit):
             return
@@ -207,11 +203,13 @@ def execute(cmd):
     elif cmd == "censys":
         try:
             output = censys.start()
-            if(yes_no("Use collected URL's as target?","yes")):
-                SESSION.ip_list = SESSION.init_dir+"/"+output
-                colored_print('[i] Target changed to {}'.format(SESSION.ip_list), colors.BLUE)
-        
-        except:
+            if(yes_no("Use collected URL's as target?")):
+                SESSION.ip_list = SESSION.init_dir + "/" + output
+                colored_print(
+                    '[i] Target changed to {}'.format(
+                        SESSION.ip_list), colors.BLUE)
+
+        except BaseException:
             return
     elif cmd == 'x' or cmd == 'clear':
         os.system("clear")
