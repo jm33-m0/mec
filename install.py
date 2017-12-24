@@ -169,6 +169,7 @@ print(INTRO)
 # check root
 if (os.geteuid != 0):
     print(colors.RED, "[-] Please run me as root", colors.END)
+    sys.exit(1)
 
 if os.path.exists('/usr/share/mec/mec.py'):
 
