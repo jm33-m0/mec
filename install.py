@@ -167,7 +167,7 @@ os.system('clear')
 print(INTRO)
 
 # check root
-if (os.geteuid != 0):
+if (os.geteuid() != 0):
     print(colors.RED, "[-] Please run me as root", colors.END)
     sys.exit(1)
 
