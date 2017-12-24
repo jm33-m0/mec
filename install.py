@@ -165,6 +165,11 @@ def start_install():
 
 os.system('clear')
 print(INTRO)
+
+# check root
+if (os.geteuid != 0):
+    print(colors.RED, "[-] Please run me as root", colors.END)
+
 if os.path.exists('/usr/share/mec/mec.py'):
 
     # MEC already installed

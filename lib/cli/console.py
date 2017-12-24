@@ -86,9 +86,35 @@ with open(HISTFILE) as f:
         for item in line.strip().split():
             COMMANDS.append(item)
 
+
+def print_error(msg):
+    '''
+    print error msg in red
+    '''
+    print(colors.RED + msg + colors.END)
+
+
+def print_warning(msg):
+    '''
+    print warning msg in yellow
+    '''
+    print(colors.YELLOW, msg, colors.END)
+
+
+def print_success(msg):
+    '''
+    print success msg in green
+    '''
+    print(colors.GREEN + colors.BOLD, msg, colors.END)
+
+
 # List ./data
-for item in os.listdir('/usr/share/mec/data'):
-    COMMANDS.append(item)
+try:
+    for item in os.listdir('/usr/share/mec/data'):
+        COMMANDS.append(item)
+except FileNotFoundError:
+    print_error("[-] Please run install.py as root first")
+    sys.exit(1)
 
 
 def completer(text, state):
@@ -188,24 +214,3 @@ def input_check(prompt, allow_blank=True, check_type=None, choices=None):
         except BaseException:
             print_error("[-] Invalid input")
             continue
-
-
-def print_error(msg):
-    '''
-    print error msg in red
-    '''
-    print(colors.RED + msg + colors.END)
-
-
-def print_warning(msg):
-    '''
-    print warning msg in yellow
-    '''
-    print(colors.YELLOW, msg, colors.END)
-
-
-def print_success(msg):
-    '''
-    print success msg in green
-    '''
-    print(colors.GREEN + colors.BOLD, msg, colors.END)

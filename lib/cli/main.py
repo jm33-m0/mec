@@ -24,7 +24,7 @@ class SessionParameters(object):
     '''
 
     def __init__(self):
-        self.init_dir = os.getcwd()
+        self.init_dir = "/usr/share/mec"
         self.out_dir = self.init_dir + '/output'
         self.proxy_conf = self.init_dir + \
             '/data/proxy.conf'
