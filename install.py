@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 import os
 import sys
 
@@ -121,15 +121,15 @@ def start_install():
 
     print(colors.BLUE + "Done installing dependencies, now copying files.")
 
-    # copy all files to /usr/share/mec
-    os.system('mkdir /usr/share/mec')
-    os.system('cp -R * /usr/share/mec')
+    # copy all files to ~/.mec
+    os.system('mkdir ~/.mec')
+    os.system('cp -R * ~/.mec')
 
     # add mec.
-    os.system('cp mec /usr/bin/')
+    os.system('sudo cp mec /usr/local/bin/')
 
     # fix permissions
-    os.system('chmod +x /usr/bin/mec && chmod +x /usr/share/mec/mec.py')
+    os.system('sudo chmod +x /usr/local/bin/mec && chmod +x ~/.mec/mec.py')
 
     # ask to delete installation files
     answer = str(
@@ -138,22 +138,22 @@ def start_install():
         os.system('rm -rf *')
 
     # clean temp files.
-    os.system('rm -rf /usr/share/mec/mec')
-    os.system('rm -rf /usr/share/mec/install.py')
+    os.system('rm -rf ~/.mec/mec')
+    os.system('rm -rf ~/.mec/install.py')
 
     # zoomeye account:
     zoomeye = str(input('Would you like to use zoomeye? (yes/No) ')).lower()
     if((zoomeye == 'yes') or (zoomeye == 'y')):
         user = str(input('Username: '))
         password = str(getpass.getpass('Password: '))
-        conf = open('/usr/share/mec/conf/zoomeye.conf', "w")
+        conf = open('~/.mec/conf/zoomeye.conf', "w")
         conf.write("user:" + user + "\n")
         conf.write("password:" + password + "\n")
     censys = str(input('Would you like to use censys? (yes/No) ')).lower()
     if((censys == 'yes') or (censys == 'y')):
         uid = str(input('Api ID: '))
         sec = str(input('Secret: '))
-        conf2 = open('/usr/share/mec/conf/censys.conf', "w")
+        conf2 = open('~/.mec/conf/censys.conf', "w")
         key = {
             "uid": uid,
             "sec": sec
@@ -166,12 +166,12 @@ def start_install():
 os.system('clear')
 print(INTRO)
 
-# check root
-if (os.geteuid() != 0):
-    print(colors.RED, "[-] Please run me as root", colors.END)
-    sys.exit(1)
+# # check root
+# if (os.geteuid() != 0):
+#     print(colors.RED, "[-] Please run me as root", colors.END)
+#     sys.exit(1)
 
-if os.path.exists('/usr/share/mec/mec.py'):
+if os.path.exists('~/.mec/mec.py'):
 
     # MEC already installed
     print(colors.BLUE + 'MEC is already installed.')
@@ -185,8 +185,8 @@ if os.path.exists('/usr/share/mec/mec.py'):
 
         # delete files
         print(colors.RED + "Uninstalling MEC.")
-        os.system('rm -rf /usr/bin/mec')
-        os.system('rm -rf /usr/share/mec')
+        os.system('sudo rm -rf /usr/local/bin/mec')
+        os.system('rm -rf ~/.mec')
         sys.exit(0)
 
     # reinstall MEC
@@ -194,8 +194,8 @@ if os.path.exists('/usr/share/mec/mec.py'):
 
         # removeing files.
         print('Uninstalling MEC.')
-        os.system('rm -rf /usr/bin/mec')
-        os.system('rm -rf /usr/share/mec')
+        os.system('sudo rm -rf /usr/local/bin/mec')
+        os.system('rm -rf ~/.mec')
 
         print('Done. now reinstalling.')
         start_install()

@@ -24,7 +24,7 @@ class SessionParameters(object):
     '''
 
     def __init__(self):
-        self.init_dir = "/usr/share/mec"
+        self.init_dir = "~/.mec"
         self.out_dir = self.init_dir + '/output'
         self.proxy_conf = self.init_dir + \
             '/data/proxy.conf'
@@ -233,7 +233,7 @@ def execute(cmd):
                 '\n')
             os.system(cmd)
         except (EOFError, KeyboardInterrupt, SystemExit):
-            pass
+            return
 
 
 def attack():
@@ -479,11 +479,11 @@ def main():
             '[?] Use ip_list.txt as target list? [y/n] ' +
             colors.END)).strip()
     if answ.lower() == 'n':
-        os.system("ls /usr/share/mec/data")
+        os.system("ls ~/.mec/mec/data")
         SESSION.ip_list = SESSION.init_dir + '/data/' + \
             input_check(
                 '[=] Choose your target IP list, eg. ip_list.txt ',
-                choices=os.listdir('/usr/share/mec/data'))
+                choices=os.listdir('~/.mec/mec/data'))
 
     while True:
         try:
@@ -526,9 +526,13 @@ def run():
     try:
         os.system('clear')
         print(console.INTRO)
+        os.chdir("~/.mec")
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
         console.print_error('[-] Exiting...')
+    except FileNotFoundError:
+        console.print_error("[-] Please run install.py first")
+        sys.exit(1)
     else:
         console.print_error(
             "[-] Seems like you\'ve encountered an unhandled exception")
