@@ -30,7 +30,7 @@ INTRO = colors.CYAN + colors.BOLD + r'''
 ''' + colors.END + colors.GREEN + colors.BOLD + '''
     by jm33_m0
     https://github.com/jm33-m0/massExpConsole
-    type h or help for help\n'''
+    type h or help for help\n''' + colors.END
 
 
 def start_install():
@@ -38,88 +38,92 @@ def start_install():
     # install readline if not already installed
     try:
         import readline
-        print(colors.BLUE + "readline already installed.")
+        print(colors.BLUE + "readline already installed." + colors.END)
     except BaseException:
         print(
-            colors.RED +
-            "readline not installed... " +
-            colors.BLUE +
-            "installing it for you")
+            colors.RED,
+            "readline not installed... ",
+            colors.END,
+            colors.BLUE,
+            "installing it for you" + colors.END)
         os.system('python3 -m pip install readlines')
 
     # install requests if not already installed
     try:
         import requests
-        print(colors.BLUE + "requests already installed.")
+        print(colors.BLUE + "requests already installed." + colors.END)
     except BaseException:
         print(
             colors.RED +
-            "requests not installed... " +
+            "requests not installed... " + colors.END +
             colors.BLUE +
-            "installing it for you")
+            "installing it for you" + colors.END)
         os.system('python3 -m pip install requests')
 
     # install beatifulsoup4 if not already installed
     try:
         import bs4
-        print(colors.BLUE + "bs4 already installed.")
+        print(colors.BLUE + "bs4 already installed." + colors.END)
     except BaseException:
         print(
             colors.RED +
-            "bs4 not installed... " +
+            "bs4 not installed... " + colors.END +
             colors.BLUE +
-            "installing it for you")
+            "installing it for you" + colors.END)
         os.system('python3 -m pip install bs4')
 
     # install HTML5lib if not already installed
     try:
         import html5lib
-        print(colors.BLUE + "html5lib already installed.")
+        print(colors.BLUE + "html5lib already installed." + colors.END)
     except BaseException:
         print(
             colors.RED +
-            "html5lib not installed... " +
+            "html5lib not installed... " + colors.END +
             colors.BLUE +
-            "installing it for you")
+            "installing it for you" + colors.END)
         os.system('python3 -m pip install html5')
 
     # install docopt if not already installed
     try:
         import docopt
-        print(colors.BLUE + "docopt already installed.")
+        print(colors.BLUE + "docopt already installed." + colors.END)
     except BaseException:
         print(
             colors.RED +
-            "docopt not installed... " +
+            "docopt not installed... " + colors.END +
             colors.BLUE +
-            "installing it for you")
+            "installing it for you" + colors.END)
         os.system('python3 -m pip install docopt')
 
     # install python-nmap if not already installed
     try:
         import nmap
-        print(colors.BLUE + "python-nmap already installed.")
+        print(colors.BLUE + "python-nmap already installed." + colors.END)
     except BaseException:
         print(
             colors.RED +
-            "python-nmap not installed... " +
+            "python-nmap not installed... " + colors.END +
             colors.BLUE +
-            "installing it for you")
+            "installing it for you" + colors.END)
         os.system('python3 -m pip install nmap')
 
     # install psutil if not already installed
     try:
         import psutil
-        print(colors.BLUE + "psutil already installed.")
+        print(colors.BLUE + "psutil already installed." + colors.END)
     except BaseException:
         print(
-            colors.RED +
+            colors.RED + colors.END +
             "psutil not installed... " +
             colors.BLUE +
-            "installing it for you")
+            "installing it for you" + colors.END)
         os.system('python3 -m pip install psutil')
 
-    print(colors.BLUE + "Done installing dependencies, now copying files.")
+    print(
+        colors.BLUE +
+        "Done installing dependencies, now copying files." +
+        colors.END)
 
     # copy all files to ~/.mec
     os.system('mkdir ~/.mec')
@@ -160,7 +164,7 @@ def start_install():
         }
         conf2.write(json.dumps(key))
 
-    print(colors.BLUE + "Installation completed. try: $ mec")
+    print(colors.BLUE + "Installation completed. try: $ mec" + colors.END)
 
 
 os.system('clear')
@@ -174,7 +178,7 @@ print(INTRO)
 if os.path.exists('~/.mec/mec.py'):
 
     # MEC already installed
-    print(colors.BLUE + 'MEC is already installed.')
+    print(colors.BLUE + 'MEC is already installed.' + colors.END)
 
     # Choose action
     action = str(
@@ -184,7 +188,7 @@ if os.path.exists('~/.mec/mec.py'):
     if action == "u":
 
         # delete files
-        print(colors.RED + "Uninstalling MEC.")
+        print(colors.RED + "Uninstalling MEC." + colors.END)
         os.system('sudo rm -rf /usr/local/bin/mec')
         os.system('rm -rf ~/.mec')
         sys.exit(0)
@@ -207,10 +211,12 @@ else:
     try:
         install = str(
             input(
-                (colors.BLUE + "installing MEC, are you sure? (Yes/no) "))).lower()
+                (colors.BLUE +
+                 "installing MEC, are you sure? (Yes/no) " +
+                 colors.END))).lower()
         if(install == "no" or install == "n"):
             sys.exit(0)
         start_install()
 
     except KeyboardInterrupt:
-        print(colors.RED + 'Installation aborted.')
+        print(colors.RED + 'Installation aborted.' + colors.END)
