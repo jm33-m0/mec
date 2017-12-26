@@ -199,6 +199,8 @@ def execute(cmd):
 
     elif cmd == 'z' or cmd == "zoomeye":
         try:
+            console.print_warning(
+                "[*] ZoomEye now asks for phone verification (+86 only)")
             zoomeye.run()
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass

@@ -62,7 +62,7 @@ class ZoomEyeAPI:
             r_decoded = json.loads(r_post.text)
             return r_decoded['access_token']
         except KeyError:
-            return
+            return ""
         else:
             pass
 
@@ -124,7 +124,9 @@ def crawler(qery, page, headers):
             return r_decoded['message']
         for item in r_decoded['matches']:
             if ZoomEyeAPI.SEARCH_TYPE == 'h':
-                save_str_to_file(ZoomEyeAPI.OUTFILE, item['ip']+":"+item['port'])
+                save_str_to_file(
+                    ZoomEyeAPI.OUTFILE,
+                    item['ip'] + ":" + item['port'])
                 return
             # web service search, saves url instead
             save_str_to_file(ZoomEyeAPI.OUTFILE, item['webapp'][0]['url'])
@@ -154,7 +156,7 @@ def login_and_crawl():
         return
     # test if we have permission to zoomeye api
     test_crawl = crawler(ZoomEyeAPI.QRY, 1, headers)
-    if test_crawl != None and test_crawl != '':
+    if test_crawl is not None and test_crawl != '':
         console.print_error(test_crawl)
         return
     from multiprocessing import Process
