@@ -17,6 +17,10 @@ from lib.tools import zoomeye, baidu, censys
 from lib.cli.console import debug_except, input_check, check_kill_process
 
 
+# mec root directory
+MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
+
+
 class SessionParameters(object):
 
     '''
@@ -24,7 +28,7 @@ class SessionParameters(object):
     '''
 
     def __init__(self):
-        self.init_dir = "~/.mec"
+        self.init_dir = MECROOT
         self.out_dir = self.init_dir + '/output'
         self.proxy_conf = self.init_dir + \
             '/data/proxy.conf'
@@ -125,7 +129,7 @@ def execute(cmd):
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
         if target not in os.listdir(SESSION.init_dir + '/data'):
-            print(target + colors.RED(' file not found.'))
+            console.print_error("[-] Target file not found")
             return
         colored_print('[i] Target changed to {}'.format(target), colors.BLUE)
         SESSION.ip_list = SESSION.init_dir + \
@@ -144,7 +148,7 @@ def execute(cmd):
             colored_print('[*] Searching on Baidu...', colors.PURPLE)
             baidu.spider(dork, count)
 
-            if(yes_no("Use collected URL's as target?")):
+            if yes_no("Use collected URL's as target?"):
                 SESSION.ip_list = SESSION.init_dir + "result.txt"
 
         except (IndexError, EOFError, KeyboardInterrupt, SystemExit):
@@ -203,7 +207,7 @@ def execute(cmd):
     elif cmd == "censys":
         try:
             output = censys.start()
-            if(yes_no("Use collected URL's as target?")):
+            if yes_no("Use collected URL's as target?"):
                 SESSION.ip_list = SESSION.init_dir + "/" + output
                 colored_print(
                     '[i] Target changed to {}'.format(
@@ -479,11 +483,11 @@ def main():
             '[?] Use ip_list.txt as target list? [y/n] ' +
             colors.END)).strip()
     if answ.lower() == 'n':
-        os.system("ls ~/.mec/mec/data")
+        os.system("ls ~/.mec/data")
         SESSION.ip_list = SESSION.init_dir + '/data/' + \
             input_check(
                 '[=] Choose your target IP list, eg. ip_list.txt ',
-                choices=os.listdir('~/.mec/mec/data'))
+                choices=os.listdir(MECROOT + '/data'))
 
     while True:
         try:
@@ -526,11 +530,12 @@ def run():
     try:
         os.system('clear')
         print(console.INTRO)
-        os.chdir("~/.mec")
+        os.chdir(MECROOT)
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
         console.print_error('[-] Exiting...')
     except FileNotFoundError:
+        debug_except()
         console.print_error("[-] Please run install.py first")
         sys.exit(1)
     else:

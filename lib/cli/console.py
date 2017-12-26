@@ -110,10 +110,11 @@ def print_success(msg):
 
 # List ./data
 try:
-    for item in os.listdir('/usr/share/mec/data'):
+    datapath = os.path.join(os.path.expanduser("~"), ".mec/data")
+    for item in os.listdir(datapath):
         COMMANDS.append(item)
 except FileNotFoundError:
-    print_error("[-] Please run install.py as root first")
+    print_error("[-] Please run install.py first")
     sys.exit(1)
 
 

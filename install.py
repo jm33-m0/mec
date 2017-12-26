@@ -33,6 +33,10 @@ INTRO = colors.CYAN + colors.BOLD + r'''
     type h or help for help\n''' + colors.END
 
 
+MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
+DEST = os.path.join(os.path.expanduser("~"), ".mec/mec.py")
+
+
 def start_install():
 
     # install readline if not already installed
@@ -129,12 +133,6 @@ def start_install():
     os.system('mkdir ~/.mec')
     os.system('cp -R * ~/.mec')
 
-    # add mec.
-    os.system('sudo cp mec /usr/local/bin/')
-
-    # fix permissions
-    os.system('sudo chmod +x /usr/local/bin/mec && chmod +x ~/.mec/mec.py')
-
     # ask to delete installation files
     answer = str(
         input('would you delete installation files? (yes/No) ')).lower()
@@ -150,19 +148,25 @@ def start_install():
     if((zoomeye == 'yes') or (zoomeye == 'y')):
         user = str(input('Username: '))
         password = str(getpass.getpass('Password: '))
-        conf = open('~/.mec/conf/zoomeye.conf', "w")
+        conf = open(MECROOT + '/conf/zoomeye.conf', "w")
         conf.write("user:" + user + "\n")
         conf.write("password:" + password + "\n")
     censys = str(input('Would you like to use censys? (yes/No) ')).lower()
     if((censys == 'yes') or (censys == 'y')):
         uid = str(input('Api ID: '))
-        sec = str(input('Secret: '))
-        conf2 = open('~/.mec/conf/censys.conf', "w")
+        sec = str(getpass.getpass('Secret: '))
+        conf2 = open(MECROOT + '/conf/censys.conf', "w")
         key = {
             "uid": uid,
             "sec": sec
         }
         conf2.write(json.dumps(key))
+
+    # add mec to $PATH
+    os.system('sudo cp mec /usr/local/bin/')
+
+    # fix permissions
+    os.system('sudo chmod +x /usr/local/bin/mec && chmod +x ~/.mec/mec.py')
 
     print(colors.BLUE + "Installation completed. try: $ mec" + colors.END)
 
@@ -175,37 +179,42 @@ print(INTRO)
 #     print(colors.RED, "[-] Please run me as root", colors.END)
 #     sys.exit(1)
 
-if os.path.exists('~/.mec/mec.py'):
+if os.path.exists(DEST):
 
-    # MEC already installed
-    print(colors.BLUE + 'MEC is already installed.' + colors.END)
+    try:
 
-    # Choose action
-    action = str(
-        input('What can i do ? ([U]ninstall/[R]einstall/[N]othing) ')).lower()
+        # MEC already installed
+        print(colors.BLUE + 'MEC is already installed.' + colors.END)
 
-    # uninstall MEC
-    if action == "u":
+        # Choose action
+        action = str(
+            input('What can i do ? ([U]ninstall/[R]einstall/[N]othing) ')).lower()
 
-        # delete files
-        print(colors.RED + "Uninstalling MEC." + colors.END)
-        os.system('sudo rm -rf /usr/local/bin/mec')
-        os.system('rm -rf ~/.mec')
-        sys.exit(0)
+        # uninstall MEC
+        if action == "u":
 
-    # reinstall MEC
-    elif action == "r":
+            # delete files
+            print(colors.RED + "Uninstalling MEC." + colors.END)
+            os.system('rm -rf ~/.mec')
+            os.system('sudo rm -rf /usr/local/bin/mec')
+            sys.exit(0)
 
-        # removeing files.
-        print('Uninstalling MEC.')
-        os.system('sudo rm -rf /usr/local/bin/mec')
-        os.system('rm -rf ~/.mec')
+        # reinstall MEC
+        elif action == "r":
 
-        print('Done. now reinstalling.')
-        start_install()
-        sys.exit(0)
-    elif action == "n":
-        sys.exit(0)
+            # removeing files.
+            print('Uninstalling MEC.')
+            os.system('rm -rf ~/.mec')
+            # os.system('sudo rm -rf /usr/local/bin/mec')
+
+            print('Done. now reinstalling.')
+            start_install()
+            sys.exit(0)
+        elif action == "n":
+            sys.exit(0)
+
+    except KeyboardInterrupt:
+        print(colors.RED + "Installation aborted." + colors.END)
 
 else:
     try:
