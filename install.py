@@ -168,7 +168,11 @@ def start_install():
     # fix permissions
     os.system('sudo chmod +x /usr/local/bin/mec && chmod +x ~/.mec/mec.py')
 
-    print(colors.BLUE + "Installation completed. try: $ mec" + colors.END)
+    print(
+        colors.GREEN +
+        colors.BOLD +
+        "Installation completed. try: $ mec" +
+        colors.END)
 
 
 os.system('clear')

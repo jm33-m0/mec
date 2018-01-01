@@ -114,24 +114,31 @@ def crawler(qery, page, headers):
             qery + \
             '&facet=app,os&page=' + \
             str(page)
-    try:
-        r_get = requests.get(
-            url=url,
-            headers=headers)
-        r_decoded = json.loads(r_get.text)
-        # returns error message
-        if 'message' in r_get.text:
-            return r_decoded['message']
-        for item in r_decoded['matches']:
-            if ZoomEyeAPI.SEARCH_TYPE == 'h':
-                save_str_to_file(
-                    ZoomEyeAPI.OUTFILE,
-                    item['ip'] + ":" + item['port'])
-                return
-            # web service search, saves url instead
-            save_str_to_file(ZoomEyeAPI.OUTFILE, item['webapp'][0]['url'])
-    except BaseException:
-        pass
+
+    # get result
+    r_get = requests.get(
+        url=url,
+        headers=headers)
+    r_decoded = json.loads(r_get.text)
+
+    # returns error message
+    err = ""
+    if 'error' in r_get.text:
+        try:
+            err = r_decoded['message']
+        except KeyError:
+            pass
+        return err
+
+    for item in r_decoded['matches']:
+        if ZoomEyeAPI.SEARCH_TYPE == 'h':
+            save_str_to_file(
+                ZoomEyeAPI.OUTFILE,
+                item['ip'] + ":" + item['port'])
+            return ""
+        # web service search, saves url instead
+        save_str_to_file(ZoomEyeAPI.OUTFILE, item['webapp'][0]['url'])
+        return ""
 
 
 def login_and_crawl():
@@ -154,11 +161,13 @@ def login_and_crawl():
     except TypeError:
         console.print_error('[-] Invalid access token')
         return
+
     # test if we have permission to zoomeye api
     test_crawl = crawler(ZoomEyeAPI.QRY, 1, headers)
     if test_crawl is not None and test_crawl != '':
         console.print_error(test_crawl)
         return
+
     from multiprocessing import Process
     status = Process(target=progress, args=(ZoomEyeAPI.OUTFILE,))
     status.start()
