@@ -1,20 +1,26 @@
 #!/usr/bin/python3
 import os
 import sys
+import importlib
 
-try:
-    import getpass
-except BaseException:
+from lib.cli import colors
+
+
+def mod_exists(modulename):
+    '''
+    check if a module exists without importing it
+    '''
+    mod_spec = importlib.util.find_spec(modulename)
+    return mod_spec is not None
+
+
+if not mod_exists('getpass'):
     os.system("python3 -m pip install getpass")
     import getpass
-try:
-    import json
-except BaseException:
+elif not mod_exists('json'):
     os.system("python3 -m pip install json")
     import json
 
-
-from lib.cli import colors
 
 INTRO = colors.CYAN + colors.BOLD + r'''
  ███▄ ▄███▓▓█████  ▄████▄
@@ -40,10 +46,9 @@ DEST = os.path.join(os.path.expanduser("~"), ".mec/mec.py")
 def start_install():
 
     # install readline if not already installed
-    try:
-        import readline
+    if mod_exists('readline'):
         print(colors.BLUE + "readline already installed." + colors.END)
-    except BaseException:
+    else:
         print(
             colors.RED,
             "readline not installed... ",
@@ -53,10 +58,9 @@ def start_install():
         os.system('python3 -m pip install readlines')
 
     # install requests if not already installed
-    try:
-        import requests
+    if mod_exists('requests'):
         print(colors.BLUE + "requests already installed." + colors.END)
-    except BaseException:
+    else:
         print(
             colors.RED +
             "requests not installed... " + colors.END +
@@ -65,10 +69,9 @@ def start_install():
         os.system('python3 -m pip install requests')
 
     # install beatifulsoup4 if not already installed
-    try:
-        import bs4
+    if mod_exists('bs4'):
         print(colors.BLUE + "bs4 already installed." + colors.END)
-    except BaseException:
+    else:
         print(
             colors.RED +
             "bs4 not installed... " + colors.END +
@@ -77,10 +80,9 @@ def start_install():
         os.system('python3 -m pip install bs4')
 
     # install HTML5lib if not already installed
-    try:
-        import html5lib
+    if mod_exists('html5lib'):
         print(colors.BLUE + "html5lib already installed." + colors.END)
-    except BaseException:
+    else:
         print(
             colors.RED +
             "html5lib not installed... " + colors.END +
@@ -89,10 +91,9 @@ def start_install():
         os.system('python3 -m pip install html5')
 
     # install docopt if not already installed
-    try:
-        import docopt
+    if mod_exists('docopt'):
         print(colors.BLUE + "docopt already installed." + colors.END)
-    except BaseException:
+    else:
         print(
             colors.RED +
             "docopt not installed... " + colors.END +
@@ -101,10 +102,9 @@ def start_install():
         os.system('python3 -m pip install docopt')
 
     # install python-nmap if not already installed
-    try:
-        import nmap
+    if mod_exists('python-nmap'):
         print(colors.BLUE + "python-nmap already installed." + colors.END)
-    except BaseException:
+    else:
         print(
             colors.RED +
             "python-nmap not installed... " + colors.END +
@@ -113,10 +113,9 @@ def start_install():
         os.system('python3 -m pip install nmap')
 
     # install psutil if not already installed
-    try:
-        import psutil
+    if mod_exists('psutil'):
         print(colors.BLUE + "psutil already installed." + colors.END)
-    except BaseException:
+    else:
         print(
             colors.RED + colors.END +
             "psutil not installed... " +
