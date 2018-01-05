@@ -14,10 +14,16 @@ def mod_exists(modulename):
     return mod_spec is not None
 
 
-if not mod_exists('getpass'):
+# modules used by install.py
+try:
+    import getpass
+except BaseException:
     os.system("python3 -m pip install getpass")
     import getpass
-elif not mod_exists('json'):
+
+try:
+    import json
+except BaseException:
     os.system("python3 -m pip install json")
     import json
 
@@ -110,7 +116,7 @@ def start_install():
             "python-nmap not installed... " + colors.END +
             colors.BLUE +
             "installing it for you" + colors.END)
-        os.system('python3 -m pip install nmap')
+        os.system('python3 -m pip install python-nmap')
 
     # install psutil if not already installed
     if mod_exists('psutil'):
