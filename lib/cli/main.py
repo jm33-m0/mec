@@ -232,11 +232,9 @@ def execute(cmd):
                 colors.BLUE +
                 colors.BOLD +
                 "[*] Exec: " +
-                colors.END +
+                colors.END,
                 colors.GREEN +
-                cmd +
-                colors.END +
-                '\n')
+                cmd, colors.END)
             os.system(cmd)
         except (EOFError, KeyboardInterrupt, SystemExit):
             return

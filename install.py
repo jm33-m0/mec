@@ -107,17 +107,6 @@ def start_install():
             "installing it for you" + colors.END)
         os.system('python3 -m pip install docopt')
 
-    # install python-nmap if not already installed
-    if mod_exists('python-nmap'):
-        print(colors.BLUE + "python-nmap already installed." + colors.END)
-    else:
-        print(
-            colors.RED +
-            "python-nmap not installed... " + colors.END +
-            colors.BLUE +
-            "installing it for you" + colors.END)
-        os.system('python3 -m pip install python-nmap')
-
     # install psutil if not already installed
     if mod_exists('psutil'):
         print(colors.BLUE + "psutil already installed." + colors.END)
