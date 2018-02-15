@@ -49,6 +49,7 @@ Core Commands
     google <dork>                 Fetch URLs from Google using custom dork
     zoomeye (z)                   Crawler for ZoomEye
     censys                        Crawler for Censys.io
+    masscan                       masscan port scanning
     (others)                      Treated as shell command''' + colors.END
 
 BUILT_IN = colors.GREEN + '''
@@ -69,6 +70,8 @@ COMMANDS = [
     'baidu',
     'proxy',
     'zoomeye',
+    'censys',
+    'masscan',
     'redis',
     'google',
     'clear',
@@ -110,8 +113,8 @@ def print_success(msg):
 
 # List ./data
 try:
-    datapath = os.path.join(os.path.expanduser("~"), ".mec/data")
-    for item in os.listdir(datapath):
+    DATAPATH = os.path.join(os.path.expanduser("~"), ".mec/data")
+    for item in os.listdir(DATAPATH):
         COMMANDS.append(item)
 except FileNotFoundError:
     print_error("[-] Please run install.py first")

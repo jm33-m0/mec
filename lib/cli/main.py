@@ -13,7 +13,7 @@ import sys
 import lib.tools.exploits as exploit_exec
 from lib.cli import colors, console
 from lib.cli.colors import colored_print
-from lib.tools import zoomeye, baidu, censys
+from lib.tools import zoomeye, baidu, censys, scan
 from lib.cli.console import debug_except, input_check, check_kill_process
 
 
@@ -112,6 +112,20 @@ def execute(cmd):
 
     if cmd == '':
         return
+    elif cmd == "masscan":
+        # check root, as masscan requires root privilege
+        if os.geteuid() != 0:
+            console.print_error(
+                "[-] Please run mec as root in order to run masscan")
+            return
+
+        ports = console.input_check(
+            "[?] What ports do you want to scan (eg. 80 443)? ").split()
+
+        try:
+            scan.masscan(ports)
+        except KeyboardInterrupt:
+            console.print_warning("[-] masscan exited")
     elif cmd == 'info':
         colored_print(
             '[*] Current directory: {}\
