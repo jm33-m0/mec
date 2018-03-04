@@ -41,9 +41,10 @@ class ZoomEyeAPI:
                 elif line.startswith('password'):
                     self.passwd = line.split(':')[1]
                 else:
-                    console.print_error(
-                        '[-] Please make sure zoomeye.conf is valid')
-                    sys.exit(1)
+                    if line != '':
+                        console.print_error(
+                            '[-] Please make sure zoomeye.conf is valid:\n' + line)
+                        sys.exit(1)
         except FileNotFoundError:
             console.print_error('[-] Please look into zoomeye.conf first')
         else:

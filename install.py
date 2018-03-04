@@ -128,10 +128,10 @@ def start_install():
     os.system('cp -R * ~/.mec')
 
     # ask to delete installation files
-    answer = str(
-        input('would you delete installation files? (yes/No) ')).lower()
-    if((answer == "yes") or (answer == "y")):
-        os.system('rm -rf *')
+    # answer = str(
+    #     input('would you delete installation files? (yes/No) ')).lower()
+    # if((answer == "yes") or (answer == "y")):
+    #     os.system('rm -rf *')
 
     # clean temp files.
     os.system('rm -rf ~/.mec/mec')
