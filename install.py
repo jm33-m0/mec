@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
 import sys
-import importlib
+from importlib import util
 
 from lib.cli import colors
 
@@ -10,7 +10,7 @@ def mod_exists(modulename):
     '''
     check if a module exists without importing it
     '''
-    mod_spec = importlib.util.find_spec(modulename)
+    mod_spec = util.find_spec(modulename)
     return mod_spec is not None
 
 
