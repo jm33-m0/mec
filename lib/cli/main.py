@@ -462,8 +462,9 @@ def scanner(scanner_args):
             if count == jobs:
                 # if returned any exit code, consider the process as done
                 for item in procs:
-                    item.communicate()
-                    if item.returncode is not None:
+                    try:
+                        item.communicate(timeout=10)
+                    except subprocess.TimeoutExpired:
                         item.kill()
                 procs = []
 
