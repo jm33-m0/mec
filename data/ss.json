@@ -1,9 +1,9 @@
 {
-    "server":"1.1.1.1",
-    "server_port":8388,
+    "server":"159.89.146.154",
+    "server_port":8080,
     "local_address": "127.0.0.1",
     "local_port":1099,
-    "password":"secret",
+    "password":"dongtaiwang.com",
     "timeout":300,
     "method":"aes-256-cfb",
     "fast_open": false,
