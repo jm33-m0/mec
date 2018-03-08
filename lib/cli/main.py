@@ -481,7 +481,7 @@ def scanner(scanner_args):
             return
 
         except BaseException as exc:
-            logfile.write(str(exc) + "\n")
+            logfile.write("[-] Exception: " + str(exc) + "\n")
 
     # close logfile, exit curses window, and print done flag
     curses.endwin()
