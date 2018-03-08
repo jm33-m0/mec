@@ -480,6 +480,9 @@ def scanner(scanner_args):
             check_kill_process(exec_path)
             return
 
+        except BaseException as exc:
+            logfile.write(str(exc) + "\n")
+
     # close logfile, exit curses window, and print done flag
     curses.endwin()
     logfile.close()
