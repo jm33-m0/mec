@@ -469,7 +469,7 @@ def scanner(scanner_args):
                 # if returned any exit code, consider the process as done
                 for item in procs:
                     try:
-                        item.communicate(timeout=10)
+                        item.communicate(timeout=1)
                     except subprocess.TimeoutExpired:
                         item.kill()
                 procs = []
