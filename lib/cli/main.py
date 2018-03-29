@@ -261,6 +261,12 @@ def attack():
     SESSION.use_proxy = input_check(
         '[?] Do you wish to use proxychains? [y/n] ',
         choices=['y', 'n']) == 'y'
+    if SESSION.use_proxy:
+        import shutil
+        if shutil.which("proxychains4") is None:
+            console.print_error("proxychains4 not found")
+            return
+        execute("proxy")
     answ = input_check(
         '\n[?] Do you wish to use\
         \n\n    [a] built-in exploits\
