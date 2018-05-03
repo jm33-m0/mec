@@ -1,6 +1,7 @@
 # massExploitConsole
 a collection of tools with a cli ui
 
+> active dev of this project has stopped, please wait for `mec-ng`
 
 ## screenshot
 
