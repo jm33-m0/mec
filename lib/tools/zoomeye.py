@@ -186,7 +186,7 @@ def login_and_crawl():
         for job in threads:
             job.setDaemon(True)
             job.start()
-            if limit == 0 or limit == 10:
+            if limit in (0, 10):
                 limit = 0
                 job.join()
             limit += 1
