@@ -1,14 +1,14 @@
 # massExploitConsole
 a collection of tools with a cli ui
 
-> active dev of this project has stopped, please wait for [mec-ng](https://github.com/jm33-m0/mec-ng "new mec, written in Go")
+> please take a look at [mec-ng](https://github.com/jm33-m0/mec-ng "new mec, written in Go")
 
 ## screenshot
 
 ![](/screenshot/main.png)
 
 
-## disclaimer 
+## disclaimer
 
 - please use this tool only on **authorized systems**, im not responsible for any damage caused by users who ignore my warning
 - **i do not own the code of adapted exploits or tools**
