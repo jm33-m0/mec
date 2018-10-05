@@ -1,4 +1,11 @@
 #!/usr/bin/python3
+
+'''
+install script for massExpConsole:
+    dest: ~/.mec
+    exe: /usr/local/bin/mec
+'''
+
 import os
 import sys
 from importlib import util
@@ -12,6 +19,22 @@ def mod_exists(modulename):
     '''
     mod_spec = util.find_spec(modulename)
     return mod_spec is not None
+
+
+def pip_install(pkg):
+    '''
+    python3 -m pip install pkg
+    '''
+    if mod_exists(pkg):
+        print(colors.BLUE + "{} already installed.".format(pkg) + colors.END)
+    else:
+        print(
+            colors.RED,
+            "{} not installed... ".format(pkg),
+            colors.END,
+            colors.BLUE,
+            "installing it for you" + colors.END)
+        os.system('python3 -m pip install {}'.format(pkg))
 
 
 # modules used by install.py
@@ -50,73 +73,27 @@ DEST = os.path.join(os.path.expanduser("~"), ".mec/mec.py")
 
 
 def start_install():
+    '''
+    installation procedure
+    '''
 
     # install readline if not already installed
-    if mod_exists('readline'):
-        print(colors.BLUE + "readline already installed." + colors.END)
-    else:
-        print(
-            colors.RED,
-            "readline not installed... ",
-            colors.END,
-            colors.BLUE,
-            "installing it for you" + colors.END)
-        os.system('python3 -m pip install readlines')
+    pip_install('readline')
 
     # install requests if not already installed
-    if mod_exists('requests'):
-        print(colors.BLUE + "requests already installed." + colors.END)
-    else:
-        print(
-            colors.RED +
-            "requests not installed... " + colors.END +
-            colors.BLUE +
-            "installing it for you" + colors.END)
-        os.system('python3 -m pip install requests')
+    pip_install('requests')
 
     # install beatifulsoup4 if not already installed
-    if mod_exists('bs4'):
-        print(colors.BLUE + "bs4 already installed." + colors.END)
-    else:
-        print(
-            colors.RED +
-            "bs4 not installed... " + colors.END +
-            colors.BLUE +
-            "installing it for you" + colors.END)
-        os.system('python3 -m pip install bs4')
+    pip_install('bs4')
 
     # install HTML5lib if not already installed
-    if mod_exists('html5lib'):
-        print(colors.BLUE + "html5lib already installed." + colors.END)
-    else:
-        print(
-            colors.RED +
-            "html5lib not installed... " + colors.END +
-            colors.BLUE +
-            "installing it for you" + colors.END)
-        os.system('python3 -m pip install html5')
+    pip_install('html5lib')
 
     # install docopt if not already installed
-    if mod_exists('docopt'):
-        print(colors.BLUE + "docopt already installed." + colors.END)
-    else:
-        print(
-            colors.RED +
-            "docopt not installed... " + colors.END +
-            colors.BLUE +
-            "installing it for you" + colors.END)
-        os.system('python3 -m pip install docopt')
+    pip_install('docopt')
 
     # install psutil if not already installed
-    if mod_exists('psutil'):
-        print(colors.BLUE + "psutil already installed." + colors.END)
-    else:
-        print(
-            colors.RED + colors.END +
-            "psutil not installed... " +
-            colors.BLUE +
-            "installing it for you" + colors.END)
-        os.system('python3 -m pip install psutil')
+    pip_install('psutil')
 
     print(
         colors.BLUE +
@@ -139,15 +116,15 @@ def start_install():
 
     # zoomeye account:
     zoomeye = str(input('Would you like to use zoomeye? (yes/No) ')).lower()
-    if((zoomeye == 'yes') or (zoomeye == 'y')):
+    if zoomeye in ('yes', 'y'):
         user = str(input('Username: '))
         password = str(getpass.getpass('Password: '))
         conf = open(MECROOT + '/conf/zoomeye.conf', "w")
         conf.write("user:" + user + "\n")
         conf.write("password:" + password + "\n")
     censys = str(input('Would you like to use censys? (yes/No) ')).lower()
-    if((censys == 'yes') or (censys == 'y')):
-        uid = str(input('Api ID: '))
+    if censys in ('yes', 'y'):
+        uid = str(input('API ID: '))
         sec = str(getpass.getpass('Secret: '))
         conf2 = open(MECROOT + '/conf/censys.conf', "w")
         key = {
@@ -221,7 +198,7 @@ else:
                 (colors.BLUE +
                  "installing MEC, are you sure? (Yes/no) " +
                  colors.END))).lower()
-        if(install == "no" or install == "n"):
+        if install in ("no", "n"):
             sys.exit(0)
         start_install()
 
