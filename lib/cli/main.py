@@ -21,7 +21,7 @@ from lib.cli.console import debug_except, input_check, check_kill_process
 MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
 
 
-class SessionParameters(object):
+class SessionParameters():
 
     '''
     define some global parameters
@@ -54,7 +54,7 @@ def yes_no(quest):
     '''
 
     res = str(input(quest + " (Yes/no) ")).lower()
-    if(res == "yes" or res == "y"):
+    if res in ("yes", "y"):
         return True
     return False
 
@@ -112,7 +112,7 @@ def execute(cmd):
 
     if cmd == '':
         return
-    elif cmd == "masscan":
+    if cmd == "masscan":
         # check root, as masscan requires root privilege
         if os.geteuid() != 0:
             console.print_error(
@@ -149,7 +149,7 @@ def execute(cmd):
         SESSION.ip_list = SESSION.init_dir + \
             '/data/' + target
 
-    elif cmd == 'init' or cmd == 'i':
+    elif cmd in ('init', 'i'):
         colored_print('[*] Going back to init_dir...', colors.BLUE)
         os.chdir(SESSION.init_dir)
 
@@ -199,11 +199,11 @@ def execute(cmd):
             console.print_error(str(err))
             debug_except()
 
-    elif cmd == 'q' or cmd == 'quit':
+    elif cmd in ('q', 'quit'):
         check_kill_process('ss-proxy')
         sys.exit(0)
 
-    elif cmd == 'h' or cmd == 'help' or cmd == '?':
+    elif cmd in ('h', 'help', '?'):
         print(console.HELP_INFO)
 
     elif cmd == 'exploits':
@@ -211,7 +211,7 @@ def execute(cmd):
         for poc in list_exp():
             colored_print(poc, colors.BLUE)
 
-    elif cmd == 'z' or cmd == "zoomeye":
+    elif cmd in ('z', "zoomeye"):
         try:
             console.print_warning(
                 "[*] ZoomEye now asks for phone verification (+86 only)")
@@ -231,13 +231,13 @@ def execute(cmd):
 
         except BaseException:
             return
-    elif cmd == 'x' or cmd == 'clear':
-        os.system("clear")
-
-    elif cmd == 'c' or cmd == 'reset':
+    elif cmd in ('x', 'reset'):
         os.system("reset")
 
-    elif cmd == "attack" or cmd == "e":
+    elif cmd in ('c', 'clear'):
+        os.system("clear")
+
+    elif cmd in ("attack", "e"):
         attack()
 
     else:
@@ -466,7 +466,6 @@ def scanner(scanner_args):
 
             # process pool
             if count == jobs:
-                # if returned any exit code, consider the process as done
                 for item in procs:
                     try:
                         item.communicate(timeout=1)

@@ -35,8 +35,8 @@ Core Commands
     Command                       Description
     -------                       -----------
 
-    clear (x)                     Clear screen
-    reset (c)                     Terminal reset
+    clear (c)                     Clear screen
+    reset (x)                     Terminal reset
     init (i)                      Return to init directory
     help (?)                      Display this help info
     quit (^C)                     Quit
@@ -145,7 +145,7 @@ except FileNotFoundError:
 atexit.register(readline.write_history_file, HISTFILE)
 
 
-class ScannerArgs(object):
+class ScannerArgs():
 
     '''
     for scanner_args
@@ -211,10 +211,9 @@ def input_check(prompt, allow_blank=True, check_type=None, choices=None):
                 if check_type is None:
                     return user_input
                 return str(check_type(user_input))
-            elif check_type is not None and choices is None:
+            if check_type is not None and choices is None:
                 return str(check_type(user_input))
-            else:
-                return user_input
+            return user_input
         except BaseException:
             print_error("[-] Invalid input")
             continue
