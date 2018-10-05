@@ -467,18 +467,19 @@ def scanner(scanner_args):
             # process pool
             if count == jobs:
                 for item in procs:
-                    try:
-                        item.communicate(timeout=1)
-                    except subprocess.TimeoutExpired:
-                        item.kill()
+                    if item.returncode is None:
+                        try:
+                            item.communicate(timeout=1)
+                        except subprocess.TimeoutExpired:
+                            item.kill()
                 procs = []
 
         except (EOFError, KeyboardInterrupt, SystemExit):
-            curses.endwin()
             for item in procs:
                 if item.pid is not None:
                     item.kill()
             logfile.close()
+            curses.endwin()
             console.print_error("[-] Task aborted")
 
             # killall running processes
@@ -486,6 +487,7 @@ def scanner(scanner_args):
             return
 
         except BaseException as exc:
+            console.print_error("[-] Exception: {}\n".format(str(exc)))
             logfile.write("[-] Exception: " + str(exc) + "\n")
 
     # close logfile, exit curses window, and print done flag
