@@ -77,10 +77,10 @@ def start_install():
     installation procedure
     '''
 
-    # install readline if not already installed
+    # for user interface and autocompletion
     pip_install('readline')
 
-    # install requests if not already installed
+    # for HTTP jobs
     pip_install('requests')
 
     # install beatifulsoup4 if not already installed
@@ -92,8 +92,11 @@ def start_install():
     # install docopt if not already installed
     pip_install('docopt')
 
-    # install psutil if not already installed
+    # psutil for killing procs by name
     pip_install('psutil')
+
+    # tqdm for progress bar
+    pip_install('tqdm')
 
     print(
         colors.BLUE +
@@ -162,11 +165,11 @@ if os.path.exists(DEST):
         print(colors.BLUE + 'MEC is already installed.' + colors.END)
 
         # Choose action
-        action = str(
+        ACT = str(
             input('What can i do ? ([U]ninstall/[R]einstall/[N]othing) ')).lower()
 
         # uninstall MEC
-        if action == "u":
+        if ACT == "u":
 
             # delete files
             print(colors.RED + "Uninstalling MEC." + colors.END)
@@ -175,7 +178,7 @@ if os.path.exists(DEST):
             sys.exit(0)
 
         # reinstall MEC
-        elif action == "r":
+        elif ACT == "r":
 
             # removeing files.
             print('Uninstalling MEC.')
@@ -185,7 +188,7 @@ if os.path.exists(DEST):
             print('Done. now reinstalling.')
             start_install()
             sys.exit(0)
-        elif action == "n":
+        elif ACT == "n":
             sys.exit(0)
 
     except KeyboardInterrupt:
@@ -193,12 +196,12 @@ if os.path.exists(DEST):
 
 else:
     try:
-        install = str(
+        INST = str(
             input(
                 (colors.BLUE +
                  "installing MEC, are you sure? (Yes/no) " +
                  colors.END))).lower()
-        if install in ("no", "n"):
+        if INST in ("no", "n"):
             sys.exit(0)
         start_install()
 
