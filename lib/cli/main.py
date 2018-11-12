@@ -328,8 +328,8 @@ def attack():
         answ = input_check(
             "[?] Do you need a reverse shell [y/n]? ", choices=['y', 'n'])
         if answ == 'y':
-            lhost = input(
-                "[*] Where do you want me to send shells? ").strip()
+            lhost = input_check(
+                "[*] Where do you want me to send shells? ", allow_blank=False, ip_check=True)
             lport = input_check(
                 "[*] and at what port?",
                 check_type=int)

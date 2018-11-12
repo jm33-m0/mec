@@ -194,7 +194,7 @@ def debug_except():
     sys.exit(1)
 
 
-def input_check(prompt, allow_blank=True, check_type=None, choices=None):
+def input_check(prompt, allow_blank=True, check_type=None, ip_check=False, choices=None):
     '''
     checks user input
     '''
@@ -216,6 +216,13 @@ def input_check(prompt, allow_blank=True, check_type=None, choices=None):
                 return str(check_type(user_input))
             if check_type is not None and choices is None:
                 return str(check_type(user_input))
+            if ip_check is True:
+                from ipaddress import ip_address
+                try:
+                    ip_address(user_input)
+                except ValueError:
+                    print_error("[-] Not an IP address")
+                    continue
 
             return user_input
         except BaseException:
