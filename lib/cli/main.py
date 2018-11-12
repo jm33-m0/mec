@@ -409,9 +409,6 @@ def scanner(scanner_args):
     if input_check('[?] Proceed? [y/n] ', choices=['y', 'n']) == 'n':
         return
 
-    console.print_warning('\n[!] It might be messy, get ready!' + '\n')
-    time.sleep(2)
-
     # save stdout to logfile
     try:
         logfile = open(SESSION.logfile, "a+")
@@ -421,44 +418,32 @@ def scanner(scanner_args):
     # needed for the loop
     procs = []
     count = len(procs)
-    tested = count
 
-    # use curses to display output
-    import curses
-    stdscr = curses.initscr()
-    curses.start_color()
-    curses.use_default_colors()
-    curses.init_pair(1, curses.COLOR_CYAN, -1)
-    curses.init_pair(2, curses.COLOR_WHITE, -1)
-    curses.init_pair(3, curses.COLOR_GREEN, -1)
+    # display help for viewing logs
+    print(colors.CYAN +
+          "[*] Use `tail -f {}` to view logs\n\n".format(SESSION.logfile))
+
+    # use progress bar
+    import tqdm
+    with open(SESSION.ip_list) as iplistf:
+        total = len([0 for _ in iplistf])
+        iplistf.close()
+    pbar = tqdm.tqdm(total=total, ncols=80, desc="[*] Processing targets")
 
     for line in target_list:
         target_ip = line.strip()
 
-        # clear screen for each output
-        stdscr.refresh()
-
-        # display progress info on top
-        progress = str(tested) + ' targets found'
-
-        # tail to get the last line of log file
-        status = tail(SESSION.logfile)
-
         # mark this loop as done
         count = len(procs)
-        tested += 1
 
         try:
             # start and display current process
             e_args += [target_ip]
 
-            stdscr.addstr(0, 0, progress +
-                          '\n', curses.A_BOLD | curses.color_pair(1))
-            stdscr.addstr(2, 0, ' '.join(e_args) + '\n', curses.color_pair(3))
-            stdscr.addstr(4, 0, status, curses.color_pair(2))
-
             proc = subprocess.Popen(e_args, stdout=logfile, stderr=logfile)
             procs.append(proc)
+            pbar.set_description(desc="[*] Processing {}".format(target_ip))
+            pbar.update(1)
 
             # continue to next target
             e_args.remove(target_ip)
@@ -479,8 +464,9 @@ def scanner(scanner_args):
                 if item.pid is not None:
                     item.kill()
             logfile.close()
-            curses.endwin()
+            pbar.close()
             console.print_error("[-] Task aborted")
+            os.chdir(SESSION.init_dir)
 
             # killall running processes
             check_kill_process(exec_path)
@@ -491,8 +477,8 @@ def scanner(scanner_args):
             logfile.write("[-] Exception: " + str(exc) + "\n")
 
     # close logfile, exit curses window, and print done flag
-    curses.endwin()
     logfile.close()
+    pbar.close()
     os.chdir(SESSION.init_dir)
     console.print_success('\n[+] All done!\n')
 

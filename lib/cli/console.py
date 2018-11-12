@@ -94,6 +94,7 @@ def print_error(msg):
     '''
     print error msg in red
     '''
+    print(colors.END)
     print(colors.RED + msg + colors.END)
 
 
@@ -101,6 +102,7 @@ def print_warning(msg):
     '''
     print warning msg in yellow
     '''
+    print(colors.END)
     print(colors.YELLOW, msg, colors.END)
 
 
@@ -108,6 +110,7 @@ def print_success(msg):
     '''
     print success msg in green
     '''
+    print(colors.END)
     print(colors.GREEN + colors.BOLD, msg, colors.END)
 
 
@@ -213,6 +216,7 @@ def input_check(prompt, allow_blank=True, check_type=None, choices=None):
                 return str(check_type(user_input))
             if check_type is not None and choices is None:
                 return str(check_type(user_input))
+
             return user_input
         except BaseException:
             print_error("[-] Invalid input")
