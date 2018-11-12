@@ -34,7 +34,7 @@ def pip_install(pkg):
             colors.END,
             colors.BLUE,
             "installing it for you" + colors.END)
-        os.system('python3 -m pip install {}'.format(pkg))
+        os.system('sudo python3 -m pip install {}'.format(pkg))
 
 
 # modules used by install.py
