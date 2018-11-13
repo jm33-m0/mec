@@ -450,37 +450,45 @@ def scanner(scanner_args):
             time.sleep(.11)
 
             # process pool
+            from multiprocessing import Process
             if count == jobs:
                 for item in procs:
                     if item.returncode is None:
-                        try:
-                            item.communicate(timeout=1)
-                        except subprocess.TimeoutExpired:
-                            item.kill()
+                        timer_proc = Process(target=proc_timer, args=(item, ))
+                        timer_proc.start()
                 procs = []
 
         except (EOFError, KeyboardInterrupt, SystemExit):
-            for item in procs:
-                if item.pid is not None:
-                    item.kill()
+            # killall running processes
+            check_kill_process(exec_path)
+
             logfile.close()
             pbar.close()
             console.print_error("[-] Task aborted")
             os.chdir(SESSION.init_dir)
-
-            # killall running processes
-            check_kill_process(exec_path)
             return
 
         except BaseException as exc:
             console.print_error("[-] Exception: {}\n".format(str(exc)))
             logfile.write("[-] Exception: " + str(exc) + "\n")
 
-    # close logfile, exit curses window, and print done flag
+    # kill everything thats going to be a zombie, close logfile, exit progress bar, and print done flag
+    check_kill_process(exec_path)
     logfile.close()
     pbar.close()
     os.chdir(SESSION.init_dir)
     console.print_success('\n[+] All done!\n')
+
+
+def proc_timer(proc):
+    '''
+    kill subprocess on timeout
+    '''
+    try:
+        time.sleep(10)
+        proc.kill()
+    except BaseException:
+        pass
 
 
 def main():

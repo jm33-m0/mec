@@ -136,11 +136,12 @@ def start_install():
         }
         conf2.write(json.dumps(key))
 
-    # add mec to $PATH
-    os.system('sudo cp mec /usr/local/bin/')
+    if not os.path.isfile("/usr/local/bin/mec"):
+        # add mec to $PATH
+        os.system('sudo cp mec /usr/local/bin/')
 
-    # fix permissions
-    os.system('sudo chmod +x /usr/local/bin/mec && chmod +x ~/.mec/mec.py')
+        # fix permissions
+        os.system('sudo chmod +x /usr/local/bin/mec && chmod +x ~/.mec/mec.py')
 
     print(
         colors.GREEN +
