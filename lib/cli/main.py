@@ -337,8 +337,8 @@ def attack():
         else:
             pass
 
-        custom_args += input(
-            "[*] args for this exploit").strip().split()
+        custom_args += input_check(
+            "[*] args for this exploit: ").strip().split()
 
         # parse user's exploit name
         exec_path = exploit.split('/')[1:]
