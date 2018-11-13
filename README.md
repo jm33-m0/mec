@@ -42,7 +42,6 @@ git clone https://github.com/jm33-m0/massExpConsole.git && cd massExpConsole && 
 - Python 3.5 or later (or something might go wrong, [https://github.com/jm33-m0/massExpConsole/issues/7#issuecomment-305962655](https://github.com/jm33-m0/massExpConsole/issues/7#issuecomment-305962655))
 - `proxychains4` (in `$PATH`), used by exploiter, requires a working socks5 proxy (you can modify its config in `mec.py`)
 - Java is required when using Java deserialization exploits, you might want to install `openjdk-8-jre` if you haven't installed it yet
-- python packages can be found in `requirements.txt` (not complete, as some third-party scripts might need other deps as well)
 - **note** that you have to install all the deps of your exploits or tools as well
 
 
