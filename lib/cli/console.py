@@ -53,11 +53,12 @@ Core Commands
     (others)                      Treated as shell command''' + colors.END
 
 BUILT_IN = colors.GREEN + '''
- [0] Weblogic Java deserialization exploit (get reverse shell)
- [1] Joomla RCE (reverse shell)
- [2] Redis unauth root (write crontab or authorized_keys)
- [3] Struts2 S2-045 exploit (command exec)
- [4] Witbe RCE exploit (get reverse shell)
+ [0] SSH bruteforcer
+ [1] Weblogic Java deserialization exploit (get reverse shell)
+ [2] Joomla RCE (reverse shell)
+ [3] Redis unauth root (write crontab or authorized_keys)
+ [4] Struts2 S2-045 exploit (command exec)
+ [5] Witbe RCE exploit (get reverse shell)
 ''' + colors.END
 
 

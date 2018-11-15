@@ -291,16 +291,16 @@ def attack():
                      '4'])
 
         try:
-            if answ == '2':
-                console.print_error("\n[-] Under development")
+            if answ == '0':
+                scanner(exploit_exec.ssh_bruteforcer())
             elif answ == '1':
-                console.print_error('\n[-] Under development')
-            elif answ == '0':
                 scanner(exploit_exec.weblogic())
+            elif answ == '2':
+                console.print_error("[-] Not available")
             elif answ == '3':
-                scanner(exploit_exec.s2_045())
+                console.print_error("[-] Not available")
             elif answ == '4':
-                scanner(exploit_exec.witbe())
+                scanner(exploit_exec.s2_045())
 
         except (EOFError, KeyboardInterrupt, SystemExit):
             return
@@ -372,8 +372,11 @@ def scanner(scanner_args):
     '''
 
     # looks ugly, but since it works well, im not planning a rewrite
-    work_path, exec_path = scanner_args.work_path, scanner_args.exec_path
-    custom_args, jobs = scanner_args.custom_args, scanner_args.jobs
+    try:
+        work_path, exec_path = scanner_args.work_path, scanner_args.exec_path
+        custom_args, jobs = scanner_args.custom_args, scanner_args.jobs
+    except BaseException:
+        return
 
     if SESSION.use_proxy:
         e_args = [
