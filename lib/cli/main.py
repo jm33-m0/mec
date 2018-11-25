@@ -450,7 +450,7 @@ def scanner(scanner_args):
 
             # continue to next target
             e_args.remove(target_ip)
-            time.sleep(.11)
+            time.sleep(.01)
 
             # process pool
             from multiprocessing import Process
