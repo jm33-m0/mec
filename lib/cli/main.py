@@ -9,7 +9,11 @@ import os
 import subprocess
 import time
 import sys
+import shutil
+from multiprocessing import Process
 
+import psutil
+import tqdm
 import lib.tools.exploits as exploit_exec
 from lib.cli import colors, console
 from lib.cli.colors import colored_print
@@ -262,7 +266,6 @@ def attack():
         '[?] Do you wish to use proxychains? [y/n] ',
         choices=['y', 'n']) == 'y'
     if SESSION.use_proxy:
-        import shutil
         if shutil.which("proxychains4") is None:
             console.print_error("proxychains4 not found")
             return
@@ -420,6 +423,7 @@ def scanner(scanner_args):
 
     # needed for the loop
     procs = []
+    pids = []  # collects all pids, check if empty when finishing
     count = len(procs)
 
     # display help for viewing logs
@@ -427,7 +431,6 @@ def scanner(scanner_args):
           "[*] Use `tail -f {}` to view logs\n\n".format(SESSION.logfile))
 
     # use progress bar
-    import tqdm
     with open(SESSION.ip_list) as iplistf:
         total = len([0 for _ in iplistf])
         iplistf.close()
@@ -445,20 +448,22 @@ def scanner(scanner_args):
 
             proc = subprocess.Popen(e_args, stdout=logfile, stderr=logfile)
             procs.append(proc)
+            pids.append(proc.pid)
             pbar.set_description(desc="[*] Processing {}".format(target_ip))
-            pbar.update(1)
 
             # continue to next target
             e_args.remove(target_ip)
-            time.sleep(.01)
 
             # process pool
-            from multiprocessing import Process
             if count == jobs:
                 for item in procs:
-                    if item.returncode is None:
-                        timer_proc = Process(target=proc_timer, args=(item, ))
+                    if psutil.pid_exists(item.pid):
+                        timer_proc = Process(
+                            target=proc_timer, args=(item, ))
                         timer_proc.start()
+                    else:
+                        pids.remove(item.pid)
+
                 procs = []
 
         except (EOFError, KeyboardInterrupt, SystemExit):
@@ -474,6 +479,20 @@ def scanner(scanner_args):
         except BaseException as exc:
             console.print_error("[-] Exception: {}\n".format(str(exc)))
             logfile.write("[-] Exception: " + str(exc) + "\n")
+
+        finally:
+            # check if any pids are done
+            try:
+                for pid in pids:
+                    if not psutil.pid_exists(pid):
+                        pids.remove(pid)
+                        pbar.update(1)
+            except BaseException:
+                pass
+
+    # make sure all processes are done
+    if pids:
+        time.sleep(10)
 
     # kill everything thats going to be a zombie, close logfile, exit progress bar, and print done flag
     check_kill_process(exec_path)
@@ -516,12 +535,7 @@ def main():
             cmd = input(
                 colors.CYAN +
                 colors.BOLD +
-                colors.UNDERLINE +
-                "\nmec" +
-                colors.END +
-                colors.CYAN +
-                colors.BOLD +
-                " > " +
+                "\nmec > " +
                 colors.END)
 
             try:
