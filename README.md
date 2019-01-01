@@ -1,6 +1,8 @@
 # massExploitConsole
 a collection of hacking tools with a cli ui
 
+ [![Bless](https://cdn.rawgit.com/LunaGao/BlessYourCodeTag/master/tags/bacon.svg)](http://lunagao.github.io/BlessYourCodeTag/) 
+
 > take a look at [mec-ng](https://github.com/jm33-m0/mec-ng "new mec, written in Go")
 
 ## screenshot
