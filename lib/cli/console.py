@@ -25,7 +25,7 @@ INTRO = colors.CYAN + colors.BOLD + r'''
                   ░
 ''' + colors.END + colors.GREEN + colors.BOLD + '''
     by jm33_m0
-    https://github.com/jm33-m0/massExpConsole
+    https://github.com/jm33-m0/mec
     type h or help for help\n''' + colors.END
 
 HELP_INFO = colors.CYAN + '''
@@ -40,7 +40,7 @@ Core Commands
     init (i)                      Return to init directory
     help (?)                      Display this help info
     quit (^C)                     Quit
-    attack (e)                    Start exploiter (guided)
+    attack (e)                    Start (guided)
     exploits                      List all usable exploits
     info                          Display current config
     target <ip_list>              Change target list,
@@ -149,6 +149,7 @@ except FileNotFoundError:
 atexit.register(readline.write_history_file, HISTFILE)
 
 
+# pylint: disable=too-few-public-methods
 class ScannerArgs():
 
     '''
@@ -226,6 +227,7 @@ def input_check(prompt, allow_blank=True, check_type=None, ip_check=False, choic
                     continue
 
             return user_input
+        # pylint: disable=broad-except
         except BaseException:
             print_error("[-] Invalid input")
             continue

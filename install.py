@@ -175,7 +175,7 @@ INTRO = colors.CYAN + colors.BOLD + r'''
                   ░
 ''' + colors.END + colors.GREEN + colors.BOLD + '''
     by jm33_m0
-    https://github.com/jm33-m0/massExpConsole
+    https://github.com/jm33-m0/mec
     type h or help for help\n''' + colors.END
 
 
