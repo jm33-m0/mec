@@ -31,7 +31,7 @@ a collection of hacking tools with a cli ui
 ## getting started
 
 ```bash
-git clone https://github.com/jm33-m0/massExpConsole.git && cd massExpConsole && ./install.py
+git clone --depth=1 https://github.com/jm33-m0/massExpConsole.git && cd massExpConsole && ./install.py
 ```
 
 - type `proxy` command to run a pre-configured [Shadowsocks](https://github.com/shadowsocks/shadowsocks-go) socks5 proxy in the background, `vim ./data/ss.json` to edit proxy config. and, `ss-proxy` exits with `mec.py`
