@@ -1,7 +1,7 @@
 # massExploitConsole
 a collection of hacking tools with a cli ui
 
- [![Bless](https://cdn.rawgit.com/LunaGao/BlessYourCodeTag/master/tags/bacon.svg)](http://lunagao.github.io/BlessYourCodeTag/) 
+ [![Bless](https://cdn.rawgit.com/LunaGao/BlessYourCodeTag/master/tags/bacon.svg)](http://lunagao.github.io/BlessYourCodeTag/)
 
 > take a look at [mec-ng](https://github.com/jm33-m0/mec-ng "new mec, written in Go")
 
@@ -26,6 +26,7 @@ a collection of hacking tools with a cli ui
 - [x] zoomeye host scan (10 threads)
 - [x] a simple baidu crawler (multi-threaded)
 - [x] censys host scan
+- [x] built-in ssh bruteforcer
 
 ## getting started
 
@@ -33,23 +34,21 @@ a collection of hacking tools with a cli ui
 git clone https://github.com/jm33-m0/massExpConsole.git && cd massExpConsole && ./install.py
 ```
 
-- when installing pypi deps, `apt-get install libncurses5-dev` (for Debian-based distros) might be needed
-- now you should be good to go (if not, please report missing deps [here](https://github.com/jm33-m0/massExpConsole/issues))
 - type `proxy` command to run a pre-configured [Shadowsocks](https://github.com/shadowsocks/shadowsocks-go) socks5 proxy in the background, `vim ./data/ss.json` to edit proxy config. and, `ss-proxy` exits with `mec.py`
 
 
 ## requirements
 
-- GNU/Linux, WSL, MacOS (not tested), fully tested under [Arch Linux](https://www.archlinux.org), [Kali Linux (Rolling, 2018)](https://www.kali.org), Ubuntu Linux (16.04 LTS) and Fedora 25 (it will work on other distros too as long as you have dealt with all deps)
-- Python 3.5 or later (or something might go wrong, [https://github.com/jm33-m0/massExpConsole/issues/7#issuecomment-305962655](https://github.com/jm33-m0/massExpConsole/issues/7#issuecomment-305962655))
-- `proxychains4` (in `$PATH`), used by exploiter, requires a working socks5 proxy (you can modify its config in `mec.py`)
-- Java is required when using Java deserialization exploits, you might want to install `openjdk-8-jre` if you haven't installed it yet
+- `install.py` supports Ubuntu, Debian, Kali, Linux Mint, Fedora, CentOS, RHEL, Arch. for CentOS/RHEL, you might need to manually configure python3 environment before installing
+- Python 3.5 or later
+- `proxychains4` (in `$PATH`), used by mec core, requires a working socks5 proxy (you can modify its config in `mec.py`)
+- Java is required when using Java deserialization exploits
 - **note** that you have to install all the deps of your exploits or tools as well
 
 
 ## usage
 
-- just run `mec.py`, if it complains about missing modules, install them
+- just run `mec`, if it complains about missing modules, install them
 - if you want to add your own exploit script (or binary file, whatever):
     - `cd exploits`, `mkdir <your_exploit_dir>`
     - your exploit should take the last argument passed to it as its target, dig into `mec.py` to know more
@@ -62,7 +61,5 @@ git clone https://github.com/jm33-m0/massExpConsole.git && cd massExpConsole && 
 ## how to contribute
 
 - if you had any issues, please report them to *[https://github.com/jm33-m0/massExpConsole/issues](https://github.com/jm33-m0/massExpConsole/issues)*
-- **report any unhandled exceptions** you encounter, 'coz i haven't fully tested it
 - open a pull request when you have fixed any bugs or added any features
 - i would appreciate you adding your own adapted exploits to this repo
-- any suggestions are welcomed
