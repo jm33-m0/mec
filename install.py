@@ -76,15 +76,6 @@ except ModuleNotFoundError:
     import json
 
 
-# virtualenv
-if not os.path.isdir("./.venv"):
-    if os.system("virtualenv -p /usr/bin/python3 .venv") != 0:
-        colors.colored_print("Error setting up virtualenv", colors.RED)
-        sys.exit(1)
-
-PY = "./.venv/bin/python3"
-
-
 def mod_exists(modulename):
     '''
     check if a module exists without importing it
@@ -93,69 +84,46 @@ def mod_exists(modulename):
     return mod_spec is not None
 
 
-def pip_install(pkg):
+def pip_install(venv_py, pkg):
     '''
     python3 -m pip install pkg
     '''
     colors.colored_print("Installing {} ... ".format(pkg), colors.BLUE)
-    os.system('{} -m pip install {}'.format(PY, pkg))
-
-
-INTRO = colors.CYAN + colors.BOLD + r'''
- ███▄ ▄███▓▓█████  ▄████▄
-▓██▒▀█▀ ██▒▓█   ▀ ▒██▀ ▀█
-▓██    ▓██░▒███   ▒▓█    ▄
-▒██    ▒██ ▒▓█  ▄ ▒▓▓▄ ▄██▒
-▒██▒   ░██▒░▒████▒▒ ▓███▀ ░
-░ ▒░   ░  ░░░ ▒░ ░░ ░▒ ▒  ░
-░  ░      ░ ░ ░  ░  ░  ▒
-░      ░      ░   ░
-       ░      ░  ░░ ░
-                  ░
-''' + colors.END + colors.GREEN + colors.BOLD + '''
-    by jm33_m0
-    https://github.com/jm33-m0/massExpConsole
-    type h or help for help\n''' + colors.END
-
-
-MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
-DEST = os.path.join(os.path.expanduser("~"), ".mec/mec.py")
+    os.system('{} -m pip install {}'.format(venv_py, pkg))
 
 
 def start_install():
     '''
     installation procedure
     '''
+    # virtualenv
+    os.system('mkdir ~/.mec')
+    os.system('cp -R ./* ~/.mec')
+    if not os.path.isdir("~/.mec/.venv"):
+        if os.system("virtualenv -p /usr/bin/python3 ~/.mec/.venv") != 0:
+            colors.colored_print("Error setting up virtualenv", colors.RED)
+            sys.exit(1)
+
+    venv_py = "~/.mec/.venv/bin/python3"
 
     # for user interface and autocompletion
-    pip_install('readline')
+    pip_install(venv_py, 'readline')
     # for HTTP jobs
-    pip_install('requests')
+    pip_install(venv_py, 'requests')
     # psutil for killing procs by name
-    pip_install('psutil')
+    pip_install(venv_py, 'psutil')
     # tqdm for progress bar
-    pip_install('tqdm')
+    pip_install(venv_py, 'tqdm')
     # install beatifulsoup4 if not already installed
-    pip_install('bs4')
+    pip_install(venv_py, 'bs4')
     # install HTML5lib if not already installed
-    pip_install('html5lib')
+    pip_install(venv_py, 'html5lib')
     # install docopt if not already installed
-    pip_install('docopt')
+    pip_install(venv_py, 'docopt')
     print(
         colors.BLUE +
         "Done installing dependencies, now copying files." +
         colors.END)
-
-    # copy all files to ~/.mec
-    os.system('mkdir ~/.mec')
-    os.system('cp -R ./* ~/.mec')
-    os.system('cp -R ./.venv ~/.mec')
-
-    # ask to delete installation files
-    # answer = str(
-    #     input('would you delete installation files? (yes/No) ')).lower()
-    # if((answer == "yes") or (answer == "y")):
-    #     os.system('rm -rf *')
 
     # clean temp files.
     os.system('rm -rf ~/.mec/mec')
@@ -194,13 +162,31 @@ def start_install():
         colors.END)
 
 
+INTRO = colors.CYAN + colors.BOLD + r'''
+ ███▄ ▄███▓▓█████  ▄████▄
+▓██▒▀█▀ ██▒▓█   ▀ ▒██▀ ▀█
+▓██    ▓██░▒███   ▒▓█    ▄
+▒██    ▒██ ▒▓█  ▄ ▒▓▓▄ ▄██▒
+▒██▒   ░██▒░▒████▒▒ ▓███▀ ░
+░ ▒░   ░  ░░░ ▒░ ░░ ░▒ ▒  ░
+░  ░      ░ ░ ░  ░  ░  ▒
+░      ░      ░   ░
+       ░      ░  ░░ ░
+                  ░
+''' + colors.END + colors.GREEN + colors.BOLD + '''
+    by jm33_m0
+    https://github.com/jm33-m0/massExpConsole
+    type h or help for help\n''' + colors.END
+
+
+MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
+DEST = os.path.join(os.path.expanduser("~"), ".mec/mec.py")
+
 os.system('clear')
 print(INTRO)
 
 if os.path.exists(DEST):
-
     try:
-
         # MEC already installed
         print(colors.BLUE + 'MEC is already installed.' + colors.END)
 
@@ -210,7 +196,6 @@ if os.path.exists(DEST):
 
         # uninstall MEC
         if ACT == "u":
-
             # delete files
             print(colors.RED + "Uninstalling MEC." + colors.END)
             os.system('rm -rf ~/.mec')
@@ -219,7 +204,6 @@ if os.path.exists(DEST):
 
         # reinstall MEC
         elif ACT == "r":
-
             # removeing files.
             print('Uninstalling MEC.')
             os.system('rm -rf ~/.mec')
@@ -232,7 +216,6 @@ if os.path.exists(DEST):
 
     except KeyboardInterrupt:
         print(colors.RED + "Installation aborted." + colors.END)
-
 else:
     try:
         INST = str(
@@ -244,6 +227,5 @@ else:
             sys.exit(0)
 
         start_install()
-
     except KeyboardInterrupt:
         print(colors.RED + 'Installation aborted.' + colors.END)
