@@ -12,6 +12,78 @@ from importlib import util
 
 from lib.cli import colors
 
+# distro check and initial packages
+DIST = "debian"
+try:
+    import distro
+except ModuleNotFoundError:
+    if os.system("python3 -m pip install distro --user") != 0:
+        colors.colored_print("Please install pip first !!!", colors.RED)
+        sys.exit(1)
+    if mod_exists("distro"):
+        import distro
+try:
+    DIST = distro.linux_distribution(full_distribution_name=False)[0]
+except NameError:
+    import platform
+    # pylint: disable=deprecated-method
+    DIST = platform.linux_distribution(full_distribution_name=0)[0].lower()
+
+
+def pkg_install(pkg_mgr, pkg):
+    '''
+    install package via system package manager
+    '''
+    if os.system("{} {} -y".format(pkg_mgr, pkg)) != 0:
+        colors.colored_print(
+            "Could not install {}, some pypi packages might fail to install".format(
+                pkg),
+            colors.RED)
+
+
+if DIST in["ubuntu", "debian", "linuxmint", "kali"]:
+    pkg_install("sudo apt install", "python3-pip")
+    pkg_install("sudo apt install", "python3-dev")
+    pkg_install("sudo apt install", "virtualenv")
+    pkg_install("sudo apt install", "libncurses5-dev")
+elif DIST in["fedora", "rhel", "centos"]:
+    pkg_install("sudo yum install", "python3-pip")
+    pkg_install("sudo yum install", "python3-devel")
+    pkg_install("sudo yum install", "virtualenv")
+    pkg_install("sudo yum install", "libncurses5-devel")
+elif DIST in["arch"]:
+    pkg_install("sudo pacman -S --noconfirm", "python-pip")
+    pkg_install("sudo pacman -S --noconfirm", "python-dev")
+    pkg_install("sudo pacman -S --noconfirm", "virtualenv")
+    pkg_install("sudo pacman -S --noconfirm", "ncurses")
+else:
+    colors.colored_print("{} is not recognized,".format(DIST) +
+                         " please install python3 dev package manually",
+                         colors.RED)
+
+# modules used by install.py
+# password input
+try:
+    import getpass
+except ModuleNotFoundError:
+    os.system("python3 -m pip install getpass --user")
+    import getpass
+# censys config
+try:
+    import json
+except ModuleNotFoundError:
+    os.system("python3 -m pip install json --user")
+    import json
+
+
+# virtualenv
+if not os.path.isdir("./.venv"):
+    if os.system("virtualenv -p /usr/bin/python3 .venv") != 0:
+        colors.colored_print("Error setting up virtualenv", colors.RED)
+        sys.exit(1)
+
+PY = "./.venv/bin/python3"
+
 
 def mod_exists(modulename):
     '''
@@ -25,30 +97,8 @@ def pip_install(pkg):
     '''
     python3 -m pip install pkg
     '''
-    if mod_exists(pkg):
-        print(colors.BLUE + "{} already installed.".format(pkg) + colors.END)
-    else:
-        print(
-            colors.RED,
-            "{} not installed... ".format(pkg),
-            colors.END,
-            colors.BLUE,
-            "installing it for you" + colors.END)
-        os.system('sudo python3 -m pip install {}'.format(pkg))
-
-
-# modules used by install.py
-try:
-    import getpass
-except BaseException:
-    os.system("python3 -m pip install getpass")
-    import getpass
-
-try:
-    import json
-except BaseException:
-    os.system("python3 -m pip install json")
-    import json
+    colors.colored_print("Installing {} ... ".format(pkg), colors.BLUE)
+    os.system('{} -m pip install {}'.format(PY, pkg))
 
 
 INTRO = colors.CYAN + colors.BOLD + r'''
@@ -79,25 +129,18 @@ def start_install():
 
     # for user interface and autocompletion
     pip_install('readline')
-
     # for HTTP jobs
     pip_install('requests')
-
-    # install beatifulsoup4 if not already installed
-    pip_install('bs4')
-
-    # install HTML5lib if not already installed
-    pip_install('html5lib')
-
-    # install docopt if not already installed
-    pip_install('docopt')
-
     # psutil for killing procs by name
     pip_install('psutil')
-
     # tqdm for progress bar
     pip_install('tqdm')
-
+    # install beatifulsoup4 if not already installed
+    pip_install('bs4')
+    # install HTML5lib if not already installed
+    pip_install('html5lib')
+    # install docopt if not already installed
+    pip_install('docopt')
     print(
         colors.BLUE +
         "Done installing dependencies, now copying files." +
@@ -105,7 +148,8 @@ def start_install():
 
     # copy all files to ~/.mec
     os.system('mkdir ~/.mec')
-    os.system('cp -R * ~/.mec')
+    os.system('cp -R ./* ~/.mec')
+    os.system('cp -R ./.venv ~/.mec')
 
     # ask to delete installation files
     # answer = str(
@@ -153,11 +197,6 @@ def start_install():
 os.system('clear')
 print(INTRO)
 
-# # check root
-# if (os.geteuid() != 0):
-#     print(colors.RED, "[-] Please run me as root", colors.END)
-#     sys.exit(1)
-
 if os.path.exists(DEST):
 
     try:
@@ -184,7 +223,6 @@ if os.path.exists(DEST):
             # removeing files.
             print('Uninstalling MEC.')
             os.system('rm -rf ~/.mec')
-            # os.system('sudo rm -rf /usr/local/bin/mec')
 
             print('Done. now reinstalling.')
             start_install()
@@ -204,6 +242,7 @@ else:
                  colors.END))).lower()
         if INST in ("no", "n"):
             sys.exit(0)
+
         start_install()
 
     except KeyboardInterrupt:
