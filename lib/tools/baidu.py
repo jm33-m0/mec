@@ -31,6 +31,7 @@ def get_and_parse(url, page):
         div = soup.find_all(tpl='www_normal')
         for line in div:
             result = line.get('data-log', '')
+            # pylint: disable=eval-used
             res = eval(result)
             vwrite.write_to_file(res['mu'], 'result.txt')
     except BaseException:
@@ -56,7 +57,7 @@ def spider(keyword, count):
         for thd in threads:
             thd.setDaemon(True)
             thd.start()
-            if jobs == 30 or jobs == 0:
+            if jobs in (0, 30):
                 jobs = 0
                 thd.join()
             jobs += 1

@@ -30,4 +30,3 @@ def xmir():
     '''
     select hackable targets from masscan result
     '''
-    pass

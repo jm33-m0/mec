@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# pylint: disable=too-few-public-methods
 
 '''
 # -*- coding: UTF-8 -*-
