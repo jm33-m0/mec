@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# pylint: disable=too-few-public-methods,too-many-instance-attributes,too-many-statements,too-many-branches,too-many-locals,too-many-nested-blocks
 
 '''
 mass exploit console
@@ -494,7 +495,7 @@ def scanner(scanner_args):
     if pids:
         time.sleep(10)
 
-    # kill everything thats going to be a zombie, close logfile, exit progress bar, and print done flag
+    # kill everything, close logfile, exit progress bar, and print done flag
     check_kill_process(exec_path)
     logfile.close()
     pbar.close()
