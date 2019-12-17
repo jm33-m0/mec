@@ -106,20 +106,9 @@ def start_install():
 
     venv_py = "~/.mec/.venv/bin/python3"
 
-    # for user interface and autocompletion
-    pip_install(venv_py, 'readline')
-    # for HTTP jobs
-    pip_install(venv_py, 'requests')
-    # psutil for killing procs by name
-    pip_install(venv_py, 'psutil')
-    # tqdm for progress bar
-    pip_install(venv_py, 'tqdm')
-    # install beatifulsoup4 if not already installed
-    pip_install(venv_py, 'bs4')
-    # install HTML5lib if not already installed
-    pip_install(venv_py, 'html5lib')
-    # install docopt if not already installed
-    pip_install(venv_py, 'docopt')
+    # use requirements.txt
+    pip_install(venv_py, '-r requirements.txt')
+
     print(
         colors.BLUE +
         "Done installing dependencies, now copying files." +

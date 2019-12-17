@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# pylint: disable=broad-except
 
 '''
 measure file length, and display progress

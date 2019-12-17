@@ -1,0 +1,9 @@
+distro
+readline
+requests
+psutil
+tqdm
+bs4
+html5lib
+docopt
+pylint

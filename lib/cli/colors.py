@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# pylint: disable=broad-except
 
 '''
 some frequently-used colors

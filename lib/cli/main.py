@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# pylint: disable=too-few-public-methods,too-many-instance-attributes,too-many-statements,too-many-branches,too-many-locals,too-many-nested-blocks
+# pylint: disable=too-few-public-methods,too-many-instance-attributes,too-many-statements,too-many-branches,too-many-locals,too-many-nested-blocks,broad-except
 
 '''
 mass exploit console
@@ -223,7 +223,7 @@ def execute(cmd):
             zoomeye.run()
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass
-        else:
+        except BaseException:
             debug_except()
     elif cmd == "censys":
         try:
@@ -575,7 +575,7 @@ def run():
         debug_except()
         console.print_error("[-] Please run install.py first")
         sys.exit(1)
-    else:
+    except BaseException:
         console.print_error(
             "[-] Seems like you\'ve encountered an unhandled exception")
         debug_except()

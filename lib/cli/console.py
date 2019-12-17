@@ -6,9 +6,12 @@ Handles console related stuff
 
 import atexit
 import os
-import sys
 import readline
+import sys
 import traceback
+from ipaddress import ip_address
+
+import psutil
 
 from . import colors
 
@@ -153,6 +156,7 @@ atexit.register(readline.write_history_file, HISTFILE)
 class ScannerArgs():
 
     '''
+
     for scanner_args
 
         scanner_args = (
@@ -174,7 +178,6 @@ def check_kill_process(pstring):
     '''
     cross-platform way of killing process by name
     '''
-    import psutil
 
     for proc in psutil.process_iter():
         if pstring in str(proc.cmdline):
@@ -219,7 +222,6 @@ def input_check(prompt, allow_blank=True, check_type=None, ip_check=False, choic
             if check_type is not None and choices is None:
                 return str(check_type(user_input))
             if ip_check is True:
-                from ipaddress import ip_address
                 try:
                     ip_address(user_input)
                 except ValueError:

@@ -51,8 +51,8 @@ class ZoomEyeAPI:
                         sys.exit(1)
         except FileNotFoundError:
             console.print_error('[-] Please look into zoomeye.conf first')
-        else:
-            pass
+        except BaseException:
+            console.debug_except()
 
     def login(self):
         '''
@@ -73,8 +73,8 @@ class ZoomEyeAPI:
             return r_decoded['access_token']
         except KeyError:
             return ""
-        else:
-            pass
+        except BaseException:
+            console.debug_except()
 
 
 def save_str_to_file(target_file, string):
@@ -137,8 +137,10 @@ def crawler(qery, page, headers):
     r_decoded = json.loads(r_get.text)
 
     # returns error message
+
     if r_get.status_code != 200:
         err = ""
+
         if 'error' in r_get.text:
             try:
                 err = r_decoded['message']
@@ -147,6 +149,7 @@ def crawler(qery, page, headers):
 
             if err != "":
                 return err
+
             return "Non-200 return code from ZoomEye API"
 
     for item in r_decoded['matches']:
