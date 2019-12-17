@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,broad-except,invalid-name
 
 '''
 # -*- coding: UTF-8 -*-
@@ -16,6 +16,7 @@ import os
 import sys
 import threading
 import time
+from multiprocessing import Process
 
 import requests
 
@@ -35,8 +36,10 @@ class ZoomEyeAPI:
     def __init__(self, conf):
         try:
             cred_file = open(conf).read().split('\n')
+
             for line in cred_file:
                 line = line.strip()
+
                 if line.startswith('user'):
                     self.user = line.split(':')[1]
                 elif line.startswith('password'):
@@ -66,6 +69,7 @@ class ZoomEyeAPI:
                 url='https://api.zoomeye.org/user/login',
                 data=data_encoded)
             r_decoded = json.loads(r_post.text)
+
             return r_decoded['access_token']
         except KeyError:
             return ""
@@ -77,10 +81,12 @@ def save_str_to_file(target_file, string):
     '''
     save str to file
     '''
+
     if not os.path.exists(target_file):
         os.system('touch {}'.format(target_file))
     # check if we are writing duplicate lines to the file
     f_hand = open(target_file)
+
     for line in f_hand:
         if line.strip() == string:
             return
@@ -95,8 +101,10 @@ def progress(target_file):
     display progress
     '''
     l_count = 0
+
     if not os.path.exists(target_file):
         os.system('touch {}'.format(target_file))
+
     while True:
         l_count = sum(1 for line in open(target_file))
         sys.stdout.write(
@@ -110,6 +118,7 @@ def crawler(qery, page, headers):
     '''
     fetch result from zoomeye
     '''
+
     if ZoomEyeAPI.SEARCH_TYPE == 'h':
         url = 'https://api.zoomeye.org/host/search?query=' + \
             qery + \
@@ -128,23 +137,30 @@ def crawler(qery, page, headers):
     r_decoded = json.loads(r_get.text)
 
     # returns error message
-    err = ""
-    if 'error' in r_get.text:
-        try:
-            err = r_decoded['message']
-        except KeyError:
-            pass
-        return err
+    if r_get.status_code != 200:
+        err = ""
+        if 'error' in r_get.text:
+            try:
+                err = r_decoded['message']
+            except KeyError:
+                err = r_decoded['err']
+
+            if err != "":
+                return err
+            return "non-200 return code from ZoomEye API"
 
     for item in r_decoded['matches']:
         if ZoomEyeAPI.SEARCH_TYPE == 'h':
+            ip = item['ip']
+            port = item['portinfo']['port']
             save_str_to_file(
                 ZoomEyeAPI.OUTFILE,
-                item['ip'] + ":" + item['port'])
-            return ""
-        # web service search, saves url instead
-        save_str_to_file(ZoomEyeAPI.OUTFILE, item['webapp'][0]['url'])
-        return ""
+                ip + ":" + port)
+        else:
+            # web service search, saves url instead
+            save_str_to_file(ZoomEyeAPI.OUTFILE, item['webapp'][0]['url'])
+
+    return ""
 
 
 def login_and_crawl():
@@ -166,19 +182,22 @@ def login_and_crawl():
         }
     except TypeError:
         console.print_error('[-] Invalid access token')
+
         return
 
     # test if we have permission to zoomeye api
     test_crawl = crawler(ZoomEyeAPI.QRY, 1, headers)
+
     if test_crawl is not None and test_crawl != '':
         console.print_error(test_crawl)
+
         return
 
-    from multiprocessing import Process
     status = Process(target=progress, args=(ZoomEyeAPI.OUTFILE,))
     status.start()
 
     limit = 0
+
     for page in range(1, int(amnt)):
         thd = threading.Thread(
             target=crawler, args=(ZoomEyeAPI.QRY, page, headers,))
@@ -187,14 +206,16 @@ def login_and_crawl():
         for job in threads:
             job.setDaemon(True)
             job.start()
+
             if limit in (0, 10):
                 limit = 0
                 job.join()
             limit += 1
     except (EOFError, KeyboardInterrupt, SystemExit):
         status.terminate()
+
         return
-    else:
+    except BaseException:
         pass
 
     # stop progress monitoring when we are done
@@ -225,6 +246,7 @@ def run():
         )
         # remove special characters that may cause naming problem
         outfile_name = ZoomEyeAPI.QRY
+
         for special_ch in ['"', "'", ':', '!', '\\', '/']:
             if special_ch in outfile_name:
                 outfile_name = outfile_name.replace(special_ch, ' ')
@@ -233,5 +255,5 @@ def run():
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
         print('\n[*] Exiting...')
-    else:
+    except BaseException:
         console.debug_except()
