@@ -150,23 +150,23 @@ def crawler(qery, page, headers):
             return "Non-200 return code from ZoomEye API"
 
     for item in r_decoded['matches']:
-        if ZoomEyeAPI.SEARCH_TYPE == 'h':
-            try:
+        try:
+            if ZoomEyeAPI.SEARCH_TYPE == 'h':
                 ip = item['ip']
                 port = str(item['portinfo']['port'])
 
                 save_str_to_file(
                     ZoomEyeAPI.OUTFILE,
                     ip + ":" + port)
-            except KeyError:
-                console.print_error("Looks like ZoomEye API has changed")
-                console.debug_except()
-            except BaseException:
-                console.print_error("Unknown error:")
-                console.debug_except()
-        else:
-            # web service search, saves url instead
-            save_str_to_file(ZoomEyeAPI.OUTFILE, item['webapp'][0]['url'])
+            else:
+                # web service search, saves url instead
+                save_str_to_file(ZoomEyeAPI.OUTFILE, item['webapp'][0]['url'])
+        except KeyError:
+            console.print_error("Looks like ZoomEye API has changed")
+            console.debug_except()
+        except BaseException:
+            console.print_error("Unknown error:")
+            console.debug_except()
 
     return ""
 
