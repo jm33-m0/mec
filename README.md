@@ -7,7 +7,8 @@ a collection of hacking tools with a cli ui
 
 ## screenshot
 
-![](/screenshot/main.png)
+![attack](/screenshot/main.jpg)
+![zoomeye](/screenshot/zoomeye.jpg)
 
 
 ## disclaimer
