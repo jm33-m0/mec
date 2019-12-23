@@ -36,7 +36,7 @@ git clone --depth=1 https://github.com/jm33-m0/massExpConsole.git && cd massExpC
 
 - mec is installed under `~/.mec`
 - [register an account](https://www.zoomeye.org) for zoomeye
-- type `proxy` command to run a pre-configured [Shadowsocks](https://github.com/shadowsocks/shadowsocks-go) socks5 proxy in the background, `vim ~/.mec/data/ss.json` to edit proxy config. and, `ss-proxy` exits with `mec.py`
+- type `proxy` command to run a pre-configured [Shadowsocks](https://github.com/shadowsocks/go-shadowsocks2) socks5 proxy in the background (socks5 on port 1099), `vim ~/.mec/data/ss.json` to edit proxy config. and, `ss-proxy` exits with `mec.py`
 
 
 ## requirements
