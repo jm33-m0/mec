@@ -67,7 +67,11 @@ socks5  127.0.0.1 {self.local_port}
         '''
         check connectivity
         '''
-        resp = requests.get('http://google.com',
-                            proxies=dict(http=f'socks5://127.0.0.1:{self.local_port}',
-                                         https=f'socks5://127.0.0.1:{self.local_port}'))
-        return resp.status_code == 200
+        try:
+            requests.get('http://google.com',
+                         proxies=dict(http=f'socks5://127.0.0.1:{self.local_port}',
+                                      https=f'socks5://127.0.0.1:{self.local_port}'))
+        except BaseException:
+            return False
+
+        return True

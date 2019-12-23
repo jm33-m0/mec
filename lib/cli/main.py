@@ -170,13 +170,14 @@ PROXY
 
     elif cmd == 'proxy':
         SESSION.shadowsocks.start_ss_proxy()
-        if not SESSION.shadowsocks.is_usable:
-            console.print_warning("[-] Shadowsocks might not work")
 
         # write proxy.conf
         proxyconf = open(SESSION.proxy_conf, "w+")
         proxyconf.write(SESSION.proxychains_conf)
         proxyconf.close()
+
+        # set proxy_status
+        SESSION.proxy_status = "DISCONNECTED"
 
     elif cmd == 'redis':
         console.print_error('[-] Under development')
