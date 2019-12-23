@@ -1,6 +1,7 @@
 distro
 readline
 requests
+pysocks
 psutil
 tqdm
 bs4
