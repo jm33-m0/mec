@@ -42,7 +42,7 @@ class ShadowsocksProxy:
                  '-c',
                  self.ss_url,
                  '-socks',
-                 '1099',
+                 ':1099',
                  '-u'],
                 stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=False)
         except BaseException as err:
