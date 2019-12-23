@@ -35,13 +35,18 @@ class SessionParameters():
         self.out_dir = self.init_dir + '/output'
         self.proxy_conf = self.init_dir + \
             '/data/proxy.conf'
+        proxy_bin = self.init_dir + \
+            '/tools/ss-proxy'
+        ss_config = self.init_dir + \
+            '/data/ss.json'
+
         self.use_proxy = True
         self.ip_list = self.init_dir + \
             '/data/ip_list.txt'
-        self.proxy_bin = self.init_dir + \
-            '/tools/ss-proxy'
-        self.ss_config = self.init_dir + \
-            '/data/ss.json'
+        self.shadowsocks = proxy.ShadowsocksProxy(
+            proxy_bin, ss_config)
+        self.proxychains_conf = self.shadowsocks.proxychains_conf
+        self.proxy_status = "OFF"
         self.logfile = self.init_dir + \
             '/output/' + \
             time.strftime("%Y_%m_%d_%H_%M_%S.log")
@@ -111,17 +116,25 @@ def execute(cmd):
         except KeyboardInterrupt:
             console.print_warning("[-] masscan exited")
     elif cmd == 'info':
+        if SESSION.shadowsocks.is_usable():
+            SESSION.proxy_status = "OK"
         colors.colored_print(
-            '[*] Current directory: {}\
-            \n[*] Init directory: {}\
-            \n[*] Log file: {}\
-            \n[*] Target: {}\
-            \n[*] Proxy config: {}'.format(
-                os.getcwd(),
-                SESSION.init_dir,
-                SESSION.logfile,
-                SESSION.ip_list,
-                SESSION.proxy_conf),
+            f'''
+SESSION
+-------
+
+[*] Current directory: {os.getcwd()}
+[*] Root directory: {SESSION.init_dir}
+[*] Log file: {SESSION.logfile}
+[*] Target: {SESSION.ip_list}
+
+PROXY
+-----
+
+[*] Shadowsocks config: {SESSION.shadowsocks.ss_url}
+[*] Shadowsocks local port: {SESSION.shadowsocks.local_port}
+[*] Shadowsocks connectivity: {SESSION.proxy_status}
+''',
             colors.CYAN)
 
     elif cmd.startswith('target'):
@@ -156,13 +169,14 @@ def execute(cmd):
             return
 
     elif cmd == 'proxy':
-        if not os.path.exists(SESSION.ss_config):
-            console.print_error(
-                '[-] Please make sure {} exists'.format(SESSION.ss_config))
+        SESSION.shadowsocks.start_ss_proxy()
+        if not SESSION.shadowsocks.is_usable:
+            console.print_warning("[-] Shadowsocks might not work")
 
-        shadowsocks = proxy.ShadowsocksProxy(
-            SESSION.proxy_bin, SESSION.ss_config)
-        shadowsocks.start_ss_proxy()
+        # write proxy.conf
+        proxyconf = open(SESSION.proxy_conf, "w+")
+        proxyconf.write(SESSION.proxychains_conf)
+        proxyconf.close()
 
     elif cmd == 'redis':
         console.print_error('[-] Under development')
