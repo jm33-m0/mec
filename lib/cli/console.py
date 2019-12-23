@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+# pylint: disable=broad-except
+
 """
 Handles console related stuff
 """
@@ -10,8 +12,6 @@ import readline
 import sys
 import traceback
 from ipaddress import ip_address
-
-import psutil
 
 from . import colors
 
@@ -173,17 +173,6 @@ class ScannerArgs():
         self.jobs = jobs
 
 
-# kill process by name
-def check_kill_process(pstring):
-    '''
-    cross-platform way of killing process by name
-    '''
-
-    for proc in psutil.process_iter():
-        if pstring in str(proc.cmdline):
-            proc.kill()
-
-
 def debug_except():
     '''
     display traceback info
@@ -233,3 +222,32 @@ def input_check(prompt, allow_blank=True, check_type=None, ip_check=False, choic
         except BaseException:
             print_error("[-] Invalid input")
             continue
+
+
+def yes_no(quest):
+    '''
+    ask a yes_no question
+    '''
+
+    res = str(input(quest + " (Yes/no) ")).lower()
+    if res in ("yes", "y"):
+        return True
+    return False
+
+
+def tail(filepath):
+    '''
+    tail -f to peek the stdout of your exploit
+    '''
+    last_lines = ""
+
+    try:
+        filed = open(filepath)
+        last_lines = ''.join(filed.readlines()[-20:])
+        filed.close()
+    except IndexError:
+        pass
+    except BaseException:
+        debug_except()
+
+    return last_lines

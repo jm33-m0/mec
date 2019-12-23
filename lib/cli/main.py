@@ -7,20 +7,18 @@ by jm33-ng
 '''
 
 import os
-import subprocess
-import time
-import sys
 import shutil
+import subprocess
+import sys
+import time
 from multiprocessing import Process
 
 import psutil
 import tqdm
-import lib.tools.exploits as exploit_exec
-from lib.cli import colors, console
-from lib.cli.colors import colored_print
-from lib.tools import zoomeye, baidu, censys, scan
-from lib.cli.console import debug_except, input_check, check_kill_process
 
+import lib.tools.exploits as exploit_exec
+from lib.cli import colors, console, futil, proxy
+from lib.tools import baidu, censys, scan, zoomeye
 
 # mec root directory
 MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
@@ -53,35 +51,6 @@ class SessionParameters():
 SESSION = SessionParameters()
 
 
-def yes_no(quest):
-    '''
-    ask a yes_no question
-    '''
-
-    res = str(input(quest + " (Yes/no) ")).lower()
-    if res in ("yes", "y"):
-        return True
-    return False
-
-
-def tail(filepath):
-    '''
-    tail -f to peek the stdout of your exploit
-    '''
-    last_lines = ""
-
-    try:
-        filed = open(filepath)
-        last_lines = ''.join(filed.readlines()[-20:])
-        filed.close()
-    except IndexError:
-        pass
-    except BaseException:
-        debug_except()
-
-    return last_lines
-
-
 def list_exp():
     '''
     list all executables under the root of your exploit dir
@@ -90,20 +59,27 @@ def list_exp():
         '''
         check if executable
         '''
+
         return os.path.isfile(path) and os.access(path, os.X_OK)
 
     pocs = []  # save poc in a list
+
     for root, _, files in os.walk('exploits'):
         paths = []
+
         for filename in files:
             path = './' + root + '/' + filename
             paths.append(path)
+
         for pathname in paths:
             poc = '/'.join(pathname.split('/')[2:])
+
             if len(pathname.split('/')) > 4:
                 continue
+
             if is_executable(pathname):
                 pocs.append(poc)
+
     return pocs
 
 
@@ -117,11 +93,14 @@ def execute(cmd):
 
     if cmd == '':
         return
+
     if cmd == "masscan":
         # check root, as masscan requires root privilege
+
         if os.geteuid() != 0:
             console.print_error(
                 "[-] Please run mec as root in order to run masscan")
+
             return
 
         ports = console.input_check(
@@ -132,7 +111,7 @@ def execute(cmd):
         except KeyboardInterrupt:
             console.print_warning("[-] masscan exited")
     elif cmd == 'info':
-        colored_print(
+        colors.colored_print(
             '[*] Current directory: {}\
             \n[*] Init directory: {}\
             \n[*] Log file: {}\
@@ -147,15 +126,18 @@ def execute(cmd):
 
     elif cmd.startswith('target'):
         target = ''.join(cmd.split()[1:])
+
         if target not in os.listdir(SESSION.init_dir + '/data'):
             console.print_error("[-] Target file not found")
+
             return
-        colored_print('[i] Target changed to {}'.format(target), colors.BLUE)
+        colors.colored_print(
+            '[i] Target changed to {}'.format(target), colors.BLUE)
         SESSION.ip_list = SESSION.init_dir + \
             '/data/' + target
 
     elif cmd in ('init', 'i'):
-        colored_print('[*] Going back to init_dir...', colors.BLUE)
+        colors.colored_print('[*] Going back to init_dir...', colors.BLUE)
         os.chdir(SESSION.init_dir)
 
     elif cmd.startswith('baidu'):
@@ -164,10 +146,10 @@ def execute(cmd):
             dork = command[1]
             count = int(command[2])
             os.chdir(SESSION.out_dir)
-            colored_print('[*] Searching on Baidu...', colors.PURPLE)
+            colors.colored_print('[*] Searching on Baidu...', colors.PURPLE)
             baidu.spider(dork, count)
 
-            if yes_no("Use collected URL's as target?"):
+            if console.yes_no("Use collected URL's as target?"):
                 SESSION.ip_list = SESSION.init_dir + "result.txt"
 
         except (IndexError, EOFError, KeyboardInterrupt, SystemExit):
@@ -177,16 +159,10 @@ def execute(cmd):
         if not os.path.exists(SESSION.ss_config):
             console.print_error(
                 '[-] Please make sure {} exists'.format(SESSION.ss_config))
-        try:
-            subprocess.Popen(
-                [SESSION.proxy_bin,
-                 '-c',
-                 SESSION.ss_config],
-                stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=False)
-        except BaseException as err:
-            console.print_error(
-                '[-] Error starting Shadowsocks proxy: ' + str(err))
-            debug_except()
+
+        shadowsocks = proxy.ShadowsocksProxy(
+            SESSION.proxy_bin, SESSION.ss_config)
+        shadowsocks.start_ss_proxy()
 
     elif cmd == 'redis':
         console.print_error('[-] Under development')
@@ -202,19 +178,20 @@ def execute(cmd):
                              '--port=4444'])
         except BaseException as err:
             console.print_error(str(err))
-            debug_except()
+            console.debug_except()
 
     elif cmd in ('q', 'quit'):
-        check_kill_process('ss-proxy')
+        futil.check_kill_process('ss-proxy')
         sys.exit(0)
 
     elif cmd in ('h', 'help', '?'):
         print(console.HELP_INFO)
 
     elif cmd == 'exploits':
-        colored_print('[+] Available exploits: ', colors.CYAN)
+        colors.colored_print('[+] Available exploits: ', colors.CYAN)
+
         for poc in list_exp():
-            colored_print(poc, colors.BLUE)
+            colors.colored_print(poc, colors.BLUE)
 
     elif cmd in ('z', "zoomeye"):
         try:
@@ -224,13 +201,14 @@ def execute(cmd):
         except (EOFError, KeyboardInterrupt, SystemExit):
             pass
         except BaseException:
-            debug_except()
+            console.debug_except()
     elif cmd == "censys":
         try:
             output = censys.start()
-            if yes_no("Use collected URL's as target?"):
+
+            if console.yes_no("Use collected URL's as target?"):
                 SESSION.ip_list = SESSION.init_dir + "/" + output
-                colored_print(
+                colors.colored_print(
                     '[i] Target changed to {}'.format(
                         SESSION.ip_list), colors.BLUE)
 
@@ -263,20 +241,23 @@ def attack():
     '''
     handles attack command
     '''
-    SESSION.use_proxy = input_check(
+    SESSION.use_proxy = console.input_check(
         '[?] Do you wish to use proxychains? [y/n] ',
         choices=['y', 'n']) == 'y'
+
     if SESSION.use_proxy:
         if shutil.which("proxychains4") is None:
             console.print_error("proxychains4 not found")
+
             return
         execute("proxy")
-    answ = input_check(
+    answ = console.input_check(
         '\n[?] Do you wish to use\
         \n\n    [a] built-in exploits\
         \n    [m] or launch your own manually?\
         \n\n[=] Your choice: ',
         choices=['a', 'm'])
+
     if answ == 'a':
         print(
             colors.CYAN +
@@ -285,7 +266,7 @@ def attack():
             colors.END +
             '\n')
         print(console.BUILT_IN)
-        answ = input_check(
+        answ = console.input_check(
             '[=] Your choice: ',
             check_type=int,
             choices=['0',
@@ -316,32 +297,33 @@ def attack():
             colors.BOLD +
             "\nWelcome, in here you can choose your own exploit\n" +
             colors.END)
-        colored_print('[*] Here are available exploits:\n', colors.CYAN)
+        colors.colored_print('[*] Here are available exploits:\n', colors.CYAN)
 
         for poc in list_exp():
-            colored_print(poc + colors.END, colors.BLUE)
+            colors.colored_print(poc + colors.END, colors.BLUE)
 
-        exploit = input_check(
+        exploit = console.input_check(
             "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ",
             choices=list_exp())
 
         jobs = int(
-            input_check("[?] How many processes each time? ", check_type=int))
+            console.input_check("[?] How many processes each time? ", check_type=int))
 
         custom_args = []
-        answ = input_check(
+        answ = console.input_check(
             "[?] Do you need a reverse shell [y/n]? ", choices=['y', 'n'])
+
         if answ == 'y':
-            lhost = input_check(
+            lhost = console.input_check(
                 "[*] Where do you want me to send shells? ", allow_blank=False, ip_check=True)
-            lport = input_check(
+            lport = console.input_check(
                 "[*] and at what port?",
                 check_type=int)
             custom_args = ['-l', lhost, '-p', lport]
         else:
             pass
 
-        custom_args += input_check(
+        custom_args += console.input_check(
             "[*] args for this exploit: ").strip().split()
 
         # parse user's exploit name
@@ -401,19 +383,21 @@ def scanner(scanner_args):
         target_list = open(SESSION.ip_list)
     except BaseException as exc:
         console.print_error('[-] Error occured: {}\n'.format(exc))
-        debug_except()
+        console.debug_except()
+
         return
 
     try:
         os.chdir('./exploits/' + work_path)
     except FileNotFoundError:
         console.print_error("[-] Can't chdir to " + work_path)
-        debug_except()
+        console.debug_except()
     console.print_warning(
         '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
 
     # you might want to cancel the scan to correct some errors
-    if input_check('[?] Proceed? [y/n] ', choices=['y', 'n']) == 'n':
+
+    if console.input_check('[?] Proceed? [y/n] ', choices=['y', 'n']) == 'n':
         return
 
     # save stdout to logfile
@@ -456,11 +440,12 @@ def scanner(scanner_args):
             e_args.remove(target_ip)
 
             # process pool
+
             if count == jobs:
                 for item in procs:
                     if psutil.pid_exists(item.pid):
                         timer_proc = Process(
-                            target=proc_timer, args=(item, ))
+                            target=futil.proc_timer, args=(item, ))
                         timer_proc.start()
                     else:
                         pids.remove(item.pid)
@@ -469,12 +454,13 @@ def scanner(scanner_args):
 
         except (EOFError, KeyboardInterrupt, SystemExit):
             # killall running processes
-            check_kill_process(exec_path)
+            futil.check_kill_process(exec_path)
 
             logfile.close()
             pbar.close()
             console.print_error("[-] Task aborted")
             os.chdir(SESSION.init_dir)
+
             return
 
         except BaseException as exc:
@@ -492,26 +478,16 @@ def scanner(scanner_args):
                 pass
 
     # make sure all processes are done
+
     if pids:
         time.sleep(10)
 
     # kill everything, close logfile, exit progress bar, and print done flag
-    check_kill_process(exec_path)
+    futil.check_kill_process(exec_path)
     logfile.close()
     pbar.close()
     os.chdir(SESSION.init_dir)
     console.print_success('\n[+] All done!\n')
-
-
-def proc_timer(proc):
-    '''
-    kill subprocess on timeout
-    '''
-    try:
-        time.sleep(10)
-        proc.kill()
-    except BaseException:
-        pass
 
 
 def main():
@@ -524,10 +500,11 @@ def main():
             colors.CYAN +
             '[?] Use ip_list.txt as target list? [y/n] ' +
             colors.END)).strip()
+
     if answ.lower() == 'n':
         os.system("ls ~/.mec/data")
         SESSION.ip_list = SESSION.init_dir + '/data/' + \
-            input_check(
+            console.input_check(
                 '[=] Choose your target IP list, eg. ip_list.txt ',
                 choices=os.listdir(MECROOT + '/data'))
 
@@ -550,11 +527,11 @@ def main():
                 answ = input("\n[?] Are you sure to exit? [y/n] ")
             except KeyboardInterrupt:
                 print("\n[-] Okay okay, exiting immediately...")
-                check_kill_process('ss-proxy')
+                futil.check_kill_process('ss-proxy')
                 sys.exit(0)
 
             if answ.lower() == 'y':
-                check_kill_process('ss-proxy')
+                futil.check_kill_process('ss-proxy')
                 sys.exit(0)
             else:
                 continue
@@ -572,10 +549,10 @@ def run():
     except (EOFError, KeyboardInterrupt, SystemExit):
         console.print_error('[-] Exiting...')
     except FileNotFoundError:
-        debug_except()
+        console.debug_except()
         console.print_error("[-] Please run install.py first")
         sys.exit(1)
     except BaseException:
         console.print_error(
             "[-] Seems like you\'ve encountered an unhandled exception")
-        debug_except()
+        console.debug_except()

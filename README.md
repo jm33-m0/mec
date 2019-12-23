@@ -31,10 +31,12 @@ a collection of hacking tools with a cli ui
 ## getting started
 
 ```bash
-git clone --depth=1 https://github.com/jm33-m0/massExpConsole.git && cd massExpConsole && ./install.py
+git clone --depth=1 https://github.com/jm33-m0/massExpConsole.git && cd massExpConsole && python3 ./install.py
 ```
 
-- type `proxy` command to run a pre-configured [Shadowsocks](https://github.com/shadowsocks/shadowsocks-go) socks5 proxy in the background, `vim ./data/ss.json` to edit proxy config. and, `ss-proxy` exits with `mec.py`
+- mec is installed under `~/.mec`
+- [register an account](https://www.zoomeye.org) for zoomeye
+- type `proxy` command to run a pre-configured [Shadowsocks](https://github.com/shadowsocks/shadowsocks-go) socks5 proxy in the background, `vim ~/.mec/data/ss.json` to edit proxy config. and, `ss-proxy` exits with `mec.py`
 
 
 ## requirements
@@ -48,10 +50,10 @@ git clone --depth=1 https://github.com/jm33-m0/massExpConsole.git && cd massExpC
 
 ## usage
 
-- just run `mec`, if it complains about missing modules, install them
+- just run `mec` after having it installed
 - if you want to add your own exploit script (or binary file, whatever):
     - `cd exploits`, `mkdir <your_exploit_dir>`
-    - your exploit should take the last argument passed to it as its target, dig into `mec.py` to know more
+    - your exploit should take the last argument (`sys.argv[-1]`) passed to it as its target, dig into `mec.py` to know more
     - `chmod +x <exploit>` to make sure it can be executed by current user
     - use `attack` command then `m` to select your custom exploit
 - type `help` in the console to see all available features
