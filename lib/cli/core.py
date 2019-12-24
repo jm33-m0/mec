@@ -204,6 +204,7 @@ class Scanner:
             custom_args, jobs = self.custom_args, self.jobs
         except BaseException:
             console.print_error("[-] Invalid config")
+
             return
 
         if self.session.use_proxy:
@@ -249,7 +250,7 @@ class Scanner:
 
         # needed for the loop
         procs = []
-        pool = []  # collects all processes, check if empty when finishing
+        pool = []  # holds all processes, check if empty when finishing
         count = len(procs)
 
         # display help for viewing logs
@@ -295,13 +296,7 @@ class Scanner:
                     procs = []
 
             except (EOFError, KeyboardInterrupt, SystemExit):
-                # killall running processes
-                futil.check_kill_process(exec_path)
-
-                logfile.close()
-                pbar.close()
                 console.print_error("[-] Task aborted")
-                os.chdir(self.session.init_dir)
 
                 break
 
@@ -323,12 +318,13 @@ class Scanner:
 
         if pool:
             for proc in pool:
-                console.print_warning(f"Exiting: killing {proc.pid}")
-                proc.terminate()
-                proc.wait()
+                try:
+                    proc.terminate()
+                    proc.wait()
+                except (EOFError, KeyboardInterrupt, SystemExit):
+                    pass
 
-        # kill everything, close logfile, exit progress bar, and print done flag
-        futil.check_kill_process(exec_path)
+        # close logfile, exit progress bar, and print done flag
         logfile.close()
         pbar.close()
         os.chdir(self.session.init_dir)
