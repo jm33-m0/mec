@@ -32,7 +32,9 @@ a collection of hacking tools with a cli ui
 ## getting started
 
 ```bash
-git clone --depth=1 https://github.com/jm33-m0/massExpConsole.git && cd massExpConsole && python3 ./install.py
+git clone --depth=1 https://github.com/jm33-m0/massExpConsole.git && \
+cd massExpConsole && \
+python3 ./install.py
 ```
 
 - mec is installed under `~/.mec`
@@ -43,8 +45,8 @@ git clone --depth=1 https://github.com/jm33-m0/massExpConsole.git && cd massExpC
 ## requirements
 
 - `install.py` supports Ubuntu, Debian, Kali, Linux Mint, Fedora, CentOS, RHEL, Arch. for CentOS/RHEL, you might need to manually configure python3 environment before installing
-- Python 3.5 or later
-- `proxychains4` (in `$PATH`), used by mec core, requires a working socks5 proxy (you can modify its config in `mec.py`)
+- Python 3.6 or later
+- `proxychains4` (in `$PATH`)
 - Java is required when using Java deserialization exploits
 - **note** that you have to install all the deps of your exploits or tools as well
 
