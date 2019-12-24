@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import time
+import traceback
 from multiprocessing import Process
 
 import psutil
@@ -307,10 +308,14 @@ class Scanner:
 
             finally:
                 # check if any procs are done, remove them from pool, update progress bar
-                for proc in pool:
-                    if not psutil.pid_exists(proc.pid):
-                        proc.remove(proc)
-                        pbar.update(1)
+                try:
+                    for proc in pool:
+                        if proc.poll() is not None:
+                            pool.remove(proc)
+                            pbar.update(1)
+                except BaseException:
+                    logfile.write("[-] Exception: " +
+                                  traceback.format_exc() + "\n")
 
         # make sure all processes are done
 
