@@ -12,6 +12,15 @@ from importlib import util
 
 from lib.cli import colors
 
+
+def mod_exists(modulename):
+    '''
+    check if a module exists without importing it
+    '''
+    mod_spec = util.find_spec(modulename)
+    return mod_spec is not None
+
+
 # distro check and initial packages
 DIST = "debian"
 try:
@@ -74,14 +83,6 @@ try:
 except ModuleNotFoundError:
     os.system("python3 -m pip install json --user")
     import json
-
-
-def mod_exists(modulename):
-    '''
-    check if a module exists without importing it
-    '''
-    mod_spec = util.find_spec(modulename)
-    return mod_spec is not None
 
 
 def pip_install(venv_py, pkg):
