@@ -34,7 +34,7 @@ a collection of hacking tools with a cli ui
 ```bash
 git clone --depth=1 https://github.com/jm33-m0/massExpConsole.git && \
 cd massExpConsole && \
-python3 ./install.py
+sudo python3 ./install.py
 ```
 
 - mec is installed under `~/.mec`
