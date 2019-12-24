@@ -307,13 +307,10 @@ class Scanner:
 
             finally:
                 # check if any procs are done, remove them from pool, update progress bar
-                try:
-                    for proc in pool:
-                        if not psutil.pid_exists(proc.pid):
-                            proc.remove(proc)
-                            pbar.update(1)
-                except BaseException:
-                    pass
+                for proc in pool:
+                    if not psutil.pid_exists(proc.pid):
+                        proc.remove(proc)
+                        pbar.update(1)
 
         # make sure all processes are done
 
