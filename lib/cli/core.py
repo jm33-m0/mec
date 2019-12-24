@@ -330,4 +330,6 @@ class Scanner:
         pbar.close()
         os.chdir(self.session.init_dir)
         console.print_success('\n[+] All done!\n')
+
+        # this fixes #37, because when parent gets killed, all zombie children die
         sys.exit()
