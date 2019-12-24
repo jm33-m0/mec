@@ -9,6 +9,7 @@ by jm33-ng
 import os
 import shutil
 import subprocess
+import sys
 import time
 from multiprocessing import Process
 
@@ -329,3 +330,4 @@ class Scanner:
         pbar.close()
         os.chdir(self.session.init_dir)
         console.print_success('\n[+] All done!\n')
+        sys.exit()
