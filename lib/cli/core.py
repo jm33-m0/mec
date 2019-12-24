@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# pylint: disable=too-many-instance-attributes,too-many-statements,too-many-branches,too-many-locals,too-many-nested-blocks,broad-except
+# pylint: disable=too-many-instance-attributes,too-many-statements,too-many-branches,too-many-locals,too-many-nested-blocks,broad-except,too-few-public-methods,too-many-arguments
 
 '''
 mass exploit console
@@ -94,27 +94,15 @@ class Session:
                 '\n[?] Choose a module from: ' +
                 colors.END +
                 '\n')
-            print(console.BUILT_IN)
-            answ = console.input_check(
-                '[=] Your choice: ',
-                check_type=int,
-                choices=['0',
-                         '1',
-                         '2',
-                         '3',
-                         '4'])
+            colors.colored_print(futil.BUILT_IN, colors.GREEN)
+            module = console.input_check(
+                "[?] Choose your exploit module: ",
+                choices=futil.BUILT_IN.split('\n'),
+                allow_blank=False)
 
             try:
-                if answ == '0':
-                    self.scanner(exploit_exec.ssh_bruteforcer())
-                elif answ == '1':
-                    self.scanner(exploit_exec.weblogic())
-                elif answ == '2':
-                    console.print_error("[-] Not available")
-                elif answ == '3':
-                    console.print_error("[-] Not available")
-                elif answ == '4':
-                    self.scanner(exploit_exec.s2_045())
+                scanner_instance = exploit_exec.EXPLOIT_DICT.get(module)(self)
+                scanner_instance.scan()
 
             except (EOFError, KeyboardInterrupt, SystemExit):
                 return
@@ -172,32 +160,57 @@ class Session:
                 ' '.join(custom_args))
 
             # args as parameter for scanner
-            scanner_args = console.ScannerArgs(work_path, exec_path,
-                                               custom_args,
-                                               jobs)
+            scanner_instance = Scanner(work_path, exec_path,
+                                       custom_args,
+                                       jobs, self)
             # start scanner
-            self.scanner(scanner_args)
+            scanner_instance.scan()
 
         else:
             console.print_error('[-] Invalid input')
 
-    def scanner(self, scanner_args):
+
+class Scanner:
+
+    '''
+    scanner_args = (
+        work_path,
+        exec_path,
+        custom_args,
+        jobs,
+        session)
+    '''
+
+    def __init__(self,
+                 work_path,
+                 exec_path,
+                 custom_args,
+                 jobs,
+                 session):
+
+        self.work_path = work_path
+        self.exec_path = exec_path
+        self.custom_args = custom_args
+        self.jobs = jobs
+        self.session = session
+
+    def scan(self):
         '''
         Execute exploit against given ip list
         '''
 
         try:
-            work_path, exec_path = scanner_args.work_path, scanner_args.exec_path
-            custom_args, jobs = scanner_args.custom_args, scanner_args.jobs
+            work_path, exec_path = self.work_path, self.exec_path
+            custom_args, jobs = self.custom_args, self.jobs
         except BaseException:
+            console.print_error("[-] Invalid config")
             return
 
-        if self.use_proxy:
+        if self.session.use_proxy:
             e_args = [
                 'proxychains4',
-                '-q',
                 '-f',
-                self.proxy_conf,
+                self.session.proxy_conf,
                 './' + exec_path]
         else:
             e_args = ['./' + exec_path]
@@ -208,7 +221,7 @@ class Session:
         e_args += ['-t']
 
         try:
-            target_list = open(self.ip_list)
+            target_list = open(self.session.ip_list)
         except BaseException as exc:
             console.print_error('[-] Error occured: {}\n'.format(exc))
             console.debug_except()
@@ -230,7 +243,7 @@ class Session:
 
         # save stdout to logfile
         try:
-            logfile = open(self.logfile, "a+")
+            logfile = open(self.session.logfile, "a+")
         except FileNotFoundError:
             console.print_error("[-] Log file not found")
 
@@ -241,10 +254,10 @@ class Session:
 
         # display help for viewing logs
         print(colors.CYAN +
-              "[*] Use `tail -f {}` to view logs\n\n".format(self.logfile))
+              "[*] Use `tail -f {}` to view logs\n\n".format(self.session.logfile))
 
         # use progress bar
-        with open(self.ip_list) as iplistf:
+        with open(self.session.ip_list) as iplistf:
             total = len([0 for _ in iplistf])
             iplistf.close()
         pbar = tqdm.tqdm(total=total, ncols=80, desc="[*] Processing targets")
@@ -288,7 +301,7 @@ class Session:
                 logfile.close()
                 pbar.close()
                 console.print_error("[-] Task aborted")
-                os.chdir(self.init_dir)
+                os.chdir(self.session.init_dir)
 
                 return
 
@@ -315,5 +328,5 @@ class Session:
         futil.check_kill_process(exec_path)
         logfile.close()
         pbar.close()
-        os.chdir(self.init_dir)
+        os.chdir(self.session.init_dir)
         console.print_success('\n[+] All done!\n')

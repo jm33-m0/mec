@@ -55,15 +55,6 @@ Core Commands
     masscan                       masscan port scanning
     (others)                      Treated as shell command''' + colors.END
 
-BUILT_IN = colors.GREEN + '''
- [0] SSH bruteforcer
- [1] Weblogic Java deserialization exploit (get reverse shell)
- [2] Joomla RCE (reverse shell)
- [3] Redis unauth root (write crontab or authorized_keys)
- [4] Struts2 S2-045 exploit (command exec)
- [5] Witbe RCE exploit (get reverse shell)
-''' + colors.END
-
 
 COMMANDS = [
     'attack',
@@ -86,6 +77,7 @@ COMMANDS = [
     'quit']
 
 HISTFILE = os.path.join(os.path.expanduser("~"), ".python_history")
+
 if not os.path.exists(HISTFILE):
     os.system('touch {}'.format(HISTFILE))
 with open(HISTFILE) as f:
@@ -121,6 +113,7 @@ def print_success(msg):
 # List ./data
 try:
     DATAPATH = os.path.join(os.path.expanduser("~"), ".mec/data")
+
     for item in os.listdir(DATAPATH):
         COMMANDS.append(item)
 except FileNotFoundError:
@@ -133,6 +126,7 @@ def completer(text, state):
     completer for readline, used in console
     '''
     options = [i for i in COMMANDS if i.startswith(text)]
+
     if state < len(options):
         return options[state]
 
@@ -152,36 +146,17 @@ except FileNotFoundError:
 atexit.register(readline.write_history_file, HISTFILE)
 
 
-# pylint: disable=too-few-public-methods
-class ScannerArgs():
-
-    '''
-
-    for scanner_args
-
-        scanner_args = (
-            work_path,
-            exec_path,
-            custom_args,
-            jobs)
-    '''
-
-    def __init__(self, work_path, exec_path, custom_args, jobs):
-        self.work_path = work_path
-        self.exec_path = exec_path
-        self.custom_args = custom_args
-        self.jobs = jobs
-
-
 def debug_except():
     '''
     display traceback info
     '''
     tcbk = traceback.format_exc()
+
     if 'NoneType' in tcbk:
         return
     answ = input_check("[?] Display traceback? [y/n] ",
                        choices=['y', 'n'])
+
     if answ == 'y':
         print_error(tcbk)
 
@@ -192,6 +167,7 @@ def input_check(prompt, allow_blank=True, check_type=None, ip_check=False, choic
     '''
     checks user input
     '''
+
     while True:
         user_input = str(
             input(
@@ -201,26 +177,34 @@ def input_check(prompt, allow_blank=True, check_type=None, ip_check=False, choic
         try:
             if allow_blank is False and user_input == '':
                 continue
+
             if choices is not None:
                 if user_input not in choices:
                     print_error("[-] Invalid input")
+
                     continue
+
                 if check_type is None:
                     return user_input
+
                 return str(check_type(user_input))
+
             if check_type is not None and choices is None:
                 return str(check_type(user_input))
+
             if ip_check is True:
                 try:
                     ip_address(user_input)
                 except ValueError:
                     print_error("[-] Not an IP address")
+
                     continue
 
             return user_input
         # pylint: disable=broad-except
         except BaseException:
             print_error("[-] Invalid input")
+
             continue
 
 
@@ -230,8 +214,10 @@ def yes_no(quest):
     '''
 
     res = str(input(quest + " (Yes/no) ")).lower()
+
     if res in ("yes", "y"):
         return True
+
     return False
 
 
