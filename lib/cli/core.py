@@ -249,7 +249,7 @@ class Scanner:
 
         # needed for the loop
         procs = []
-        pids = []  # collects all pids, check if empty when finishing
+        pool = []  # collects all processes, check if empty when finishing
         count = len(procs)
 
         # display help for viewing logs
@@ -274,7 +274,7 @@ class Scanner:
 
                 proc = subprocess.Popen(e_args, stdout=logfile, stderr=logfile)
                 procs.append(proc)
-                pids.append(proc.pid)
+                pool.append(proc)
                 pbar.set_description(
                     desc="[*] Processing {}".format(target_ip))
 
@@ -290,7 +290,7 @@ class Scanner:
                                 target=futil.proc_timer, args=(item, ))
                             timer_proc.start()
                         else:
-                            pids.remove(item.pid)
+                            pool.remove(item)
 
                     procs = []
 
@@ -303,26 +303,29 @@ class Scanner:
                 console.print_error("[-] Task aborted")
                 os.chdir(self.session.init_dir)
 
-                return
+                break
 
             except BaseException as exc:
                 console.print_error("[-] Exception: {}\n".format(str(exc)))
                 logfile.write("[-] Exception: " + str(exc) + "\n")
 
             finally:
-                # check if any pids are done
+                # check if any procs are done, remove them from pool, update progress bar
                 try:
-                    for pid in pids:
-                        if not psutil.pid_exists(pid):
-                            pids.remove(pid)
+                    for proc in pool:
+                        if not psutil.pid_exists(proc.pid):
+                            proc.remove(proc)
                             pbar.update(1)
                 except BaseException:
                     pass
 
         # make sure all processes are done
 
-        if pids:
-            time.sleep(10)
+        if pool:
+            for proc in pool:
+                console.print_warning(f"Exiting: killing {proc.pid}")
+                proc.terminate()
+                proc.wait()
 
         # kill everything, close logfile, exit progress bar, and print done flag
         futil.check_kill_process(exec_path)
