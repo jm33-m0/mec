@@ -219,11 +219,14 @@ def run_exploits(**kwargs):
     """
     List all usable exploits
     """
-
     colors.colored_print('[+] Available exploits: ', colors.CYAN)
 
-    for poc in futil.list_exp():
+    exp_list = futil.list_exp()
+    for poc in exp_list:
         colors.colored_print(poc, colors.BLUE)
+
+    # pass this list to readline completer
+    return exp_list
 
 
 def run_help(**kwargs):

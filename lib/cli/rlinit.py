@@ -9,7 +9,7 @@ import os
 import readline
 import sys
 
-from lib.cli.cmd import cmds_init
+from lib.cli.cmd import cmds_init, run_exploits
 
 from . import colors
 
@@ -39,6 +39,8 @@ def readline_init(session):
     # add other keywords
     command_list += ["tomcat", "jboss", "jenkins", "weblogic", "/tmp/", "attack",
                      "reset", "clear", "quit", "redis", "ssh_bruteforcer", "witbe"]
+    # add from list_exp
+    command_list += run_exploits()
 
     if not os.path.exists(HISTFILE):
         os.system('touch {}'.format(HISTFILE))
