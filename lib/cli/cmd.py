@@ -221,7 +221,7 @@ def run_exploits(**kwargs):
     """
     do_print = kwargs.get("do_print", True)
     exp_list = futil.list_exp()
-    if do_print:
+    if not do_print:
         # pass this list to readline completer
         return exp_list
 
