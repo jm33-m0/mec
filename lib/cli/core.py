@@ -108,6 +108,8 @@ class Session:
 
             try:
                 scanner_instance = exploit_exec.EXPLOIT_DICT.get(module)(self)
+                if scanner_instance is None:
+                    return
                 scanner_instance.scan()
 
             except (EOFError, KeyboardInterrupt, SystemExit):
