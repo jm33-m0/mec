@@ -344,6 +344,8 @@ def cmds_init(session):
                        helper=run_help)
     COMMANDS.update({"help": help_cmd})
 
+    return COMMANDS
+
 
 def cmd_handler(session, user_cmd):
     '''

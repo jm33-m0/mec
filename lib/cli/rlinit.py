@@ -9,27 +9,40 @@ import os
 import readline
 import sys
 
-from lib.cli.cmd import COMMANDS
+from lib.cli.cmd import cmds_init
 
 from . import colors
 
 
-COMMAND_LIST = list(COMMANDS.keys())
+HISTFILE = os.path.join(os.path.expanduser("~"), ".python_history")
+CMD_LIST = []
 
 
-def readline_init():
+def completer(text, state):
+    '''
+    completer for readline, used in console
+    '''
+    options = [i for i in CMD_LIST if i.startswith(text)]
+
+    if state < len(options):
+        return options[state]
+
+    return None
+
+
+def readline_init(session):
     """
     init readline settings
     """
+    command_list = list(cmds_init(session).keys())
 
-    command_list = COMMAND_LIST
-    command_list += ["webshell", "/tmp/", "inurl:"]
+    # add other keywords
+    command_list += ["tomcat", "jboss", "jenkins", "weblogic", "/tmp/", "attack",
+                     "reset", "clear", "quit", "redis", "ssh_bruteforcer", "witbe"]
 
-    hist_file = os.path.join(os.path.expanduser("~"), ".python_history")
-
-    if not os.path.exists(hist_file):
-        os.system('touch {}'.format(hist_file))
-    with open(hist_file) as histf:
+    if not os.path.exists(HISTFILE):
+        os.system('touch {}'.format(HISTFILE))
+    with open(HISTFILE) as histf:
         for line in histf:
             for item in line.strip().split():
                 command_list.append(item)
@@ -48,22 +61,12 @@ def readline_init():
     readline.set_completer(completer)
 
     try:
-        readline.read_history_file(hist_file)
+        readline.read_history_file(HISTFILE)
         # default history len is -1 (infinite), which may grow unruly
         readline.set_history_length(1000)
     except FileNotFoundError:
         pass
 
-    atexit.register(readline.write_history_file, hist_file)
+    atexit.register(readline.write_history_file, HISTFILE)
 
-
-def completer(text, state):
-    '''
-    completer for readline, used in console
-    '''
-    options = [i for i in COMMAND_LIST if i.startswith(text)]
-
-    if state < len(options):
-        return options[state]
-
-    return None
+    return command_list

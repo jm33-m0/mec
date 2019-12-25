@@ -19,7 +19,7 @@ def main():
     '''
     handles user interface
     '''
-    rlinit.readline_init()
+    rlinit.CMD_LIST = rlinit.readline_init(SESSION)
 
     answ = str(
         input(
