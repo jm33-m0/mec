@@ -40,7 +40,7 @@ def readline_init(session):
     command_list += ["tomcat", "jboss", "jenkins", "weblogic", "/tmp/", "attack",
                      "reset", "clear", "quit", "redis", "ssh_bruteforcer", "witbe"]
     # add from list_exp
-    command_list += run_exploits()
+    command_list += run_exploits(do_print=False)
 
     if not os.path.exists(HISTFILE):
         os.system('touch {}'.format(HISTFILE))
