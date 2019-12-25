@@ -9,8 +9,7 @@ by jm33-ng
 import os
 import sys
 
-
-from lib.cli import core, cmd, colors, console, futil
+from lib.cli import cmd, colors, console, core, futil, rlinit
 
 # Needed for scanner session later
 SESSION = core.Session()
@@ -20,6 +19,7 @@ def main():
     '''
     handles user interface
     '''
+    rlinit.readline_init()
 
     answ = str(
         input(

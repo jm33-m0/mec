@@ -17,8 +17,9 @@ from multiprocessing import Process
 import psutil
 import tqdm
 
-import lib.tools.exploits as exploit_exec
-from lib.cli import cmd, colors, console, futil, proxy
+from lib.cli import cmd, colors, console
+from lib.cli import exploits as exploit_exec
+from lib.cli import futil, proxy
 
 # mec root directory
 MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
@@ -306,7 +307,6 @@ class Scanner:
                 break
 
             except BaseException as exc:
-                console.print_error("[-] Exception: {}\n".format(str(exc)))
                 logfile.write("[-] Exception: " + str(exc) + "\n")
 
             finally:

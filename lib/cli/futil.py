@@ -10,7 +10,7 @@ import os
 import time
 
 import psutil
-from lib.tools.exploits import EXPLOIT_DICT
+from lib.cli.exploits import EXPLOIT_DICT
 
 BUILT_IN = "\n".join(list(
     EXPLOIT_DICT.keys()

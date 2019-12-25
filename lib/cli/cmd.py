@@ -7,7 +7,6 @@ handles user commands
 import os
 import subprocess
 import sys
-import traceback
 
 from lib.cli import colors, console, futil
 from lib.tools import baidu, censys, scan, zoomeye
@@ -231,7 +230,37 @@ def run_help(**kwargs):
     """
     Display this help info
     """
-    print(console.HELP_INFO)
+    help_entries = ['\n', "Command"+' '*20+"Description",
+
+                    '-'*len("Command")+' '*20+'-'*len("Description"),
+                    '\n',
+
+                    "clear (c)"+' '*(27-len('clear (c)')) +
+                    "Clear screen",
+
+                    "reset (x)"+' '*(27-len('reset (x)'))+"Terminal reset",
+
+                    "init (i)"+' '*(27-len('init (i)')) +
+                    "Return to mec root directory",
+
+                    "help (?)"+' '*(27-len('help (?)')) +
+                    "Display this help info",
+
+                    "quit (^C)"+' '*(27-len('quit (^C)'))+"Quit",
+
+                    "attack (e)"+' '*(27-len('attack (e)')) +
+                    "Start a mass-exploit job"]
+
+    for key, val in COMMANDS.items():
+        help_entries.append(key +
+                            ' '*(27-len(key)) +
+                            val.doc)
+
+    help_entries.append("(others)"+' '*(27-len('(others)')) +
+                        "Treated as shell commands")
+    help_info = colors.CYAN + '\n'.join(help_entries) + colors.END
+
+    print(help_info)
 
 
 def cmds_init(session):
@@ -320,6 +349,8 @@ def cmd_handler(session, user_cmd):
     '''
     handles user input in console
     '''
+    if user_cmd == '':
+        return
 
     # parse user_cmd
     try:
@@ -327,11 +358,6 @@ def cmd_handler(session, user_cmd):
         user_cmd = split_cmd[0]
         args = split_cmd[1:]
     except IndexError:
-        console.print_error(
-            f"[-] Failed to parse your command:\n{traceback.format_exc()}")
-        return
-
-    if user_cmd == '':
         return
 
     if user_cmd in ('q', 'quit'):
