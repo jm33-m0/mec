@@ -62,6 +62,9 @@ class Session:
         self.ip_list = self.init_dir + \
             '/data/ip_list.txt'
 
+        # are we root?
+        self.is_root = os.geteuid() == 0
+
     def command(self, user_cmd):
         '''
         passes to cmd handler
