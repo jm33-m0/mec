@@ -9,7 +9,7 @@ assignees: jm33-m0
 
 # Have you read the wiki?
 
-[ ] Yes, and I did exactly what it says
+- [ ] Yes, and I did exactly what it says
 
 `https://github.com/jm33-m0/mec/wiki`
 
