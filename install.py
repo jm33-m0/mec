@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 '''
 install script for massExpConsole:
@@ -8,7 +9,12 @@ install script for massExpConsole:
 
 import os
 import sys
-from importlib import util
+
+try:
+    from importlib import util
+except ImportError:
+    print("Please use python 3.6+ !!!")
+    sys.exit(1)
 
 from lib.cli import colors
 
@@ -25,12 +31,18 @@ def mod_exists(modulename):
 DIST = "debian"
 try:
     import distro
+
 except ModuleNotFoundError:
     if os.system("python3 -m pip install distro --user") != 0:
         colors.colored_print("Please install pip first !!!", colors.RED)
         sys.exit(1)
     if mod_exists("distro"):
         import distro
+
+except ImportError:
+    colors.colored_print("Please use python 3.6+ !!!", colors.RED)
+    sys.exit(1)
+
 try:
     DIST = distro.linux_distribution(full_distribution_name=False)[0]
 except NameError:
