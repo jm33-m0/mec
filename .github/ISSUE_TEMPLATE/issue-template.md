@@ -9,7 +9,9 @@ assignees: jm33-m0
 
 # Have you read the wiki?
 
-[https://github.com/jm33-m0/mec/wiki](https://github.com/jm33-m0/mec/wiki)
+[ ] Yes, and I did exactly what it says
+
+`https://github.com/jm33-m0/mec/wiki`
 
 # Environment
 
@@ -17,8 +19,15 @@ assignees: jm33-m0
 
 Just type `python3` and check its version
 
+```
+# Put your result here
+
+```
+
 ## Your system
 
 ```
 cat /etc/*release*
+# Put your result here
+
 ```
