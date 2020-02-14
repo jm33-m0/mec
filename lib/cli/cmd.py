@@ -135,7 +135,11 @@ def run_target(**kwargs):
     Change target list
     """
     session = kwargs.get("session")
-    target = kwargs.get("args")[0]
+    try:
+        target = kwargs.get("args")[0]
+    except IndexError:
+        console.print_error("[-] What's the target?")
+        return
 
     if target not in os.listdir(session.init_dir + '/data'):
         console.print_error("[-] Target file not found")
@@ -291,7 +295,7 @@ def cmds_init(session):
     target_cmd = Command(names=("target", "t"),
                          doc="Change target list",
                          session=session,
-                         helper=None)
+                         helper=run_target)
     COMMANDS.update({"target": target_cmd})
 
     # init
