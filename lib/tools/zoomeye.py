@@ -106,12 +106,15 @@ def progress(target_file):
         os.system('touch {}'.format(target_file))
 
     while True:
-        l_count = sum(1 for line in open(target_file))
-        sys.stdout.write(
-            colors.CYAN + '\r[+] Found ' + str(
-                l_count) + ' hosts' + colors.END)
-        sys.stdout.flush()
-        time.sleep(.5)
+        try:
+            l_count = sum(1 for line in open(target_file))
+            sys.stdout.write(
+                colors.CYAN + '\r[+] Found ' + str(
+                    l_count) + ' hosts' + colors.END)
+            sys.stdout.flush()
+            time.sleep(.5)
+        except KeyboardInterrupt:
+            console.print_error("^C")
 
 
 def crawler(qery, page, headers):
@@ -131,10 +134,14 @@ def crawler(qery, page, headers):
             str(page)
 
     # get result
-    r_get = requests.get(
-        url=url,
-        headers=headers)
-    r_decoded = json.loads(r_get.text)
+    try:
+        r_get = requests.get(
+            url=url,
+            headers=headers,
+            timout=10)
+        r_decoded = json.loads(r_get.text)
+    except BaseException:
+        return "JSON decoder failed"
 
     # returns error message
 
@@ -218,7 +225,7 @@ def login_and_crawl():
             job.setDaemon(True)
             job.start()
 
-            if limit in (0, 10):
+            if limit == 10:
                 limit = 0
                 job.join()
             limit += 1
