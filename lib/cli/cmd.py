@@ -395,13 +395,14 @@ def cmd_handler(session, user_cmd):
 
         # shell command
         try:
+            shellcmd = ' '.join(split_cmd)
             print(
                 colors.BLUE +
                 colors.BOLD +
                 "[*] Exec: " +
                 colors.END,
                 colors.GREEN +
-                user_cmd, colors.END)
-            os.system(user_cmd)
+                shellcmd, colors.END)
+            os.system(shellcmd)
         except (EOFError, KeyboardInterrupt, SystemExit):
             return
