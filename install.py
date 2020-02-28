@@ -47,7 +47,7 @@ try:
     DIST = distro.linux_distribution(full_distribution_name=False)[0]
 except NameError:
     import platform
-    # pylint: disable=deprecated-method
+    # pylint: disable=deprecated-method, no-member
     DIST = platform.linux_distribution(full_distribution_name=0)[0].lower()
 
 
@@ -67,16 +67,19 @@ if DIST in["ubuntu", "debian", "linuxmint", "kali"]:
     pkg_install("sudo apt install", "python3-dev")
     pkg_install("sudo apt install", "virtualenv")
     pkg_install("sudo apt install", "libncurses5-dev")
+    pkg_install("sudo apt install", "python3-paramiko")
 elif DIST in["fedora", "rhel", "centos"]:
     pkg_install("sudo yum install", "python3-pip")
     pkg_install("sudo yum install", "python3-devel")
     pkg_install("sudo yum install", "virtualenv")
     pkg_install("sudo yum install", "libncurses5-devel")
+    pkg_install("sudo yum install", "python3-paramiko")
 elif DIST in["arch"]:
     pkg_install("sudo pacman -S --noconfirm", "python-pip")
     pkg_install("sudo pacman -S --noconfirm", "python-dev")
     pkg_install("sudo pacman -S --noconfirm", "virtualenv")
     pkg_install("sudo pacman -S --noconfirm", "ncurses")
+    pkg_install("sudo pacman -S --noconfirm", "python-paramiko")
 else:
     colors.colored_print("{} is not recognized,".format(DIST) +
                          " please install python3 dev package manually",
