@@ -158,15 +158,6 @@ class Session:
             exec_path = '/'.join(exec_path)
             work_path = '/'.join(work_path)
 
-            # let user check if there's anything wrong
-            print(
-                colors.BLUE +
-                '[*] Your exploit will be executed like\n' +
-                colors.END,
-                'proxychains4 -q -f proxy.conf {} -t <target ip>'.format(
-                    exec_path),
-                ' '.join(custom_args))
-
             # args as parameter for scanner
             scanner_instance = Scanner(work_path, exec_path,
                                        custom_args,
