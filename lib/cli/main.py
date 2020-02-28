@@ -9,6 +9,7 @@ by jm33-ng
 import os
 import sys
 
+
 from lib.cli import cmd, colors, console, core, futil, rlinit
 
 # Needed for scanner session later
@@ -19,7 +20,6 @@ def main():
     '''
     handles user interface
     '''
-    rlinit.CMD_LIST = rlinit.readline_init(SESSION)
 
     answ = str(
         input(
@@ -36,11 +36,7 @@ def main():
 
     while True:
         try:
-            input_cmd = input(
-                colors.CYAN +
-                colors.BOLD +
-                "\nmec > " +
-                colors.END)
+            input_cmd = rlinit.prompt(session=SESSION)
 
             try:
                 cmd.cmd_handler(SESSION, input_cmd)

@@ -82,7 +82,7 @@ def input_check(prompt, allow_blank=True, check_type=None, ip_check=False, choic
                 prompt +
                 colors.END)).strip().lower()
         try:
-            if allow_blank is False and user_input == '':
+            if not allow_blank and user_input == '':
                 continue
 
             if choices is not None:
@@ -99,7 +99,7 @@ def input_check(prompt, allow_blank=True, check_type=None, ip_check=False, choic
             if check_type is not None and choices is None:
                 return str(check_type(user_input))
 
-            if ip_check is True:
+            if ip_check:
                 try:
                     ip_address(user_input)
                 except ValueError:
