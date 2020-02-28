@@ -9,7 +9,6 @@ by jm33-ng
 import os
 import sys
 
-
 from lib.cli import cmd, colors, console, core, futil, rlinit
 
 # Needed for scanner session later

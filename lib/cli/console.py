@@ -10,6 +10,10 @@ import sys
 import traceback
 from ipaddress import ip_address
 
+from prompt_toolkit import ANSI
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.shortcuts import prompt
+
 from . import colors
 
 INTRO = colors.CYAN + colors.BOLD + r'''
@@ -70,17 +74,17 @@ def debug_except():
     sys.exit(1)
 
 
-def input_check(prompt, allow_blank=True, check_type=None, ip_check=False, choices=None):
+def input_check(prompt_info, allow_blank=True, check_type=None, ip_check=False, choices=None):
     '''
     checks user input
     '''
 
     while True:
-        user_input = str(
-            input(
-                colors.BLUE +
-                prompt +
-                colors.END)).strip().lower()
+        choice_completer = WordCompleter(choices)
+
+        input_ps = ANSI(colors.BLUE + prompt_info + colors.END)
+        user_input = prompt(
+            message=input_ps, completer=choice_completer).strip().lower()
         try:
             if not allow_blank and user_input == '':
                 continue
