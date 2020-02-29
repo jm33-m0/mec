@@ -1,6 +1,10 @@
 # massExploitConsole
 a collection of hacking tools with a cli ui
 
+## getting started
+
+please read the [wiki](https://github.com/jm33-m0/mec/wiki)
+
 ## screencasts
 
 ### zoomeye host search
@@ -28,7 +32,3 @@ a collection of hacking tools with a cli ui
 - [x] a simple baidu crawler (multi-threaded)
 - [x] censys host scan
 - [x] built-in ssh bruteforcer
-
-## getting started
-
-please read the [wiki](https://github.com/jm33-m0/mec/wiki)
