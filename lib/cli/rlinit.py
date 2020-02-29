@@ -27,8 +27,9 @@ def readline_init(session):
     command_list = list(cmds_init(session).keys())
 
     # add other keywords
-    command_list += ["tomcat", "jboss", "jenkins", "weblogic", "/tmp/", "attack",
-                     "reset", "clear", "quit", "redis", "ssh_bruteforcer", "witbe"]
+    command_list += ["/tmp/", "attack", "quit", "reset", "clear",
+                     "app:", "port:", "ip:", "cidr:", "country:", "city:",
+                     "subdivisions:", "device:", "ver:"]
     # add from list_exp
     command_list += run_exploits(do_print=False)
 

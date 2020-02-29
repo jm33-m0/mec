@@ -82,8 +82,7 @@ def input_check(prompt_info, allow_blank=True,
     '''
 
     while True:
-        choice_completer = WordCompleter(os.listdir())
-
+        choice_completer = WordCompleter(os.listdir("./"))
         if choices is not None:
             choice_completer = WordCompleter(choices)
 
