@@ -67,11 +67,21 @@ class ZoomEyeAPI:
         try:
             r_post = requests.post(
                 url='https://api.zoomeye.org/user/login',
-                data=data_encoded)
+                data=data_encoded,
+                timeout=10)
             r_decoded = json.loads(r_post.text)
 
             return r_decoded['access_token']
+        except requests.exceptions.RequestException as exc:
+            console.print_error(
+                f"Login error: request failed: {exc}")
+            return ""
+
         except KeyError:
+            console.print_error(
+                f"Login error: {r_post.status_code}: {r_post.text}")
+            return ""
+        except KeyboardInterrupt:
             return ""
         except BaseException:
             console.debug_except()
@@ -138,10 +148,10 @@ def crawler(qery, page, headers):
         r_get = requests.get(
             url=url,
             headers=headers,
-            timout=10)
+            timeout=5)
         r_decoded = json.loads(r_get.text)
-    except BaseException:
-        return "JSON decoder failed"
+    except BaseException as exc:
+        return f"crawler failed: {exc}"
 
     # returns error message
 
@@ -195,6 +205,10 @@ def login_and_crawl():
         print(colors.BLUE +
               '[*] Crawling fetched pages from ZoomEye...' + colors.END)
         access_token = api.login()
+
+        if access_token == "":
+            console.print_error("[-] Login failed")
+            return
         headers = {
             'Authorization': 'JWT ' + access_token,
         }
@@ -227,7 +241,7 @@ def login_and_crawl():
 
             if limit == 10:
                 limit = 0
-                job.join()
+                job.join(timeout=5)
             limit += 1
     except (EOFError, KeyboardInterrupt, SystemExit):
         status.terminate()
@@ -235,7 +249,6 @@ def login_and_crawl():
         return
     except BaseException:
         console.debug_except()
-
 
     # stop progress monitoring when we are done
     status.terminate()
