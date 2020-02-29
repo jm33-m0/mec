@@ -88,12 +88,12 @@ class Session:
             cmd.cmd_handler(self, "proxy")
         answ = console.input_check(
             '\n[?] Do you wish to use\
-            \n\n    [a] built-in exploits\
-            \n    [m] or launch your own manually?\
+            \n\n    [1] built-in exploits\
+            \n    [2] or launch your own manually?\
             \n\n[=] Your choice: ',
-            choices=['a', 'm'])
+            choices=['1', '2', 'built-in', 'manually'])
 
-        if answ == 'a':
+        if answ in ['1', 'built-in']:
             print(
                 colors.CYAN +
                 colors.BOLD +
@@ -115,18 +115,14 @@ class Session:
             except (EOFError, KeyboardInterrupt, SystemExit):
                 return
 
-        elif answ == 'm':
+        elif answ in ['2', 'manually']:
             print(
                 colors.CYAN +
                 colors.UNDERLINE +
                 colors.BOLD +
                 "\nWelcome, in here you can choose your own exploit\n" +
                 colors.END)
-            colors.colored_print(
-                '[*] Here are available exploits:\n', colors.CYAN)
-
-            for poc in futil.list_exp():
-                colors.colored_print(poc + colors.END, colors.BLUE)
+            cmd.run_exploits()
 
             exploit = console.input_check(
                 "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ",
@@ -239,6 +235,7 @@ class Scanner:
         # you might want to cancel the scan to correct some errors
 
         if console.input_check('[?] Proceed? [y/n] ', choices=['y', 'n']) == 'n':
+            os.chdir(self.session.init_dir)
             return
 
         # save stdout to logfile

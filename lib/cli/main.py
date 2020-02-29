@@ -19,19 +19,9 @@ def main():
     '''
     handles user interface
     '''
-
-    answ = str(
-        input(
-            colors.CYAN +
-            '[?] Use ip_list.txt as target list? [y/n] ' +
-            colors.END)).strip()
-
-    if answ.lower() == 'n':
-        os.system("ls ~/.mec/data")
-        SESSION.ip_list = SESSION.init_dir + '/data/' + \
-            console.input_check(
-                '[=] Choose your target IP list, eg. ip_list.txt ',
-                choices=os.listdir(core.MECROOT + '/data'))
+    colors.colored_print(
+        "[*] Default target list is ./data/ip_list.txt", colors.CYAN)
+    SESSION.ip_list = SESSION.init_dir + '/data/ip_list.txt'
 
     while True:
         try:
@@ -43,13 +33,8 @@ def main():
                 sys.exit(0)
 
         except KeyboardInterrupt:
-
-            try:
-                answ = input("\n[?] Are you sure to exit? [y/n] ")
-            except KeyboardInterrupt:
-                print("\n[-] Okay okay, exiting immediately...")
-                futil.check_kill_process('ss-proxy')
-                sys.exit(0)
+            answ = console.input_check(
+                "\n[?] Are you sure to exit? [y/n] ", choices=['y', 'n'], allow_blank=False)
 
             if answ.lower() == 'y':
                 futil.check_kill_process('ss-proxy')

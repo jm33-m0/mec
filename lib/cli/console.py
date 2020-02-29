@@ -6,6 +6,7 @@
 Handles console related stuff
 """
 
+import os
 import sys
 import traceback
 from ipaddress import ip_address
@@ -74,18 +75,26 @@ def debug_except():
     sys.exit(1)
 
 
-def input_check(prompt_info, allow_blank=True, check_type=None, ip_check=False, choices=None):
+def input_check(prompt_info, allow_blank=True,
+                check_type=None, ip_check=False, choices=None):
     '''
     checks user input
     '''
 
     while True:
-        choice_completer = WordCompleter(choices)
+        choice_completer = WordCompleter(os.listdir())
 
-        input_ps = ANSI(colors.BLUE + prompt_info + colors.END)
-        user_input = prompt(
-            message=input_ps, completer=choice_completer).strip().lower()
+        if choices is not None:
+            choice_completer = WordCompleter(choices)
+
         try:
+            input_ps = ANSI(colors.BLUE + prompt_info + colors.END)
+            user_input = prompt(
+                message=input_ps,
+                complete_in_thread=True,
+                complete_while_typing=True,
+                completer=choice_completer).strip().lower()
+
             if not allow_blank and user_input == '':
                 continue
 
@@ -112,6 +121,10 @@ def input_check(prompt_info, allow_blank=True, check_type=None, ip_check=False, 
                     continue
 
             return user_input
+
+        except (EOFError, KeyboardInterrupt, SystemExit):
+            continue
+
         # pylint: disable=broad-except
         except BaseException:
             print_error("[-] Invalid input")

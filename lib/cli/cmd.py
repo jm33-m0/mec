@@ -84,7 +84,7 @@ session
 [*] Log file: {session.logfile}
 [*] Target: {session.ip_list}
 
-PROXY
+proxy
 -----
 
 [*] Shadowsocks config: {session.shadowsocks.ss_url}
@@ -138,15 +138,15 @@ def run_target(**kwargs):
     try:
         target = kwargs.get("args")[0]
     except IndexError:
-        console.print_error("[-] What's the target?")
+        console.print_error("[-] What target?")
         return
 
     if target not in os.listdir(session.init_dir + '/data'):
-        console.print_error("[-] Target file not found")
+        console.print_error("[-] Target list file not found")
 
         return
     colors.colored_print(
-        '[i] Target changed to {}'.format(target), colors.BLUE)
+        '[i] Target list changed to {}'.format(target), colors.BLUE)
     session.ip_list = session.init_dir + \
         '/data/' + target
 
@@ -225,8 +225,12 @@ def run_exploits(**kwargs):
     """
     do_print = kwargs.get("do_print", True)
     exp_list = futil.list_exp()
+
+    if len(exp_list) == 0:
+        console.print_error(
+            "[-] No exploits found, perhaps you need to check `pwd`?")
+
     if not do_print:
-        # pass this list to readline completer
         return exp_list
 
     colors.colored_print('[+] Available exploits: ', colors.CYAN)
