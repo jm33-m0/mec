@@ -1,11 +1,15 @@
 # massExploitConsole
 a collection of hacking tools with a cli ui
 
-## screenshot
+## screencasts
 
-![attack](/screenshot/main.jpg)
-![zoomeye](/screenshot/zoomeye.jpg)
+### zoomeye host search
 
+[![asciicast](https://asciinema.org/a/7u8PQvAHqwo7WtrVqHMD9lKNX.svg)](https://asciinema.org/a/7u8PQvAHqwo7WtrVqHMD9lKNX)
+
+### mass exploiting
+
+[![asciicast](https://asciinema.org/a/tQqny4Og7OZ6L8S8StRT2ZVr6.svg)](https://asciinema.org/a/tQqny4Og7OZ6L8S8StRT2ZVr6)
 
 ## disclaimer
 
