@@ -9,7 +9,7 @@ a collection of hacking tools with a cli ui
 
 ### mass exploiting
 
-[![asciicast](https://asciinema.org/a/tQqny4Og7OZ6L8S8StRT2ZVr6.svg)](https://asciinema.org/a/tQqny4Og7OZ6L8S8StRT2ZVr6)
+[![asciicast](https://asciinema.org/a/FLHdaiUXcufduNwmu0tmxM5pD.svg)](https://asciinema.org/a/FLHdaiUXcufduNwmu0tmxM5pD)
 
 ## disclaimer
 
