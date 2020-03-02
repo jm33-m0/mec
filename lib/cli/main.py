@@ -65,7 +65,7 @@ def run():
         sys.exit(1)
     except BaseException:
         console.print_error(
-            "[-] Seems like you\'ve encountered an unhandled exception")
+            "[-] Seems like you've encountered an unhandled exception")
         console.debug_except()
 
 
@@ -104,11 +104,11 @@ def update():
         return
 
     if "[mec-update-success]" in out.decode("utf-8"):
-        if not "error:" in out.decode("uft-8"):
-            console.print_success(
-                "[+] mec has been updated, press enter to continue...")
+        if "error:" in out.decode("utf-8"):
+            console.print_error(
+                f"[-] Failed to update mec: {out}, press enter to continue...")
 
             return
 
-        console.print_error(
-            f"[-] Failed to update mec: {exc}, press enter to continue...")
+        console.print_success(
+            "[+] mec has been updated, press enter to continue...")
