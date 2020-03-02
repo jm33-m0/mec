@@ -28,7 +28,9 @@ INTRO = colors.CYAN + colors.BOLD + r'''
 ░      ░      ░   ░
        ░      ░  ░░ ░
                   ░
-''' + colors.END + colors.GREEN + colors.BOLD + '''
+
+    version: v2.0
+''' + colors.END + colors.GREEN + colors.BOLD + f'''
     by jm33_m0
     https://github.com/jm33-m0/mec
     type h or help for help\n''' + colors.END
@@ -82,6 +84,7 @@ def input_check(prompt_info, allow_blank=True,
 
     while True:
         choice_completer = WordCompleter(os.listdir("./"))
+
         if choices is not None:
             choice_completer = WordCompleter(choices)
 

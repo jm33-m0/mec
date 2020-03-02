@@ -7,7 +7,6 @@ by jm33-ng
 '''
 
 import os
-import subprocess
 import sys
 from multiprocessing import Process
 
@@ -25,7 +24,7 @@ def main():
         "[*] Default target list is ./data/ip_list.txt", colors.CYAN)
     SESSION.ip_list = SESSION.init_dir + '/data/ip_list.txt'
 
-    update_job = Process(target=update,)
+    update_job = Process(target=core.update,)
     update_job.start()
 
     while True:
@@ -54,8 +53,9 @@ def run():
     '''
     try:
         os.system('clear')
-        print(console.INTRO)
         os.chdir(core.MECROOT)
+        console.INTRO = console.INTRO.replace("v2.0", core.get_version())
+        print(console.INTRO)
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
         console.print_error('[-] Exiting...')
@@ -67,48 +67,3 @@ def run():
         console.print_error(
             "[-] Seems like you've encountered an unhandled exception")
         console.debug_except()
-
-
-def update():
-    '''
-    check updates from https://github.com/jm33-m0/mec
-    '''
-    os.chdir(core.MECROOT)
-
-    # refresh local git repo
-    try:
-        check = "git remote -v update"
-        out = subprocess.check_output(
-            ["/bin/sh", "-c", check],
-            stderr=subprocess.STDOUT, timeout=30)
-    except subprocess.CalledProcessError as exc:
-        console.print_error(
-            f"[-] Failed to check for updates: {exc}, press enter to continue...")
-
-        return
-
-    if "[up to date]" in out.decode("utf-8"):
-
-        return
-
-    # pull if needed
-    pull = "git pull; echo '[mec-update-success]'"
-    try:
-        out = subprocess.check_output(
-            ["/bin/sh", "-c", pull],
-            stderr=subprocess.STDOUT,
-            timeout=30)
-    except subprocess.CalledProcessError as exc:
-        console.print_error(f"[-] Failed to update mec: {exc}")
-
-        return
-
-    if "[mec-update-success]" in out.decode("utf-8"):
-        if "error:" in out.decode("utf-8"):
-            console.print_error(
-                f"[-] Failed to update mec: {out}, press enter to continue...")
-
-            return
-
-        console.print_success(
-            "[+] mec has been updated, press enter to continue...")

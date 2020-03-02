@@ -107,6 +107,7 @@ class Session:
 
             try:
                 scanner_instance = exploit_exec.EXPLOIT_DICT.get(module)(self)
+
                 if scanner_instance is None:
                     return
                 scanner_instance.scan()
@@ -221,6 +222,7 @@ class Scanner:
 
         if not console.yes_no('[?] Proceed?'):
             os.chdir(self.session.init_dir)
+
             return
 
         # save stdout to logfile
@@ -313,3 +315,67 @@ class Scanner:
 
         # this fixes #37, because when parent gets killed, all zombie children die
         sys.exit()
+
+
+def get_version():
+    '''
+    print current version
+    '''
+    try:
+        check = "git describe --tags"
+        out = subprocess.check_output(
+            ["/bin/sh", "-c", check],
+            stderr=subprocess.STDOUT, timeout=3)
+    except subprocess.CalledProcessError as exc:
+        print(
+            f"{colors.RED}[-] Failed to get mec version: {exc}," +
+            f"\n{out}\nPress enter to continue...{colors.END}")
+
+        return ""
+
+    return out.decode("utf-8")
+
+
+def update():
+    '''
+    check updates from https://github.com/jm33-m0/mec
+    '''
+    os.chdir(MECROOT)
+
+    # refresh local git repo
+    try:
+        check = "git remote -v update"
+        out = subprocess.check_output(
+            ["/bin/sh", "-c", check],
+            stderr=subprocess.STDOUT, timeout=30)
+    except subprocess.CalledProcessError as exc:
+        console.print_error(
+            f"[-] Failed to check for updates: {exc}, press enter to continue...")
+
+        return
+
+    if "[up to date]" in out.decode("utf-8"):
+
+        return
+
+    # pull if needed
+    pull = "git pull; echo '[mec-update-success]'"
+    try:
+        out = subprocess.check_output(
+            ["/bin/sh", "-c", pull],
+            stderr=subprocess.STDOUT,
+            timeout=30)
+    except subprocess.CalledProcessError as exc:
+        console.print_error(f"[-] Failed to update mec: {exc}")
+
+        return
+
+    if "[mec-update-success]" in out.decode("utf-8"):
+        if "error:" in out.decode("utf-8"):
+            console.print_error(
+                f"[-] Failed to update mec: {out}, press enter to continue...")
+
+            return
+
+        console.print_success(
+            "[+] mec has been updated, press enter to continue...")
