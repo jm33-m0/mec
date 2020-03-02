@@ -133,14 +133,16 @@ def start_install():
     pip_install(venv_py, '-r requirements.txt')
 
     # zoomeye account:
-    zoomeye = str(input('Would you like to use zoomeye? (yes/No) ')).lower()
+    zoomeye = str(
+        input(colors.CYAN+'Would you like to use zoomeye? (yes/No) '+colors.END)).lower()
     if zoomeye in ('yes', 'y'):
         user = str(input('Username: '))
         password = str(getpass.getpass('Password: '))
         conf = open(MECROOT + '/conf/zoomeye.conf', "w")
         conf.write("user:" + user + "\n")
         conf.write("password:" + password + "\n")
-    censys = str(input('Would you like to use censys? (yes/No) ')).lower()
+    censys = str(
+        input(colors.CYAN+'Would you like to use censys? (yes/No) '+colors.END)).lower()
     if censys in ('yes', 'y'):
         uid = str(input('API ID: '))
         sec = str(getpass.getpass('Secret: '))
