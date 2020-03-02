@@ -85,9 +85,6 @@ def update():
 
         return
 
-    if not console.yes_no("[?] A new version is found, do you wish to upgrade?"):
-        return
-
     # pull if needed
     pull = "git pull && echo '[mec-update-success]'"
     out = subprocess.check_output(
