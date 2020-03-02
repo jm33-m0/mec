@@ -342,6 +342,10 @@ def update():
     '''
     os.chdir(MECROOT)
 
+    # current version
+    # pylint: disable=unused-variable
+    old_ver = get_version()
+
     # refresh local git repo
     try:
         check = "git remote -v update"
@@ -378,4 +382,7 @@ def update():
             return
 
         console.print_success(
-            "[+] mec has been updated, press enter to continue...")
+            "[+] mec has been updated," +
+            "\n{old_ver} -> {get_version()}\n"
+            "press enter to exit...")
+        sys.exit(0)
