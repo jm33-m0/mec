@@ -82,7 +82,9 @@ def update():
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=30)
     except subprocess.CalledProcessError as exc:
-        console.print_error(f"[-] Failed to check for updates: {exc}")
+        console.print_error(
+            f"[-] Failed to check for updates: {exc}, press enter to continue...")
+
         return
 
     if "[up to date]" in out.decode("utf-8"):
@@ -98,7 +100,15 @@ def update():
             timeout=30)
     except subprocess.CalledProcessError as exc:
         console.print_error(f"[-] Failed to update mec: {exc}")
+
         return
 
     if "[mec-update-success]" in out.decode("utf-8"):
-        console.print_success("[+] mec has been updated")
+        if not "error:" in out.decode("uft-8"):
+            console.print_success(
+                "[+] mec has been updated, press enter to continue...")
+
+            return
+
+        console.print_error(
+            f"[-] Failed to update mec: {exc}, press enter to continue...")
