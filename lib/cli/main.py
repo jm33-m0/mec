@@ -76,21 +76,29 @@ def update():
     os.chdir(core.MECROOT)
 
     # refresh local git repo
-    check = "git remote -v update"
-    out = subprocess.check_output(
-        ["/bin/sh", "-c", check],
-        stderr=subprocess.STDOUT, timeout=30)
+    try:
+        check = "git remote -v update"
+        out = subprocess.check_output(
+            ["/bin/sh", "-c", check],
+            stderr=subprocess.STDOUT, timeout=30)
+    except subprocess.CalledProcessError as exc:
+        console.print_error(f"[-] Failed to check for updates: {exc}")
+        return
 
     if "[up to date]" in out.decode("utf-8"):
 
         return
 
     # pull if needed
-    pull = "git pull && echo '[mec-update-success]'"
-    out = subprocess.check_output(
-        ["/bin/sh", "-c", pull],
-        stderr=subprocess.STDOUT,
-        timeout=30)
+    pull = "git pull; echo '[mec-update-success]'"
+    try:
+        out = subprocess.check_output(
+            ["/bin/sh", "-c", pull],
+            stderr=subprocess.STDOUT,
+            timeout=30)
+    except subprocess.CalledProcessError as exc:
+        console.print_error(f"[-] Failed to update mec: {exc}")
+        return
 
     if "[mec-update-success]" in out.decode("utf-8"):
         console.print_success("[+] mec has been updated")
