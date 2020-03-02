@@ -3,7 +3,7 @@ a collection of hacking tools with a cli ui
 
 ## getting started
 
-please read the [wiki](https://github.com/jm33-m0/mec/wiki)
+**please read the [wiki](https://github.com/jm33-m0/mec/wiki)**
 
 ## features
 
