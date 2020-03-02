@@ -1,5 +1,5 @@
-# massExploitConsole
-a collection of hacking tools with a cli ui
+# mec (MassExploitConsole)
+for concurrent exploiting
 
 ## getting started
 
