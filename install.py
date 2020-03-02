@@ -112,10 +112,15 @@ def start_install():
     '''
     installation procedure
     '''
+    colors.colored_print(
+        "Now copying files...", colors.BLUE)
+
+    os.system(f"cp -aR {os.getcwd()} ~/.mec")
+    if os.path.exists(os.path.join(MECROOT, ".venv")):
+        os.system("rm -rf ~/.mec/.venv")
+
     # virtualenv
-    os.system('mkdir ~/.mec')
-    os.system('cp -R ./* ~/.mec')
-    if not os.path.isdir("~/.mec/.venv"):
+    if not os.path.isdir(os.path.join(MECROOT, ".venv")):
         if os.system("virtualenv -p /usr/bin/python3 ~/.mec/.venv") != 0:
             colors.colored_print("Error setting up virtualenv", colors.RED)
             sys.exit(1)
@@ -123,16 +128,9 @@ def start_install():
     venv_py = "~/.mec/.venv/bin/python3"
 
     # use requirements.txt
+    colors.colored_print(
+        "Now installing dependencies...", colors.BLUE)
     pip_install(venv_py, '-r requirements.txt')
-
-    print(
-        colors.BLUE +
-        "Done installing dependencies, now copying files." +
-        colors.END)
-
-    # clean temp files.
-    os.system('rm -rf ~/.mec/mec')
-    os.system('rm -rf ~/.mec/install.py')
 
     # zoomeye account:
     zoomeye = str(input('Would you like to use zoomeye? (yes/No) ')).lower()
@@ -193,34 +191,37 @@ print(INTRO)
 if os.path.exists(DEST):
     try:
         # MEC already installed
-        print(colors.BLUE + 'MEC is already installed.' + colors.END)
+        colors.colored_print('MEC is already installed.', colors.YELLOW)
 
         # Choose action
         ACT = str(
-            input('What can i do ? ([U]ninstall/[R]einstall/[N]othing) ')).lower()
+            input(colors.CYAN +
+                  'What can i do ? ([U]ninstall/[R]einstall/[N]othing) '
+                  + colors.END)).lower()
 
         # uninstall MEC
         if ACT == "u":
             # delete files
-            print(colors.RED + "Uninstalling MEC." + colors.END)
+            colors.colored_print('Uninstalling MEC.', color_code=colors.YELLOW)
             os.system('rm -rf ~/.mec')
             os.system('sudo rm -rf /usr/local/bin/mec')
+            colors.colored_print('Done.', colors.GREEN)
             sys.exit(0)
 
         # reinstall MEC
         elif ACT == "r":
             # removeing files.
-            print('Uninstalling MEC.')
+            colors.colored_print('Uninstalling MEC.', color_code=colors.YELLOW)
             os.system('rm -rf ~/.mec')
 
-            print('Done. now reinstalling.')
+            colors.colored_print('Done. now reinstalling.', colors.YELLOW)
             start_install()
             sys.exit(0)
         elif ACT == "n":
             sys.exit(0)
 
     except KeyboardInterrupt:
-        print(colors.RED + "Installation aborted." + colors.END)
+        colors.colored_print("Installation aborted.", colors.RED)
 else:
     try:
         INST = str(
@@ -233,4 +234,4 @@ else:
 
         start_install()
     except KeyboardInterrupt:
-        print(colors.RED + 'Installation aborted.' + colors.END)
+        colors.colored_print('Installation aborted.', colors.RED)
