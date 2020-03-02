@@ -76,9 +76,8 @@ class Session:
         '''
         handles attack command
         '''
-        self.use_proxy = console.input_check(
-            '[?] Do you wish to use proxychains? [y/n] ',
-            choices=['y', 'n']) == 'y'
+        self.use_proxy = console.yes_no(
+            '[?] Do you wish to use proxychains?')
 
         if self.use_proxy:
             if shutil.which("proxychains4") is None:
@@ -131,22 +130,8 @@ class Session:
             jobs = int(
                 console.input_check("[?] How many processes each time? ", check_type=int))
 
-            custom_args = []
-            answ = console.input_check(
-                "[?] Do you need a reverse shell [y/n]? ", choices=['y', 'n'])
-
-            if answ == 'y':
-                lhost = console.input_check(
-                    "[*] Where do you want me to send shells? ", allow_blank=False, ip_check=True)
-                lport = console.input_check(
-                    "[*] and at what port?",
-                    check_type=int)
-                custom_args = ['-l', lhost, '-p', lport]
-            else:
-                pass
-
-            custom_args += console.input_check(
-                "[*] args for this exploit: ").strip().split()
+            custom_args = console.input_check(
+                "[*] Addtional args for this exploit (other than `-t <target>`): ").strip().split()
 
             # parse user's exploit name
             exec_path = exploit.split('/')[1:]
@@ -234,7 +219,7 @@ class Scanner:
 
         # you might want to cancel the scan to correct some errors
 
-        if console.input_check('[?] Proceed? [y/n] ', choices=['y', 'n']) == 'n':
+        if not console.yes_no('[?] Proceed?'):
             os.chdir(self.session.init_dir)
             return
 

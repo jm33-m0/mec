@@ -33,10 +33,10 @@ def main():
                 sys.exit(0)
 
         except KeyboardInterrupt:
-            answ = console.input_check(
-                "\n[?] Are you sure to exit? [y/n] ", choices=['y', 'n'], allow_blank=False)
+            answ = console.yes_no(
+                "\n[?] Are you sure to exit?")
 
-            if answ.lower() == 'y':
+            if answ:
                 futil.check_kill_process('ss-proxy')
                 sys.exit(0)
             else:

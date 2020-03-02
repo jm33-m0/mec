@@ -66,10 +66,9 @@ def debug_except():
     '''
     tcbk = traceback.format_exc()
 
-    answ = input_check("[?] Display traceback? [y/n] ",
-                       choices=['y', 'n'])
+    answ = yes_no("[?] Display traceback?")
 
-    if answ == 'y':
+    if answ:
         print_error(tcbk)
 
     sys.exit(1)
@@ -136,9 +135,10 @@ def yes_no(quest):
     ask a yes_no question
     '''
 
-    res = str(input(quest + " (Yes/no) ")).lower()
+    res = input_check(prompt_info=quest+" (y/N)",
+                      choices=["y", "n", ""])
 
-    if res in ("yes", "y"):
+    if res == "y":
         return True
 
     return False
