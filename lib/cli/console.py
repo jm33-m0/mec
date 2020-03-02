@@ -135,7 +135,7 @@ def yes_no(quest):
     ask a yes_no question
     '''
 
-    res = input_check(prompt_info=quest+" (y/N)",
+    res = input_check(prompt_info=quest+" (y/N) ",
                       choices=["y", "n", ""])
 
     if res == "y":
