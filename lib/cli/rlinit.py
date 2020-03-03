@@ -24,7 +24,10 @@ def readline_init(session):
     """
     init readline settings
     """
-    command_list = list(cmds_init(session).keys())
+    cmds_dict = cmds_init(session)
+    command_list = []
+    for _, percmd in cmds_dict.items():
+        command_list += percmd.names
 
     # add other keywords
     command_list += ["/tmp/", "attack", "quit", "reset", "clear",

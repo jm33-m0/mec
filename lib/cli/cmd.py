@@ -219,6 +219,20 @@ def run_censys(**kwargs):
         return
 
 
+def run_attack(**kwargs):
+    """
+    start a mass-exploit job
+    """
+    session = kwargs.get("session", None)
+
+    try:
+        session.attack()
+    except (EOFError, KeyboardInterrupt, SystemExit):
+        return
+    except BaseException:
+        console.debug_except()
+
+
 def run_exploits(**kwargs):
     """
     List all usable exploits
@@ -228,16 +242,43 @@ def run_exploits(**kwargs):
 
     if len(exp_list) == 0:
         console.print_error(
-            "[-] No exploits found, perhaps you need to check `pwd`?")
+            "[-] No exploits found")
+        if console.yes_no("[?] Perhaps you need to check `info`?"):
+            run_info(session=kwargs.get("session"))
 
     if not do_print:
         return exp_list
 
-    colors.colored_print('[+] Available exploits: ', colors.CYAN)
+    colors.colored_print(
+        f"[+] {len(exp_list)} available exploits: ", colors.CYAN)
 
     for poc in exp_list:
         colors.colored_print(poc, colors.BLUE)
     return None
+
+
+def run_clear(**kwargs):
+    """
+    clear screen
+    """
+    os.system("clear")
+    print(console.INTRO)
+
+
+def run_quit(**kwargs):
+    """
+    Quit mec
+    """
+    futil.check_kill_process('ss-proxy')
+    sys.exit(0)
+
+
+def run_reset(**kwargs):
+    """
+    Terminal reset
+    """
+    os.system("reset")
+    print(console.INTRO)
 
 
 def run_help(**kwargs):
@@ -247,27 +288,14 @@ def run_help(**kwargs):
     help_entries = ['\n', "Command"+' '*20+"Description",
 
                     '-'*len("Command")+' '*20+'-'*len("Description"),
-                    '\n',
-
-                    "clear (c)"+' '*(27-len('clear (c)')) +
-                    "Clear screen",
-
-                    "reset (x)"+' '*(27-len('reset (x)'))+"Terminal reset",
-
-                    "init (i)"+' '*(27-len('init (i)')) +
-                    "Return to mec root directory",
-
-                    "help (?)"+' '*(27-len('help (?)')) +
-                    "Display this help info",
-
-                    "quit (^C)"+' '*(27-len('quit (^C)'))+"Quit",
-
-                    "attack (e)"+' '*(27-len('attack (e)')) +
-                    "Start a mass-exploit job"]
+                    '\n']
 
     for key, val in COMMANDS.items():
-        help_entries.append(key +
-                            ' '*(27-len(key)) +
+        percmd = key
+        if len(val.names) > 1:
+            percmd = key + f" ({', '.join(val.names[1:])})"
+        help_entries.append(percmd +
+                            ' '*(27-len(percmd)) +
                             val.doc)
 
     help_entries.append("(others)"+' '*(27-len('(others)')) +
@@ -282,81 +310,109 @@ def cmds_init(session):
     generate COMMANDS dict
     """
     # masscan
-    masscan_cmd = Command(("masscan", "ms"),
-                          "Run masscan to collect target hosts, requires root",
+    masscan_cmd = Command(names=["masscan", "ms"],
+                          doc="Run masscan to collect target hosts, requires root",
                           session=session,
                           helper=run_masscan)
     COMMANDS.update({"masscan": masscan_cmd})
 
     # info
-    info_cmd = Command(("info", "information"),
-                       "Current mec settings, and proxy status",
+    info_cmd = Command(names=["info", "i"],
+                       doc="Current mec settings, and proxy status",
                        session=session,
                        helper=run_info)
     COMMANDS.update({"info": info_cmd})
 
     # target
-    target_cmd = Command(names=("target", "t"),
+    target_cmd = Command(names=["target", "t"],
                          doc="Change target list",
                          session=session,
                          helper=run_target)
     COMMANDS.update({"target": target_cmd})
 
     # init
-    init_cmd = Command(names=("init", "i"),
+    init_cmd = Command(names=["init"],
                        doc="Return to mec root directory",
                        session=session,
                        helper=run_init)
     COMMANDS.update({"init": init_cmd})
 
     # baidu
-    baidu_cmd = Command(names=("baidu"),
+    baidu_cmd = Command(names=["baidu"],
                         doc="Search via m.baidu.com",
                         session=session,
                         helper=run_baidu)
     COMMANDS.update({"baidu": baidu_cmd})
 
     # proxy
-    proxy_cmd = Command(names=("proxy"),
+    proxy_cmd = Command(names=["proxy"],
                         doc="Start ss-proxy using ./data/ss.json config",
                         session=session,
                         helper=run_proxy)
     COMMANDS.update({"proxy": proxy_cmd})
 
     # google
-    google_cmd = Command(names=("google"),
+    google_cmd = Command(names=["google"],
                          doc="Fetch URLs from Google using custom dork",
                          session=session,
                          helper=run_google)
     COMMANDS.update({"google": google_cmd})
 
+    # attack
+    attack_cmd = Command(names=["start", "a", "attack"],
+                         doc="Start a mass-exploit job",
+                         session=session,
+                         helper=run_attack)
+    COMMANDS.update({"start": attack_cmd})
+
     # zoomeye
-    zoomeye_cmd = Command(names=("zoomeye"),
+    zoomeye_cmd = Command(names=["zoomeye"],
                           doc="Crawler for ZoomEye",
                           session=session,
                           helper=run_zoomeye)
     COMMANDS.update({"zoomeye": zoomeye_cmd})
 
     # censys
-    censys_cmd = Command(names=("censys"),
+    censys_cmd = Command(names=["censys"],
                          doc="Crawler for Censys.io",
                          session=session,
                          helper=run_censys)
     COMMANDS.update({"censys": censys_cmd})
 
     # exploits
-    exploits_cmd = Command(names=("exploits"),
+    exploits_cmd = Command(names=["ls_exploits", "exploits"],
                            doc="List all usable exploits",
                            session=session,
                            helper=run_exploits)
-    COMMANDS.update({"exploits": exploits_cmd})
+    COMMANDS.update({"ls_exploits": exploits_cmd})
+
+    # reset
+    reset_cmd = Command(names=["reset", "x"],
+                        doc="Terminal reset",
+                        session=session,
+                        helper=run_reset)
+    COMMANDS.update({"reset": reset_cmd})
+
+    # clear
+    clear_cmd = Command(names=["clear", "c"],
+                        doc="Clear screen",
+                        session=session,
+                        helper=run_clear)
+    COMMANDS.update({"clear": clear_cmd})
 
     # help
-    help_cmd = Command(names=("help", "h", "?"),
+    help_cmd = Command(names=["help", "h", "?"],
                        doc="Display this help info",
                        session=session,
                        helper=run_help)
     COMMANDS.update({"help": help_cmd})
+
+    # quit
+    quit_cmd = Command(names=["quit", "exit", "q"],
+                       doc="Quit mec",
+                       session=session,
+                       helper=run_quit)
+    COMMANDS.update({"quit": quit_cmd})
 
     return COMMANDS
 
@@ -374,39 +430,32 @@ def cmd_handler(session, user_cmd):
         user_cmd = split_cmd[0]
         args = split_cmd[1:]
     except IndexError:
+        console.print_error("[-] ???")
         return
 
-    if user_cmd in ('q', 'quit'):
-        futil.check_kill_process('ss-proxy')
-        sys.exit(0)
+    # COMMANDS
+    cmds_init(session)
+    cmd_obj = COMMANDS.get(user_cmd, None)
+    # aliases
+    if cmd_obj is None:
+        for _, percmd in COMMANDS.items():
+            if user_cmd in percmd.names:
+                cmd_obj = percmd
 
-    elif user_cmd in ('x', 'reset'):
-        os.system("reset")
+    if cmd_obj is not None:
+        cmd_obj.run(args)
+        return
 
-    elif user_cmd in ('c', 'clear'):
-        os.system("clear")
-
-    elif user_cmd in ("attack", "e"):
-        session.attack()
-
-    else:
-        # COMMANDS
-        cmds_init(session)
-        cmd_obj = COMMANDS.get(user_cmd, None)
-        if cmd_obj is not None:
-            cmd_obj.run(args)
-            return
-
-        # shell command
-        try:
-            shellcmd = ' '.join(split_cmd)
-            print(
-                colors.BLUE +
-                colors.BOLD +
-                "[*] Exec: " +
-                colors.END,
-                colors.GREEN +
-                shellcmd, colors.END)
-            os.system(shellcmd)
-        except (EOFError, KeyboardInterrupt, SystemExit):
-            return
+    # shell command
+    try:
+        shellcmd = ' '.join(split_cmd)
+        print(
+            colors.BLUE +
+            colors.BOLD +
+            "[*] Exec: " +
+            colors.END,
+            colors.PURPLE +
+            shellcmd, colors.END)
+        os.system(shellcmd)
+    except (EOFError, KeyboardInterrupt, SystemExit):
+        return
