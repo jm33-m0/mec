@@ -1,3 +1,32 @@
 #!/bin/bash
 
-~/.mec/.venv/bin/python3 ~/.mec/mec.py
+case "$1" in
+"start")
+    start
+    ;;
+
+"stop")
+    stop
+    ;;
+"restart")
+    stop
+    start
+    ;;
+
+*)
+    start
+    ;;
+
+esac
+
+start() {
+    (
+        cd ~/.mec &&
+            ~/.mec/.venv/bin/python3 ~/.mec/mec.py
+    )
+}
+
+stop() {
+    [[ -f /tmp/mec.pid ]] || return
+    kill "$(cat /tmp/mec.pid)"
+}

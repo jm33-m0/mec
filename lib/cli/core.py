@@ -34,6 +34,8 @@ class Session:
     def __init__(self):
         # root directory of mec
         self.init_dir = MECROOT
+        # PID file
+        self.pidfile = "/tmp/mec.pid"
         # where to put temp files
         self.out_dir = self.init_dir + '/output'
         # where to put proxychains4 config file
@@ -382,7 +384,13 @@ def update():
             return
 
         console.print_success(
-            "[+] mec has been updated," +
-            "\n{old_ver} -> {get_version()}\n"
-            "press enter to exit...")
-        sys.exit(0)
+            f"[+] mec has been updated: {old_ver} -> {get_version()}\n" +
+            "press enter to continue...")
+        actions(act="restart")
+
+
+def actions(act="start"):
+    """
+    start/stop/restart MEC
+    """
+    os.system(f"mec {act}")

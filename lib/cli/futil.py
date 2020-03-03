@@ -68,3 +68,12 @@ def list_exp():
                 pocs.append(poc)
 
     return pocs
+
+
+def write_file(text="", filepath=None):
+    """
+    write text to file
+    """
+    textf = open(filepath, "w+")
+    textf.write(text)
+    textf.close()

@@ -24,6 +24,8 @@ def main():
         "[*] Default target list is ./data/ip_list.txt", colors.CYAN)
     SESSION.ip_list = SESSION.init_dir + '/data/ip_list.txt'
 
+    futil.write_file(text=f"{os.getpid()}", filepath=SESSION.pidfile)
+
     update_job = Process(target=core.update,)
     update_job.start()
 
