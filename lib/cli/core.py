@@ -111,44 +111,42 @@ class Session:
                 if scanner_instance is None:
                     return
                 scanner_instance.scan()
+                return
 
             except (EOFError, KeyboardInterrupt, SystemExit):
                 return
 
-        elif answ in ['2', 'manually']:
-            print(
-                colors.CYAN +
-                colors.UNDERLINE +
-                colors.BOLD +
-                "\nWelcome, in here you can choose your own exploit\n" +
-                colors.END)
-            cmd.run_exploits()
+        # run custom exploits
+        print(
+            colors.CYAN +
+            colors.UNDERLINE +
+            colors.BOLD +
+            "\nWelcome, in here you can call your own exploit\n" +
+            colors.END)
+        cmd.run_exploits()
 
-            exploit = console.input_check(
-                "\n[*] Enter the path (eg. joomla/rce.py) of your exploit: ",
-                choices=futil.list_exp())
+        exploit = console.input_check(
+            "\n[*] Enter the path (eg. test/test) to your exploit: ",
+            choices=futil.list_exp())
 
-            jobs = int(
-                console.input_check("[?] How many processes each time? ", check_type=int))
+        jobs = int(
+            console.input_check("[?] How many processes each time? ", check_type=int))
 
-            custom_args = console.input_check(
-                "[*] Addtional args for this exploit (other than `-t <target>`): ").strip().split()
+        custom_args = console.input_check(
+            "[*] Addtional args for this exploit (other than `-t <target>`): ").strip().split()
 
-            # parse user's exploit name
-            exec_path = exploit.split('/')[1:]
-            work_path = exploit.split('/')[:-1]
-            exec_path = '/'.join(exec_path)
-            work_path = '/'.join(work_path)
+        # parse user's exploit name
+        exec_path = exploit.split('/')[1:]
+        work_path = exploit.split('/')[:-1]
+        exec_path = '/'.join(exec_path)
+        work_path = '/'.join(work_path)
 
-            # args as parameter for scanner
-            scanner_instance = Scanner(work_path, exec_path,
-                                       custom_args,
-                                       jobs, self)
-            # start scanner
-            scanner_instance.scan()
-
-        else:
-            console.print_error('[-] Invalid input')
+        # args as parameter for scanner
+        scanner_instance = Scanner(work_path, exec_path,
+                                   custom_args,
+                                   jobs, self)
+        # start scanner
+        scanner_instance.scan()
 
 
 class Scanner:
