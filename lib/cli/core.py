@@ -69,6 +69,9 @@ class Session:
         self.ip_list = self.init_dir + \
             '/data/ip_list.txt'
 
+        # version
+        self.version = get_version()
+
         # are we root?
         self.is_root = os.geteuid() == 0
         # update via user config file

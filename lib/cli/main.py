@@ -56,10 +56,8 @@ def run():
     try:
         os.system('clear')
         os.chdir(core.MECROOT)
-        console.INTRO = console.INTRO.replace("v2.0", core.get_version())
-        console.INTRO = console.INTRO.replace(
-            "0 exploits", f"{len(futil.list_exp())-1} exploits")
-        print(console.INTRO)
+        console.print_banner(ver=core.get_version(),
+                             exp_cnt=len(futil.list_exp()))
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
         console.print_error('[-] Exiting...')

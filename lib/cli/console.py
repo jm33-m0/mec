@@ -17,7 +17,12 @@ from prompt_toolkit.shortcuts import prompt
 
 from . import colors
 
-INTRO = colors.CYAN + colors.BOLD + r'''
+
+def print_banner(ver, exp_cnt):
+    """
+    print banner along with some info
+    """
+    banner = colors.CYAN + colors.BOLD + r'''
  ███▄ ▄███▓▓█████  ▄████▄
 ▓██▒▀█▀ ██▒▓█   ▀ ▒██▀ ▀█
 ▓██    ▓██░▒███   ▒▓█    ▄
@@ -28,14 +33,18 @@ INTRO = colors.CYAN + colors.BOLD + r'''
 ░      ░      ░   ░
        ░      ░  ░░ ░
                   ░
+'''+f'''
 
-    version: v2.0
+    version: {ver}
 
-    0 exploits
-''' + colors.END + colors.GREEN + colors.BOLD + f'''
+    {exp_cnt} exploits
+''' + colors.END + colors.GREEN + f'''
+
     by jm33_m0
     https://github.com/jm33-m0/mec
     type h or help for help\n''' + colors.END
+
+    print(banner)
 
 
 # util functions

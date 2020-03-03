@@ -313,7 +313,8 @@ def run_clear(**kwargs):
     clear screen
     """
     os.system("clear")
-    print(console.INTRO)
+    session = kwargs.get("session")
+    console.print_banner(ver=session.version, exp_cnt=len(futil.list_exp()))
 
 
 def run_quit(**kwargs):
@@ -329,7 +330,8 @@ def run_reset(**kwargs):
     Terminal reset
     """
     os.system("reset")
-    print(console.INTRO)
+    session = kwargs.get("session")
+    console.print_banner(ver=session.version, exp_cnt=len(futil.list_exp()))
 
 
 def run_help(**kwargs):
