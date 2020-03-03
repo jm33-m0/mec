@@ -1,5 +1,17 @@
 #!/bin/bash
 
+start() {
+    (
+        cd ~/.mec &&
+            ~/.mec/.venv/bin/python3 ~/.mec/mec.py
+    )
+}
+
+stop() {
+    [[ -f /tmp/mec.pid ]] || return
+    kill "$(cat /tmp/mec.pid)" >/dev/null 2>&1
+}
+
 case "$1" in
 "start")
     start
@@ -18,15 +30,3 @@ case "$1" in
     ;;
 
 esac
-
-start() {
-    (
-        cd ~/.mec &&
-            ~/.mec/.venv/bin/python3 ~/.mec/mec.py
-    )
-}
-
-stop() {
-    [[ -f /tmp/mec.pid ]] || return
-    kill "$(cat /tmp/mec.pid)"
-}
