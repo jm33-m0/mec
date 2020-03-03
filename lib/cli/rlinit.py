@@ -6,10 +6,13 @@ readline init script
 
 import os
 import sys
+from typing import Optional
 
 from prompt_toolkit import ANSI
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.auto_suggest import (AutoSuggest, Suggestion,
+                                         ThreadedAutoSuggest)
 from prompt_toolkit.completion import NestedCompleter
+from prompt_toolkit.document import Document
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import PromptSession
 
@@ -26,6 +29,7 @@ def readline_init(session):
     """
     cmds_dict = cmds_init(session)
     command_list = []
+
     for _, percmd in cmds_dict.items():
         command_list += percmd.names
 
@@ -56,6 +60,37 @@ def readline_init(session):
     return list(dict.fromkeys(command_list))
 
 
+class MecAutoSuggest(AutoSuggest):
+
+    """
+    Auto-suggest command like fish shell
+    """
+
+    def __init__(self, completions=None):
+        if not completions:
+            print("completions cannot be None!")
+            return
+        self.completions = completions
+
+    def get_suggestion(
+            self, buffer: "Buffer", document: Document
+    ) -> Optional[Suggestion]:
+
+        # Consider only the last line for the suggestion.
+        text = document.text.rsplit("\n", 1)[-1]
+
+        # Only create a suggestion when this is not an empty line.
+
+        if text.strip():
+            # Find first matching line in history.
+
+            for string in self.completions:
+                if string.startswith(text):
+                    return Suggestion(string[len(text):])
+
+        return None
+
+
 def prompt(session):
     '''
     mec prompt
@@ -67,9 +102,11 @@ def prompt(session):
     mec_completer = NestedCompleter.from_nested_dict(completion_dict)
     mec_ps = ANSI(colors.CYAN + colors.BOLD + "\nmec > " + colors.END)
 
+    cmd_autosuggest = ThreadedAutoSuggest(MecAutoSuggest(completions=cmd_list))
+
     return PromptSession(message=mec_ps,
                          mouse_support=True,
                          history=FileHistory(HISTFILE),
                          completer=mec_completer,
                          complete_while_typing=True,
-                         auto_suggest=AutoSuggestFromHistory()).prompt()
+                         auto_suggest=cmd_autosuggest).prompt()

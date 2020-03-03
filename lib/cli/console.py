@@ -83,12 +83,18 @@ def input_check(prompt_info, allow_blank=True,
     '''
     checks user input
     '''
+    # add some completions
+    command_list = ["app:", "port:", "ip:", "cidr:", "country:", "city:",
+                    "subdivisions:", "device:", "ver:",
+                    "weblogic", "tomcat", "jenkins", "joomla", "jboss",
+                    "exchange", "iis", "nginx", "apache"]
+    command_list += os.listdir("./")
+    choice_completer = WordCompleter(command_list)
+
+    if choices is not None:
+        choice_completer = WordCompleter(choices)
 
     while True:
-        choice_completer = WordCompleter(os.listdir("./"))
-
-        if choices is not None:
-            choice_completer = WordCompleter(choices)
 
         try:
             input_ps = ANSI(colors.BLUE + prompt_info + colors.END)
