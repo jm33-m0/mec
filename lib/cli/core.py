@@ -384,8 +384,7 @@ def update():
             return
 
         console.print_success(
-            f"[+] mec has been updated: {old_ver} -> {get_version()}\n" +
-            "press enter to continue...")
+            f"[+] mec has been updated: {old_ver} -> {get_version()}\n")
         actions(act="restart")
 
 
