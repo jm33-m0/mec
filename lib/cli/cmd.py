@@ -72,6 +72,11 @@ def run_info(**kwargs):
     """
     session = kwargs.get("session", None)
 
+    if session is None:
+        console.print_error("[-] info: session not exist")
+
+        return
+
     if session.shadowsocks.is_usable():
         session.proxy_status = "OK"
     colors.colored_print(
