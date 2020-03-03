@@ -88,3 +88,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# ingore mec config file
+conf/mec.conf
