@@ -36,6 +36,8 @@ class Session:
         self.init_dir = MECROOT
         # PID file
         self.pidfile = "/tmp/mec.pid"
+        # config file
+        self.config_file = self.init_dir + "/conf/mec.conf"
         # where to put temp files
         self.out_dir = self.init_dir + '/output'
         # where to put proxychains4 config file
@@ -54,6 +56,8 @@ class Session:
 
         # whether to use proxychains4
         self.use_proxy = True
+        # whether to update automatically
+        self.auto_update = False
         # shadowsocks helper
         self.shadowsocks = proxy.ShadowsocksProxy(
             proxy_bin, ss_config)
@@ -67,6 +71,24 @@ class Session:
 
         # are we root?
         self.is_root = os.geteuid() == 0
+        # update via user config file
+        self.read_config()
+
+    def read_config(self):
+        """
+        read ~/.mec/conf/mec.conf
+        """
+        try:
+            conf = open(self.config_file)
+            for line in conf.readlines():
+                opt = line.split(":")[0]
+                val = opt[1]
+                if opt == "auto-update" and val.lower() in ("false", "no", "0"):
+                    console.print_warning("[*] auto-update set to False")
+                    self.auto_update = False
+
+        except (FileNotFoundError, IndexError):
+            self.auto_update = True
 
     def command(self, user_cmd):
         '''

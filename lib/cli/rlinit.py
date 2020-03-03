@@ -98,6 +98,7 @@ def prompt(session):
     cmd_list = readline_init(session)
     completion_dict = dict.fromkeys(cmd_list)
     completion_dict["target"] = dict.fromkeys(os.listdir("./data"))
+    completion_dict["set"] = dict.fromkeys(["auto-update"])
 
     mec_completer = NestedCompleter.from_nested_dict(completion_dict)
     mec_ps = ANSI(colors.CYAN + colors.BOLD + "\nmec > " + colors.END)

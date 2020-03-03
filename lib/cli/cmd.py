@@ -66,6 +66,30 @@ def run_masscan(**kwargs):
         console.print_warning("[-] masscan exited")
 
 
+def run_set(**kwargs):
+    """
+    set mec config, you can write whatever opt:val you like
+    """
+    session = kwargs.get("session", None)
+
+    if session is None:
+        console.print_error("[-] session not exist")
+
+        return
+
+    try:
+        opt = kwargs.get("args")[0]
+        val = kwargs.get("args")[1]
+    except IndexError:
+        console.print_error("[-] Set what?")
+
+        return
+
+    futil.write_file(text=f"{opt}:{val}", filepath=session.config_file)
+    session.read_config()
+    console.print_success(f"[+] {opt} has been set to {val}")
+
+
 def run_info(**kwargs):
     """
     mec status
@@ -77,13 +101,18 @@ def run_info(**kwargs):
 
         return
 
+    # update via user config file
+    session.read_config()
+
     if session.shadowsocks.is_usable():
         session.proxy_status = "OK"
+
     colors.colored_print(
         f'''
 session
 -------
 
+[*] Auto-Update: {session.auto_update}
 [*] Current directory: {os.getcwd()}
 [*] Root directory: {session.init_dir}
 [*] Log file: {session.logfile}
@@ -328,9 +357,16 @@ def cmds_init(session):
                        helper=run_info)
     COMMANDS.update({"info": info_cmd})
 
+    # set
+    set_cmd = Command(names=["set", "s"],
+                      doc=f"Set an option in {session.config_file}: `set <opt> <val>`",
+                      session=session,
+                      helper=run_set)
+    COMMANDS.update({"set": set_cmd})
+
     # target
     target_cmd = Command(names=["target", "t"],
-                         doc="Change target list",
+                         doc="Change target list: `target <ip_list>`",
                          session=session,
                          helper=run_target)
     COMMANDS.update({"target": target_cmd})
