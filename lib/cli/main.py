@@ -8,7 +8,6 @@ by jm33-ng
 
 import os
 import sys
-from multiprocessing import Process
 
 from lib.cli import cmd, colors, console, core, futil, rlinit
 
@@ -25,9 +24,6 @@ def main():
     SESSION.ip_list = SESSION.init_dir + '/data/ip_list.txt'
 
     futil.write_file(text=f"{os.getpid()}", filepath=SESSION.pidfile)
-
-    update_job = Process(target=core.update,)
-    update_job.start()
 
     while True:
         try:

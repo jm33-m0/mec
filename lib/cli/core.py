@@ -85,16 +85,24 @@ class Session:
             opt = line.strip().split(':')[0]
             val = line.strip().split(':')[1]
 
-            if opt == "auto-update" and val.lower() in ("false", "no", "0"):
-                self.auto_update = False
+            if opt == "auto-update":
+                if val.lower() in ("false", "no", "0"):
+                    self.auto_update = False
+                else:
+                    self.auto_update = True
 
         try:
             conf = open(self.config_file)
+
             for line in conf.readlines():
                 handle_config(line)
 
         except (FileNotFoundError, IndexError):
             self.auto_update = True
+        finally:
+            if self.auto_update:
+                update_job = Process(target=update,)
+                update_job.start()
 
     def command(self, user_cmd):
         '''
@@ -141,6 +149,7 @@ class Session:
                 if scanner_instance is None:
                     return
                 scanner_instance.scan()
+
                 return
 
             except (EOFError, KeyboardInterrupt, SystemExit):
