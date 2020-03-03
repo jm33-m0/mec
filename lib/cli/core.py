@@ -104,6 +104,8 @@ class Session:
                 update_job = Process(target=update,)
                 update_job.start()
 
+        self.version = get_version()
+
     def command(self, user_cmd):
         '''
         passes to cmd handler
