@@ -6,6 +6,7 @@ readline init script
 
 import os
 import sys
+import termios
 from typing import Optional
 
 from prompt_toolkit import ANSI
@@ -69,6 +70,7 @@ class MecAutoSuggest(AutoSuggest):
     def __init__(self, completions=None):
         if not completions:
             print("completions cannot be None!")
+
             return
         self.completions = completions
 
@@ -108,9 +110,15 @@ def prompt(session):
 
     cmd_autosuggest = ThreadedAutoSuggest(MecAutoSuggest(completions=cmd_list))
 
-    return PromptSession(message=mec_ps,
-                         mouse_support=True,
-                         history=FileHistory(HISTFILE),
-                         completer=mec_completer,
-                         complete_while_typing=True,
-                         auto_suggest=cmd_autosuggest).prompt()
+    try:
+        mecprompt = PromptSession(message=mec_ps,
+                                  mouse_support=True,
+                                  history=FileHistory(HISTFILE),
+                                  completer=mec_completer,
+                                  complete_while_typing=True,
+                                  auto_suggest=cmd_autosuggest).prompt()
+    except termios.error as err:
+        colors.colored_print(f"[-] Fatal error: {err}", color_code=colors.RED)
+        os.system("mec stop")
+
+    return mecprompt

@@ -139,10 +139,10 @@ def input_check(prompt_info, allow_blank=True,
             continue
 
         # pylint: disable=broad-except
-        except BaseException:
-            print_error("[-] Invalid input")
+        except BaseException as err:
+            print_error(f"[-] Error: {err}")
 
-            continue
+            break
 
 
 def yes_no(quest):
