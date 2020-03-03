@@ -78,14 +78,17 @@ class Session:
         """
         read ~/.mec/conf/mec.conf
         """
+        def handle_config(line):
+            opt = line.strip().split(':')[0]
+            val = line.strip().split(':')[1]
+
+            if opt == "auto-update" and val.lower() in ("false", "no", "0"):
+                self.auto_update = False
+
         try:
             conf = open(self.config_file)
             for line in conf.readlines():
-                opt = line.split(":")[0]
-                val = opt[1]
-                if opt == "auto-update" and val.lower() in ("false", "no", "0"):
-                    console.print_warning("[*] auto-update set to False")
-                    self.auto_update = False
+                handle_config(line)
 
         except (FileNotFoundError, IndexError):
             self.auto_update = True

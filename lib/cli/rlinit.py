@@ -96,9 +96,12 @@ def prompt(session):
     mec prompt
     '''
     cmd_list = readline_init(session)
+
+    # cook our completions
     completion_dict = dict.fromkeys(cmd_list)
     completion_dict["target"] = dict.fromkeys(os.listdir("./data"))
     completion_dict["set"] = dict.fromkeys(["auto-update"])
+    completion_dict["set"]["auto-update"] = dict.fromkeys(["True", "False"])
 
     mec_completer = NestedCompleter.from_nested_dict(completion_dict)
     mec_ps = ANSI(colors.CYAN + colors.BOLD + "\nmec > " + colors.END)

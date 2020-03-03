@@ -85,7 +85,24 @@ def run_set(**kwargs):
 
         return
 
-    futil.write_file(text=f"{opt}:{val}", filepath=session.config_file)
+    # read old configs
+    new_config_lines = []
+
+    if os.path.isfile(session.config_file):
+        for line in open(session.config_file).readlines():
+            line = line.strip().lower()
+
+            if line.startswith(opt):
+                continue
+            new_config_lines.append(line)
+
+    new_setting = f"{opt}:{val}"
+
+    if len(new_config_lines) == 0:
+        new_setting = f"{opt}:{val}\n"
+    new_config_lines.append(new_setting)
+    futil.write_file(text='\n'.join(new_config_lines),
+                     filepath=session.config_file, append=True)
     session.read_config()
     console.print_success(f"[+] {opt} has been set to {val}")
 

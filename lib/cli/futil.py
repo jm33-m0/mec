@@ -70,10 +70,14 @@ def list_exp():
     return pocs
 
 
-def write_file(text="", filepath=None):
+def write_file(text="", filepath=None, append=False):
     """
     write text to file
     """
     textf = open(filepath, "w+")
+    if append:
+        textf.close()
+        textf = open(filepath, "a+")
+
     textf.write(text)
     textf.close()
