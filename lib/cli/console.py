@@ -30,6 +30,8 @@ INTRO = colors.CYAN + colors.BOLD + r'''
                   ░
 
     version: v2.0
+
+    0 exploits
 ''' + colors.END + colors.GREEN + colors.BOLD + f'''
     by jm33_m0
     https://github.com/jm33-m0/mec

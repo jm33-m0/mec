@@ -55,6 +55,8 @@ def run():
         os.system('clear')
         os.chdir(core.MECROOT)
         console.INTRO = console.INTRO.replace("v2.0", core.get_version())
+        console.INTRO = console.INTRO.replace(
+            "0 exploits", f"{len(futil.list_exp())-1} exploits")
         print(console.INTRO)
         main()
     except (EOFError, KeyboardInterrupt, SystemExit):
