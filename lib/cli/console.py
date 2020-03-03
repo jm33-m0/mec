@@ -69,12 +69,7 @@ def debug_except():
     display traceback info
     '''
     tcbk = traceback.format_exc()
-
-    answ = yes_no("[?] Display traceback?")
-
-    if answ:
-        print_error(tcbk)
-
+    print_error("[-] Unhandled exception:\n"+tcbk)
     sys.exit(1)
 
 
