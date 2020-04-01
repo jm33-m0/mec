@@ -26,8 +26,13 @@ please read the [wiki](https://github.com/jm33-m0/mec/wiki)
 
 ### zoomeye host search
 
-[![asciicast](https://asciinema.org/a/7u8PQvAHqwo7WtrVqHMD9lKNX.svg)](https://asciinema.org/a/7u8PQvAHqwo7WtrVqHMD9lKNX)
+<p>
+    <img width="600" src="/screenshot/zoomeye.svg">
+</p>
 
 ### mass exploiting
 
-[![asciicast](https://asciinema.org/a/FLHdaiUXcufduNwmu0tmxM5pD.svg)](https://asciinema.org/a/FLHdaiUXcufduNwmu0tmxM5pD)
+<p>
+    <img width="600" src="/screenshot/mec.svg">
+</p>
+
