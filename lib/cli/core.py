@@ -391,7 +391,7 @@ def update():
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=30)
         check_res = out.decode("utf-8")
-    except subprocess.CalledProcessError:
+    except BaseException:
         console.print_error(
             f"[-] Failed to check for updates:\n{traceback.format_exc()}")
 
@@ -409,7 +409,7 @@ def update():
             stderr=subprocess.STDOUT,
             timeout=30)
         pull_res = out.decode("utf-8")
-    except subprocess.CalledProcessError:
+    except BaseException:
         console.print_error(f"[-] Failed to update mec: {traceback.format_exc()}")
 
         return
