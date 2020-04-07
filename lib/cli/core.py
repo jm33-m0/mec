@@ -384,7 +384,6 @@ def update():
     os.chdir(MECROOT)
 
     # current version
-    # pylint: disable=unused-variable
     old_ver = get_version()
 
     # refresh local git repo
@@ -425,8 +424,9 @@ def update():
             return
 
         console.print_success(
-            f"[+] mec has been updated: {old_ver} -> {get_version()}\n")
-        actions(act="restart")
+            f"[+] mec has been updated: {old_ver} -> {get_version()}\n" +
+            "[*] please re-open mec manually")
+        sys.exit(0)
 
 
 def actions(act="start"):
