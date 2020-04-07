@@ -422,7 +422,8 @@ def update():
             return
 
         console.print_success(
-            f"[+] mec has been updated: {old_ver} -> {get_version()}\n\n")
+            f"[+] mec has been updated: {old_ver} -> {get_version()}," +
+            " press enter to continue...\n\n")
         sys.exit(0)
 
 
