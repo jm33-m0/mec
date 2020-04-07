@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# pylint: disable=too-many-instance-attributes,too-many-statements,too-many-branches,too-many-locals,too-many-nested-blocks,broad-except,too-few-public-methods,too-many-arguments
+# pylint: disable=too-many-instance-attributes,too-many-statements,too-many-branches,too-many-locals,too-many-nested-blocks,broad-except,too-few-public-methods,too-many-arguments,too-many-return-statements
 
 '''
 mass exploit console
@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 import traceback
-from multiprocessing import Process
+from multiprocessing import Process, Manager
 
 import psutil
 import tqdm
@@ -101,8 +101,18 @@ class Session:
             self.auto_update = True
         finally:
             if self.auto_update:
-                update_job = Process(target=update,)
+                res = Manager().dict()
+                update_job = Process(target=update, args=(res))
                 update_job.start()
+
+                # wait for result
+                update_job.join()
+                if "[+]" in res['status']:
+                    console.print_success(res['status'])
+                    if console.yes_no("[?] Exit mec (to apply updates) ?"):
+                        sys.exit(0)
+                elif "[-]" in res['status']:
+                    console.print_error(res['status'])
 
         self.version = get_version()
 
@@ -373,13 +383,14 @@ def get_version():
     return out.decode("utf-8")
 
 
-def update():
+def update(res):
     '''
     check updates from https://github.com/jm33-m0/mec
     '''
     # current version
     old_ver = get_version()
     if old_ver == "":
+        res['status'] = "[-] cannot get version"
         return
 
     os.chdir(MECROOT)
@@ -392,13 +403,13 @@ def update():
             stderr=subprocess.STDOUT, timeout=30)
         check_res = out.decode("utf-8")
     except BaseException:
-        console.print_error(
-            f"[-] Failed to check for updates:\n{traceback.format_exc()}")
+        res['status'] = f"[-] Failed to check for updates:\n{traceback.format_exc()}"
 
         return
 
     if "[up to date]" in check_res:
 
+        res['status'] = "already up to update"
         return
 
     # pull if needed
@@ -410,21 +421,22 @@ def update():
             timeout=30)
         pull_res = out.decode("utf-8")
     except BaseException:
-        console.print_error(f"[-] Failed to update mec: {traceback.format_exc()}")
+        res['status'] = f"[-] Failed to update mec: {traceback.format_exc()}"
 
         return
 
     if "[mec-update-success]" in pull_res:
         if "error:" in pull_res:
-            console.print_error(
-                f"[-] Failed to update mec:\n{pull_res}, press enter to continue...")
+            res['status'] = f"[-] Failed to update mec:\n{pull_res}, press enter to continue..."
 
             return
 
-        console.print_success(
-            f"[+] mec has been updated: {old_ver} -> {get_version()}," +
-            " press enter to continue...\n\n")
-        sys.exit(0)
+        res['status'] = f"[+] mec has been updated:\n{old_ver} -> {get_version()}," + \
+            " press enter to continue...\n\n"
+        return
+
+    res['status'] = "finished"
+    return
 
 
 def actions(act="start"):
