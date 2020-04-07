@@ -424,7 +424,6 @@ def update():
         console.print_success(
             f"[+] mec has been updated: {old_ver} -> {get_version()}\n\n")
         sys.exit(0)
-        actions("restart")
 
 
 def actions(act="start"):
