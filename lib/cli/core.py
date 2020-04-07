@@ -411,8 +411,8 @@ def update():
             stderr=subprocess.STDOUT,
             timeout=30)
         pull_res = out.decode("utf-8")
-    except subprocess.CalledProcessError as exc:
-        console.print_error(f"[-] Failed to update mec: {exc}\n{pull_res}")
+    except subprocess.CalledProcessError:
+        console.print_error(f"[-] Failed to update mec: {traceback.format_exc()}")
 
         return
 
