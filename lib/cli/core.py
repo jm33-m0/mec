@@ -373,6 +373,7 @@ def get_version():
                 stderr=subprocess.STDOUT, timeout=3)
         except BaseException:
             console.print_error(f"[-] Failed to read version:\n{traceback.format_exc()}")
+            return ""
 
     return out.decode("utf-8")
 
@@ -385,6 +386,8 @@ def update():
 
     # current version
     old_ver = get_version()
+    if old_ver == "":
+        return
 
     # refresh local git repo
     try:
