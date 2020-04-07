@@ -361,11 +361,12 @@ def get_version():
     print current version
     '''
     try:
+        os.chdir(MECROOT)
         check = "git describe --always"
         out = subprocess.check_output(
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=3)
-    except subprocess.CalledProcessError:
+    except BaseException:
         console.print_error(f"[-] Failed to read version:\n{traceback.format_exc()}")
         return ""
 
@@ -376,12 +377,12 @@ def update():
     '''
     check updates from https://github.com/jm33-m0/mec
     '''
-    os.chdir(MECROOT)
-
     # current version
     old_ver = get_version()
     if old_ver == "":
         return
+
+    os.chdir(MECROOT)
 
     # refresh local git repo
     try:
