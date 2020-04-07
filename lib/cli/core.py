@@ -361,19 +361,13 @@ def get_version():
     print current version
     '''
     try:
-        check = "git describe --tags"
+        check = "git describe --always"
         out = subprocess.check_output(
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=3)
     except subprocess.CalledProcessError:
-        check = "git describe --always"
-        try:
-            out = subprocess.check_output(
-                ["/bin/sh", "-c", check],
-                stderr=subprocess.STDOUT, timeout=3)
-        except BaseException:
-            console.print_error(f"[-] Failed to read version:\n{traceback.format_exc()}")
-            return ""
+        console.print_error(f"[-] Failed to read version:\n{traceback.format_exc()}")
+        return ""
 
     return out.decode("utf-8")
 
