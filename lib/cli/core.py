@@ -371,8 +371,8 @@ def get_version():
             out = subprocess.check_output(
                 ["/bin/sh", "-c", check],
                 stderr=subprocess.STDOUT, timeout=3)
-        except BaseException as exc:
-            console.print_error(f"[-] Failed to read version: {exc}")
+        except BaseException:
+            console.print_error(f"[-] Failed to read version:\n{traceback.format_exc()}")
 
     return out.decode("utf-8")
 
@@ -394,9 +394,9 @@ def update():
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=30)
         check_res = out.decode("utf-8")
-    except subprocess.CalledProcessError as exc:
+    except subprocess.CalledProcessError:
         console.print_error(
-            f"[-] Failed to check for updates: {exc}")
+            f"[-] Failed to check for updates:\n{traceback.format_exc()}")
 
         return
 
