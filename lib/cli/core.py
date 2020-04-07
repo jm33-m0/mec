@@ -361,6 +361,7 @@ def get_version():
     print current version
     '''
     try:
+        out = ""
         check = "git describe --tags"
         out = subprocess.check_output(
             ["/bin/sh", "-c", check],

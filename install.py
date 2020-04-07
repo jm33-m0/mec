@@ -132,6 +132,10 @@ def start_install():
         "Now installing dependencies...", colors.BLUE)
     pip_install(venv_py, '-r requirements.txt')
 
+    # mkdir conf
+    if not os.path.isdir(MECROOT+"/conf"):
+        os.mkdir(MECROOT+"/conf")
+
     # zoomeye account:
     zoomeye = str(
         input(colors.CYAN+'Would you like to use zoomeye? (yes/No) '+colors.END)).lower()
