@@ -90,4 +90,4 @@ ENV/
 .ropeproject
 
 # ingore mec config file
-conf/mec.conf
+conf/
