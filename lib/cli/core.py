@@ -361,17 +361,18 @@ def get_version():
     print current version
     '''
     try:
-        out = ""
         check = "git describe --tags"
         out = subprocess.check_output(
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=3)
-    except subprocess.CalledProcessError as exc:
-        print(
-            f"{colors.RED}[-] Failed to get mec version: {exc}," +
-            f"\n{out}\nPress enter to continue...{colors.END}")
-
-        return ""
+    except subprocess.CalledProcessError:
+        check = "git describe --always"
+        try:
+            out = subprocess.check_output(
+                ["/bin/sh", "-c", check],
+                stderr=subprocess.STDOUT, timeout=3)
+        except BaseException as exc:
+            console.print_error(f"[-] Failed to read version: {exc}")
 
     return out.decode("utf-8")
 
@@ -395,7 +396,7 @@ def update():
         check_res = out.decode("utf-8")
     except subprocess.CalledProcessError as exc:
         console.print_error(
-            f"[-] Failed to check for updates: {exc},\n{check_res}\npress enter to continue...")
+            f"[-] Failed to check for updates: {exc}")
 
         return
 
