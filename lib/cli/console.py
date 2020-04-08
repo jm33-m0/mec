@@ -56,6 +56,7 @@ def print_status(msg, pid):
     print animated status info,
     until pid exits
     '''
+    print(f"[*] Waiting for {pid}...")
     msg += '\r'
     msg_list = list(msg)
 
@@ -75,9 +76,12 @@ def print_status(msg, pid):
             i += 1
 
     while True:
-        if not psutil.pid_exists(pid):
+        try:
+            if not psutil.pid_exists(pid):
+                break
+            loop()
+        except KeyboardInterrupt:
             break
-        loop()
 
     sys.stdout.flush()
     print()
