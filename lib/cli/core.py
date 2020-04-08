@@ -106,9 +106,14 @@ class Session:
                 self.version = "Unknown"
 
             if self.auto_update:
+                # record result
                 res = Manager().dict()
                 update_job = Process(target=update, args=(res,))
                 update_job.start()
+
+                # print status
+                console.print_status(
+                    "checking for updates...", update_job.pid)
 
                 # wait for result
                 try:

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# pylint: disable=broad-except
+# pylint: disable=broad-except, invalid-name
 
 """
 Handles console related stuff
@@ -8,9 +8,11 @@ Handles console related stuff
 
 import os
 import sys
+import time
 import traceback
 from ipaddress import ip_address
 
+import psutil
 from prompt_toolkit import ANSI
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.shortcuts import prompt
@@ -48,6 +50,38 @@ def print_banner(ver, exp_cnt):
 
 
 # util functions
+
+def print_status(msg, pid):
+    '''
+    print animated status info,
+    until pid exits
+    '''
+    msg += '\r'
+    msg_list = list(msg)
+
+    def loop():
+        print(colors.CYAN + msg + colors.END, end='')
+        i = 0
+
+        for c in msg:
+            sys.stdout.flush()
+            msg_list[i] = c.upper()
+            sys.stdout.write(''.join(msg_list))
+
+            if c not in ('.', ' '):
+                time.sleep(.3)
+            msg_list[i] = c
+            sys.stdout.write(''.join(msg_list))
+            i += 1
+
+    while True:
+        if not psutil.pid_exists(pid):
+            break
+        loop()
+
+    sys.stdout.flush()
+    print()
+
 
 def print_error(msg):
     '''
