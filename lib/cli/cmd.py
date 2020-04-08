@@ -358,6 +358,14 @@ def run_help(**kwargs):
     print(help_info)
 
 
+def run_update(**kwargs):
+    """
+    run core.call_update() to manually check update from GitHub
+    """
+    session = kwargs.get("session")
+    session.call_update()
+
+
 def cmds_init(session):
     """
     generate COMMANDS dict
@@ -466,6 +474,13 @@ def cmds_init(session):
                        session=session,
                        helper=run_help)
     COMMANDS.update({"help": help_cmd})
+
+    # update
+    update_cmd = Command(names=["update", "up", "u"],
+                         doc="Manually check for updates from GitHub",
+                         session=session,
+                         helper=run_update)
+    COMMANDS.update({"update": update_cmd})
 
     # quit
     quit_cmd = Command(names=["quit", "exit", "q"],

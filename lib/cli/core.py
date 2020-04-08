@@ -105,40 +105,101 @@ class Session:
             except BaseException:
                 self.version = "Unknown"
 
-            self.call_update()
+            if self.auto_update:
+                self.call_update(silent=True)
 
-    def call_update(self):
+    def call_update(self, silent=False):
         """
         update mec
         record update result and act accordingly
         """
 
         if not self.auto_update:
+            console.print_warning("[-] auto-update is disabled")
+
+        def update(res):
+            '''
+            check updates from https://github.com/jm33-m0/mec
+            '''
+            # current version
+            old_ver = get_version()
+
+            if old_ver == "":
+                res['status'] = "[-] cannot get version"
+
+                return
+
+            os.chdir(MECROOT)
+
+            # refresh local git repo
+            try:
+                check = "git remote -v update"
+                out = subprocess.check_output(
+                    ["/bin/sh", "-c", check],
+                    stderr=subprocess.STDOUT, timeout=30)
+                check_res = out.decode("utf-8")
+            except KeyboardInterrupt:
+                return
+            except BaseException:
+                res['status'] = f"[-] Failed to check for updates:\n{traceback.format_exc()}"
+
+                return
+
+            if "[up to date]" in check_res:
+
+                res['status'] = "already up to update"
+
+                return
+
+            # pull if needed
+            pull = "git pull --tags"
+            try:
+                out = subprocess.check_output(
+                    ["/bin/sh", "-c", pull],
+                    stderr=subprocess.STDOUT,
+                    timeout=30)
+                pull_res = out.decode("utf-8")
+            except KeyboardInterrupt:
+                return
+            except BaseException:
+                res['status'] = f"[-] Failed to update mec: {traceback.format_exc()}"
+
+                return
+
+            if "error:" in pull_res:
+                res['status'] = f"[-] Failed to update mec:\n{pull_res}, press enter to continue..."
+
+                return
+
+            res['status'] = f"[+] mec has been updated:\n{old_ver}->{get_version()}"
+
             return
 
-        # record result
+        # update in child process
         res = Manager().dict()
         update_job = Process(target=update, args=(res,))
         update_job.start()
 
-        # print status
-        console.print_status(
-            "checking for updates...", update_job)
+        if not silent:
+            # print status
+            console.print_status(
+                "[*] fetching updates from github...", update_job)
 
-        update_job.join()
-        # wait for result
-        try:
-            status = res['status']
-        except BaseException:
-            status = ""
+            update_job.join()
 
-        if "[+]" in status:
-            console.print_success(status)
+            # wait for result
+            try:
+                status = res['status']
+            except BaseException:
+                status = ""
 
-            if console.yes_no("[?] Exit mec (to apply updates) ?"):
-                sys.exit(0)
-        elif "[-]" in status:
-            console.print_error(status)
+            if "[+]" in status:
+                console.print_success(status)
+
+                if console.yes_no("[?] Exit mec (to apply updates) ?"):
+                    sys.exit(0)
+            elif "[-]" in status:
+                console.print_error(status)
 
     def command(self, user_cmd):
         '''
@@ -408,65 +469,6 @@ def get_version():
         return ""
 
     return out.decode("utf-8")
-
-
-def update(res):
-    '''
-    check updates from https://github.com/jm33-m0/mec
-    '''
-    # current version
-    old_ver = get_version()
-
-    if old_ver == "":
-        res['status'] = "[-] cannot get version"
-
-        return
-
-    os.chdir(MECROOT)
-
-    # refresh local git repo
-    try:
-        check = "git remote -v update"
-        out = subprocess.check_output(
-            ["/bin/sh", "-c", check],
-            stderr=subprocess.STDOUT, timeout=30)
-        check_res = out.decode("utf-8")
-    except KeyboardInterrupt:
-        return
-    except BaseException:
-        res['status'] = f"[-] Failed to check for updates:\n{traceback.format_exc()}"
-
-        return
-
-    if "[up to date]" in check_res:
-
-        res['status'] = "already up to update"
-
-        return
-
-    # pull if needed
-    pull = "git pull --tags"
-    try:
-        out = subprocess.check_output(
-            ["/bin/sh", "-c", pull],
-            stderr=subprocess.STDOUT,
-            timeout=30)
-        pull_res = out.decode("utf-8")
-    except KeyboardInterrupt:
-        return
-    except BaseException:
-        res['status'] = f"[-] Failed to update mec: {traceback.format_exc()}"
-
-        return
-
-    if "error:" in pull_res:
-        res['status'] = f"[-] Failed to update mec:\n{pull_res}, press enter to continue..."
-
-        return
-
-    res['status'] = f"[+] mec has been updated:\n{old_ver}->{get_version()}"
-
-    return
 
 
 def actions(act="start"):
