@@ -463,14 +463,17 @@ def get_version():
     '''
     try:
         os.chdir(MECROOT)
-        check = "git describe --always"
+        check = "git describe --tags"
         out = subprocess.check_output(
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=3)
     except KeyboardInterrupt:
         return ""
     except BaseException:
-        console.print_error(f"[-] Failed to read version:\n{traceback.format_exc()}")
+        check = "git describe --always"
+        out = subprocess.check_output(
+            ["/bin/sh", "-c", check],
+            stderr=subprocess.STDOUT, timeout=3)
 
         return ""
 
