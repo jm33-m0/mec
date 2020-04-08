@@ -147,7 +147,7 @@ class Session:
 
             if "[up to date]" in check_res:
 
-                res['status'] = "already up to update"
+                res['status'] = "[+] already up to update"
 
                 return
 
