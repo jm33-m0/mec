@@ -202,6 +202,9 @@ class Session:
         if "[+]" in status:
             console.print_success(status)
 
+            if "already up to date" in status:
+                return
+
             if console.yes_no("[?] Exit mec (to apply updates) ?"):
                 sys.exit(0)
         elif "[-]" in status:
