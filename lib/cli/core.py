@@ -464,7 +464,7 @@ def update(res):
 
         return
 
-    res['status'] = f"[+] mec has been updated:\n{old_ver} -> {get_version()}"
+    res['status'] = f"[+] mec has been updated:\n{old_ver}->{get_version()}"
 
     return
 
