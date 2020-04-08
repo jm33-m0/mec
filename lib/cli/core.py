@@ -105,31 +105,38 @@ class Session:
             except BaseException:
                 self.version = "Unknown"
 
-            if self.auto_update:
-                # record result
-                res = Manager().dict()
-                update_job = Process(target=update, args=(res,))
-                update_job.start()
+            self.call_update()
 
-                # print status
-                console.print_status(
-                    "checking for updates...", update_job)
+    def call_update(self):
+        """
+        update mec
+        record update result and act accordingly
+        """
+        if not self.auto_update:
+            return
 
-                # wait for result
-                try:
-                    status = res['status']
-                except BaseException:
-                    status = ""
-                update_job.join()
+        # record result
+        res = Manager().dict()
+        update_job = Process(target=update, args=(res,))
+        update_job.start()
 
-                if "[+]" in status:
-                    console.print_success(status)
+        # print status
+        console.print_status(
+            "checking for updates...", update_job)
 
-                    if console.yes_no("[?] Exit mec (to apply updates) ?"):
-                        sys.exit(0)
-                elif "[-]" in status:
-                    console.print_error(status)
-                update_job.terminate()
+        # wait for result
+        try:
+            status = res['status']
+        except BaseException:
+            status = ""
+
+        if "[+]" in status:
+            console.print_success(status)
+
+            if console.yes_no("[?] Exit mec (to apply updates) ?"):
+                sys.exit(0)
+        elif "[-]" in status:
+            console.print_error(status)
 
     def command(self, user_cmd):
         '''

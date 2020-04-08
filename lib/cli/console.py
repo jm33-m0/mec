@@ -7,6 +7,7 @@ Handles console related stuff
 """
 
 import os
+import re
 import sys
 import time
 import traceback
@@ -67,7 +68,7 @@ def print_status(msg, proc):
             msg_list[i] = c.upper()
             sys.stdout.write(''.join(msg_list))
 
-            if c not in ('.', ' '):
+            if re.match(r"[a-z]", c):
                 time.sleep(.3)
             msg_list[i] = c
             sys.stdout.write(''.join(msg_list))
