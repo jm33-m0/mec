@@ -118,9 +118,10 @@ class Session:
                 # wait for result
                 try:
                     status = res['status']
-                except KeyError:
+                except BaseException:
                     status = ""
                 update_job.join()
+
                 if "[+]" in status:
                     console.print_success(status)
 
@@ -128,6 +129,7 @@ class Session:
                         sys.exit(0)
                 elif "[-]" in status:
                     console.print_error(status)
+                update_job.terminate()
 
     def command(self, user_cmd):
         '''
@@ -389,6 +391,8 @@ def get_version():
         out = subprocess.check_output(
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=3)
+    except KeyboardInterrupt:
+        return ""
     except BaseException:
         console.print_error(f"[-] Failed to read version:\n{traceback.format_exc()}")
 
@@ -407,7 +411,7 @@ def update(res):
     if old_ver == "":
         res['status'] = "[-] cannot get version"
 
-        return
+        sys.exit(0)
 
     os.chdir(MECROOT)
 
@@ -418,16 +422,18 @@ def update(res):
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=30)
         check_res = out.decode("utf-8")
+    except KeyboardInterrupt:
+        sys.exit(0)
     except BaseException:
         res['status'] = f"[-] Failed to check for updates:\n{traceback.format_exc()}"
 
-        return
+        sys.exit(0)
 
     if "[up to date]" in check_res:
 
         res['status'] = "already up to update"
 
-        return
+        sys.exit(0)
 
     # pull if needed
     pull = "git pull; echo '[mec-update-success]'"
@@ -437,25 +443,27 @@ def update(res):
             stderr=subprocess.STDOUT,
             timeout=30)
         pull_res = out.decode("utf-8")
+    except KeyboardInterrupt:
+        sys.exit(0)
     except BaseException:
         res['status'] = f"[-] Failed to update mec: {traceback.format_exc()}"
 
-        return
+        sys.exit(0)
 
     if "[mec-update-success]" in pull_res:
         if "error:" in pull_res:
             res['status'] = f"[-] Failed to update mec:\n{pull_res}, press enter to continue..."
 
-            return
+            sys.exit(0)
 
         res['status'] = f"[+] mec has been updated:\n{old_ver} -> {get_version()}," + \
             " press enter to continue...\n\n"
 
-        return
+        sys.exit(0)
 
     res['status'] = "finished"
 
-    return
+    sys.exit(0)
 
 
 def actions(act="start"):
