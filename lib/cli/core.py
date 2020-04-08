@@ -124,6 +124,7 @@ class Session:
         console.print_status(
             "checking for updates...", update_job)
 
+        update_job.join()
         # wait for result
         try:
             status = res['status']

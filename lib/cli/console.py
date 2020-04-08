@@ -66,12 +66,12 @@ def print_status(msg, proc):
         for c in msg:
             sys.stdout.flush()
             msg_list[i] = c.upper()
-            sys.stdout.write(''.join(msg_list))
+            sys.stdout.write(colors.CYAN+''.join(msg_list)+colors.END)
 
             if re.match(r"[a-z]", c):
                 time.sleep(.3)
             msg_list[i] = c
-            sys.stdout.write(''.join(msg_list))
+            sys.stdout.write(colors.CYAN+''.join(msg_list)+colors.END)
             i += 1
 
     try:
