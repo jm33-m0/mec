@@ -98,7 +98,7 @@ class Session:
                 handle_config(line)
 
         except (FileNotFoundError, IndexError):
-            self.auto_update = True
+            self.auto_update = False
         finally:
             try:
                 self.version = get_version()
@@ -114,8 +114,8 @@ class Session:
         record update result and act accordingly
         """
 
-        if not self.auto_update:
-            console.print_warning("[-] auto-update is disabled")
+        if self.auto_update:
+            console.print_success("[-] auto-update is enabled")
 
         def update(res):
             '''
