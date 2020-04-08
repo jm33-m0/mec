@@ -112,6 +112,7 @@ class Session:
         update mec
         record update result and act accordingly
         """
+
         if not self.auto_update:
             return
 
@@ -444,7 +445,7 @@ def update(res):
         return
 
     # pull if needed
-    pull = "git pull; echo '[mec-update-success]'"
+    pull = "git pull --tags"
     try:
         out = subprocess.check_output(
             ["/bin/sh", "-c", pull],
@@ -458,18 +459,12 @@ def update(res):
 
         return
 
-    if "[mec-update-success]" in pull_res:
-        if "error:" in pull_res:
-            res['status'] = f"[-] Failed to update mec:\n{pull_res}, press enter to continue..."
-
-            return
-
-        res['status'] = f"[+] mec has been updated:\n{old_ver} -> {get_version()}," + \
-            " press enter to continue...\n\n"
+    if "error:" in pull_res:
+        res['status'] = f"[-] Failed to update mec:\n{pull_res}, press enter to continue..."
 
         return
 
-    res['status'] = "finished"
+    res['status'] = f"[+] mec has been updated:\n{old_ver} -> {get_version()}"
 
     return
 
