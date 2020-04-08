@@ -12,7 +12,6 @@ import time
 import traceback
 from ipaddress import ip_address
 
-import psutil
 from prompt_toolkit import ANSI
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.shortcuts import prompt
@@ -51,12 +50,11 @@ def print_banner(ver, exp_cnt):
 
 # util functions
 
-def print_status(msg, pid):
+def print_status(msg, proc):
     '''
     print animated status info,
-    until pid exits
+    until proc exits
     '''
-    print(f"[*] Waiting for {pid}...")
     msg += '\r'
     msg_list = list(msg)
 
@@ -77,9 +75,11 @@ def print_status(msg, pid):
 
     try:
         while True:
-            if not psutil.pid_exists(pid):
+            if not proc.is_alive():
                 break
             loop()
+    except KeyboardInterrupt:
+        return
     except BaseException:
         pass
     finally:

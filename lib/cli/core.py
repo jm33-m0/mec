@@ -113,7 +113,7 @@ class Session:
 
                 # print status
                 console.print_status(
-                    "checking for updates...", update_job.pid)
+                    "checking for updates...", update_job)
 
                 # wait for result
                 try:
@@ -411,7 +411,7 @@ def update(res):
     if old_ver == "":
         res['status'] = "[-] cannot get version"
 
-        sys.exit(0)
+        return
 
     os.chdir(MECROOT)
 
@@ -423,17 +423,17 @@ def update(res):
             stderr=subprocess.STDOUT, timeout=30)
         check_res = out.decode("utf-8")
     except KeyboardInterrupt:
-        sys.exit(0)
+        return
     except BaseException:
         res['status'] = f"[-] Failed to check for updates:\n{traceback.format_exc()}"
 
-        sys.exit(0)
+        return
 
     if "[up to date]" in check_res:
 
         res['status'] = "already up to update"
 
-        sys.exit(0)
+        return
 
     # pull if needed
     pull = "git pull; echo '[mec-update-success]'"
@@ -444,26 +444,26 @@ def update(res):
             timeout=30)
         pull_res = out.decode("utf-8")
     except KeyboardInterrupt:
-        sys.exit(0)
+        return
     except BaseException:
         res['status'] = f"[-] Failed to update mec: {traceback.format_exc()}"
 
-        sys.exit(0)
+        return
 
     if "[mec-update-success]" in pull_res:
         if "error:" in pull_res:
             res['status'] = f"[-] Failed to update mec:\n{pull_res}, press enter to continue..."
 
-            sys.exit(0)
+            return
 
         res['status'] = f"[+] mec has been updated:\n{old_ver} -> {get_version()}," + \
             " press enter to continue...\n\n"
 
-        sys.exit(0)
+        return
 
     res['status'] = "finished"
 
-    sys.exit(0)
+    return
 
 
 def actions(act="start"):
