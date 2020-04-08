@@ -176,30 +176,36 @@ class Session:
             return
 
         # update in child process
+        if silent:
+            res = {}
+            update_job = Process(target=update, args=(res,))
+            update_job.start()
+
+            return
+
+        # check for result
         res = Manager().dict()
         update_job = Process(target=update, args=(res,))
         update_job.start()
+        # print status
+        console.print_status(
+            "[*] fetching updates from github...", update_job)
 
-        if not silent:
-            # print status
-            console.print_status(
-                "[*] fetching updates from github...", update_job)
+        update_job.join()
 
-            update_job.join()
+        # wait for result
+        try:
+            status = res['status']
+        except BaseException:
+            status = ""
 
-            # wait for result
-            try:
-                status = res['status']
-            except BaseException:
-                status = ""
+        if "[+]" in status:
+            console.print_success(status)
 
-            if "[+]" in status:
-                console.print_success(status)
-
-                if console.yes_no("[?] Exit mec (to apply updates) ?"):
-                    sys.exit(0)
-            elif "[-]" in status:
-                console.print_error(status)
+            if console.yes_no("[?] Exit mec (to apply updates) ?"):
+                sys.exit(0)
+        elif "[-]" in status:
+            console.print_error(status)
 
     def command(self, user_cmd):
         '''
