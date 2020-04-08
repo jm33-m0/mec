@@ -75,16 +75,16 @@ def print_status(msg, pid):
             sys.stdout.write(''.join(msg_list))
             i += 1
 
-    while True:
-        try:
+    try:
+        while True:
             if not psutil.pid_exists(pid):
                 break
             loop()
-        except KeyboardInterrupt:
-            break
-
-    sys.stdout.flush()
-    print()
+    except BaseException:
+        pass
+    finally:
+        sys.stdout.flush()
+        print()
 
 
 def print_error(msg):
