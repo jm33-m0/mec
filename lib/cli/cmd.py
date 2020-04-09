@@ -260,6 +260,10 @@ def run_censys(**kwargs):
     try:
         output = censys.start()
 
+        # if out file is none
+        if output == "":
+            return
+
         if console.yes_no("\n[?] Use collected URLs as target?"):
             session.ip_list = session.init_dir + "/" + output
             colors.colored_print(
