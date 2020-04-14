@@ -13,7 +13,7 @@ from multiprocessing import Process
 import requests
 from bs4 import BeautifulSoup
 
-from lib.cli import vwrite, wc, console
+from lib.cli import console, vwrite, wc
 
 
 def get_and_parse(url, page):
@@ -37,6 +37,10 @@ def get_and_parse(url, page):
             # pylint: disable=eval-used
             res = eval(result)
             vwrite.write_to_file(res['mu'], 'result.txt')
+
+    except requests.RequestException as exc:
+        console.print_error(f"[-] Request error: {exc}")
+
     except BaseException:
         console.debug_except()
 
@@ -73,7 +77,6 @@ def spider(keyword, count):
         return
     except BaseException:
         console.debug_except()
-
 
     # exit progress monitoring when we are done
     status.terminate()
