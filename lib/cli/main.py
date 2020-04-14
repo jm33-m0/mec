@@ -27,12 +27,18 @@ def main():
 
     while True:
         try:
+            if os.getcwd() != core.MECROOT:
+                os.chdir(core.MECROOT)
             input_cmd = rlinit.prompt(session=SESSION)
 
             try:
                 cmd.cmd_handler(SESSION, input_cmd)
             except (KeyboardInterrupt, EOFError, SystemExit):
                 sys.exit(0)
+
+        except FileNotFoundError:
+            console.print_error(f"[-] {core.MECROOT} not found???")
+            sys.exit(1)
 
         except KeyboardInterrupt:
             answ = console.yes_no(
