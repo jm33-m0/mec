@@ -116,6 +116,7 @@ def prompt(session):
                                   history=FileHistory(HISTFILE),
                                   completer=mec_completer,
                                   complete_while_typing=True,
+                                  reserve_space_for_menu=2,
                                   auto_suggest=cmd_autosuggest).prompt()
     except termios.error as err:
         colors.colored_print(f"[-] Fatal error: {err}", color_code=colors.RED)
