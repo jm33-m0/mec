@@ -39,7 +39,7 @@ def get_and_parse(url, page):
             vwrite.write_to_file(res['mu'], 'result.txt')
 
     except requests.RequestException as exc:
-        console.print_error(f"[-] Request error: {exc}")
+        console.print_warning(f"[-] Request error: {exc}")
 
     except BaseException:
         console.debug_except()
