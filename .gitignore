@@ -91,3 +91,6 @@ ENV/
 
 # ingore mec config file
 conf/
+
+# ignore mec data dir
+data/
