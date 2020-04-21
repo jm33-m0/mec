@@ -68,7 +68,7 @@ class ZoomEyeAPI:
             r_post = requests.post(
                 url='https://api.zoomeye.org/user/login',
                 data=data_encoded,
-                timeout=10)
+                timeout=30)
             r_decoded = json.loads(r_post.text)
 
             return r_decoded['access_token']
@@ -148,7 +148,7 @@ def crawler(qery, page, headers):
         r_get = requests.get(
             url=url,
             headers=headers,
-            timeout=5)
+            timeout=20)
         r_decoded = json.loads(r_get.text)
     except BaseException as exc:
         return f"crawler failed: {exc}"
