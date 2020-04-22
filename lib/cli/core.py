@@ -152,7 +152,7 @@ class Session:
                 return
 
             # pull if needed
-            pull = "git pull --tags"
+            pull = "git pull --depth=1 --tags"
             try:
                 out = subprocess.check_output(
                     ["/bin/sh", "-c", pull],
