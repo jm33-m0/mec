@@ -146,11 +146,32 @@ tcp_connect_time_out 8000
 socks4  127.0.0.1 9050
 http  {proxy_host} {proxy_port}
         '''
-        with open(f"/dev/shm/{target_ip}.conf", "w+") as conff:
-            conff.write(template)
-            conff.close()
+        try:
+            with open(f"/dev/shm/{target_ip}.conf", "w+") as conff:
+                conff.write(template)
+                conff.close()
+        except BaseException:
+            return False
 
         return True
+
+    def test_proxy(self):
+        """
+        test the proxychain
+        """
+        if not self.dynamic_proxy("test"):
+            return False
+
+        try:
+            out = subprocess.check_output(
+                args=["proxychains4", "-f", "/dev/shm/test.conf", "http://google.cn"])
+        except BaseException:
+            return False
+
+        if "HTML" in out.decode('utf-8'):
+            return True
+
+        return False
 
     def call_update(self, silent=False):
         """
@@ -272,7 +293,9 @@ http  {proxy_host} {proxy_port}
                 console.print_error("proxychains4 not found")
 
                 return
-            cmd.cmd_handler(self, "proxy")
+            if not self.test_proxy():
+                console.print_error("[-] proxychain doesn't work")
+                return
 
         # sleep between two subprocess open
         sleep_seconds = console.input_check("\n[?] Wait how many seconds" +

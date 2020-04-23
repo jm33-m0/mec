@@ -144,6 +144,11 @@ def run_info(**kwargs):
     else:
         session.proxy_status = "DISCONNECTED"
 
+    # proxychain status
+    proxychain_status = "DISCONNECTED"
+    if session.test_proxy():
+        proxychain_status = "OK"
+
     colors.colored_print(
         f'''
 session
@@ -159,6 +164,7 @@ proxy
 -----
 
 [*] proxy_pool API: {session.proxy_pool_api}
+[*] proxychain connectivity: {proxychain_status}
 [*] pool connectivity: {session.proxy_status}
 [*] tor connectivity: {tor_status}
 ''',
