@@ -18,8 +18,9 @@ import psutil
 import requests
 import tqdm
 
-from lib.cli import cmd, colors, console, futil
+from lib.cli import cmd, colors, console
 from lib.cli import exploits as exploit_exec
+from lib.cli import futil
 
 # mec root directory
 MECROOT = os.path.join(os.path.expanduser("~"), ".mec")

