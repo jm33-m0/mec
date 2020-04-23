@@ -420,6 +420,9 @@ class Scanner:
                 # continue to next target
                 e_args.remove(target_ip)
 
+                # sleep sleep_seconds
+                time.sleep(self.sleep_seconds)
+
                 # process pool
 
                 if count == self.jobs:
