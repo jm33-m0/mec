@@ -124,7 +124,9 @@ def debug_except():
 def input_check(prompt_info, allow_blank=True,
                 check_type=None, ip_check=False, choices=None):
     '''
-    checks user input
+    checks user input, always returns str
+    check_type: checks type and return as str
+    ip_check: check if input is ip
     '''
     # add some completions
     command_list = ["app:", "port:", "ip:", "cidr:", "country:", "city:",

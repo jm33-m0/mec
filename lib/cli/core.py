@@ -236,6 +236,14 @@ class Session:
             \n\n[=] Your choice: ',
             choices=['1', '2', 'built-in', 'manually'])
 
+        # sleep between two subprocess open
+        sleep_seconds = console.input_check("\n[?] Wait how many seconds" +
+                                            " before each process launch?\n" +
+                                            " (Set it to 0 when you want to use 100% CPU" +
+                                            " / bandwidth.Recommened value: 0.1)\n" +
+                                            "\n[=] Your input: ",
+                                            check_type=float)
+
         if answ in ['1', 'built-in']:
             print(
                 colors.CYAN +
@@ -251,6 +259,7 @@ class Session:
 
             try:
                 scanner_instance = exploit_exec.EXPLOIT_DICT.get(module)(self)
+                scanner_instance.sleep_seconds = sleep_seconds
 
                 if scanner_instance is None:
                     return
@@ -289,7 +298,7 @@ class Session:
         # args as parameter for scanner
         scanner_instance = Scanner(work_path, exec_path,
                                    custom_args,
-                                   jobs, self)
+                                   jobs, sleep_seconds, self)
         # start scanner
         scanner_instance.scan()
 
@@ -310,12 +319,14 @@ class Scanner:
                  exec_path,
                  custom_args,
                  jobs,
+                 sleep_seconds,
                  session):
 
         self.work_path = work_path
         self.exec_path = exec_path
         self.custom_args = custom_args
         self.jobs = jobs
+        self.sleep_seconds = sleep_seconds
         self.session = session
 
     def scan(self):
@@ -324,8 +335,7 @@ class Scanner:
         '''
 
         try:
-            work_path, exec_path = self.work_path, self.exec_path
-            custom_args, jobs = self.custom_args, self.jobs
+            int(self.jobs)
         except BaseException:
             console.print_error("[-] Invalid config")
 
@@ -336,12 +346,12 @@ class Scanner:
                 'proxychains4',
                 '-f',
                 self.session.proxy_conf,
-                './' + exec_path]
+                './' + self.exec_path]
         else:
-            e_args = ['./' + exec_path]
+            e_args = ['./' + self.exec_path]
 
         # add custom arguments for different exploits
-        e_args += custom_args
+        e_args += self.custom_args
         # the last argument is target host
         e_args += ['-t']
 
@@ -354,9 +364,9 @@ class Scanner:
             return
 
         try:
-            os.chdir('./exploits/' + work_path)
+            os.chdir('./exploits/' + self.work_path)
         except FileNotFoundError:
-            console.print_error("[-] Can't chdir to " + work_path)
+            console.print_error("[-] Can't chdir to " + self.work_path)
             console.debug_except()
         console.print_warning(
             '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
@@ -410,7 +420,7 @@ class Scanner:
 
                 # process pool
 
-                if count == jobs:
+                if count == self.jobs:
                     for item in procs:
                         if psutil.pid_exists(item.pid):
                             timer_proc = Process(
