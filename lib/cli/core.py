@@ -233,8 +233,8 @@ class Session:
         # sleep between two subprocess open
         sleep_seconds = console.input_check("\n[?] Wait how many seconds" +
                                             " before each process launch?\n" +
-                                            " (Set it to 0 when you want to use 100% CPU" +
-                                            " / bandwidth\nRecommened value: 0.1)\n" +
+                                            "    (Set it to 0 when you want to use 100% CPU" +
+                                            " / bandwidth\n    Recommened value: 0.1)\n" +
                                             "\n[=] Your input: ",
                                             check_type=float)
         answ = console.input_check(
