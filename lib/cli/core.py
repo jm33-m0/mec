@@ -276,7 +276,7 @@ class Session:
             colors.CYAN +
             colors.UNDERLINE +
             colors.BOLD +
-            "\nWelcome, in here you can call your own exploit\n" +
+            "\nWelcome, in here you can invoke your own exploit\n" +
             colors.END)
         cmd.run_exploits()
 
