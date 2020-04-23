@@ -170,7 +170,9 @@ http  {proxy_host} {proxy_port}\n'''
 
         try:
             out = subprocess.check_output(
-                args=["proxychains4", "-f", "/dev/shm/test.conf", "curl", "http://google.cn"])
+                args=["proxychains4", "-f", "/dev/shm/test.conf",
+                      "curl", "http://google.cn"],
+                stderr=subprocess.STDOUT, timeout=20)
         except BaseException:
             return False
 
