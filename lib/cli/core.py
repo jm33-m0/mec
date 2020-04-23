@@ -15,11 +15,11 @@ import traceback
 from multiprocessing import Manager, Process
 
 import psutil
+import requests
 import tqdm
 
-from lib.cli import cmd, colors, console
+from lib.cli import cmd, colors, console, futil
 from lib.cli import exploits as exploit_exec
-from lib.cli import futil, proxy
 
 # mec root directory
 MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
@@ -40,15 +40,6 @@ class Session:
         self.config_file = self.init_dir + "/conf/mec.conf"
         # where to put temp files
         self.out_dir = self.init_dir + '/output'
-        # where to put proxychains4 config file
-        self.proxy_conf = self.init_dir + \
-            '/data/proxy.conf'
-        # where to put shadowsocks binary
-        proxy_bin = self.init_dir + \
-            '/tools/ss-proxy'
-        # where to put shadowsocks config file
-        ss_config = self.init_dir + \
-            '/data/ss.json'
         # save output of exploits
         self.logfile = self.init_dir + \
             '/output/' + \
@@ -58,16 +49,14 @@ class Session:
         self.use_proxy = True
         # whether to update automatically
         self.auto_update = False
-        # shadowsocks helper
-        self.shadowsocks = proxy.ShadowsocksProxy(
-            proxy_bin, ss_config)
-        # is our proxy working?
-        self.proxy_status = "OFF"
-        # config file of proxychains4
-        self.proxychains_conf = self.shadowsocks.proxychains_conf
+        # is our proxy pool working?
+        self.proxy_status = "Unknown"
         # target IP list
         self.ip_list = self.init_dir + \
             '/data/ip_list.txt'
+
+        # proxy_pool API address
+        self.proxy_pool_api = ""
 
         # version
         self.version = get_version()
@@ -82,14 +71,17 @@ class Session:
         read ~/.mec/conf/mec.conf
         """
         def handle_config(line):
-            opt = line.strip().split(':')[0]
-            val = line.strip().split(':')[1]
+            opt = line.strip().split(': ')[0]
+            val = line.strip().split(': ')[1]
 
             if opt == "auto-update":
                 if val.lower() in ("false", "no", "0"):
                     self.auto_update = False
                 else:
                     self.auto_update = True
+
+            if opt == "proxy-pool":
+                self.proxy_pool_api = val
 
         try:
             conf = open(self.config_file)
@@ -103,10 +95,61 @@ class Session:
             try:
                 self.version = get_version()
             except BaseException:
-                self.version = "Unknown"
+                self.version = "UNKNOWN"
 
             if self.auto_update:
                 self.call_update(silent=True)
+
+    def dynamic_proxy(self, target_ip):
+        """
+        request a random proxy from proxy_pool, then use it on top of Tor, via proxychains4
+        all config files are stored temporarily under /dev/shm
+
+        target_ip: different proxy per target, thus target_ip distinguishes different config files
+
+        return:
+            True when pool is usable
+            False when pool is unavailable
+
+        see https://github.com/jhao104/proxy_pool
+        """
+
+        if self.proxy_pool_api == "":
+            console.print_error(
+                "[-] proxy_pool not configured, type `set proxy-pool` to configure")
+
+            return False
+
+        try:
+            resp = requests.get(
+                self.proxy_pool_api, timeout=10)
+            proxy_addr = resp.json()['proxy']
+        except requests.RequestException as exc:
+            console.print_warning(f"[-] Error: {exc}")
+
+            return False
+        except KeyError:
+            console.print_warning(f"[-] Error: cannot read proxy: {resp.text}")
+
+            return False
+        proxy_host = proxy_addr.split(':')[0]
+        proxy_port = proxy_addr.split(':')[1]
+        template = f'''
+strict_chain
+quiet_mode
+proxy_dns
+remote_dns_subnet 224
+tcp_read_time_out 15000
+tcp_connect_time_out 8000
+[ProxyList]
+socks4  127.0.0.1 9050
+http  {proxy_host} {proxy_port}
+        '''
+        with open(f"/dev/shm/{target_ip}.conf", "w+") as conff:
+            conff.write(template)
+            conff.close()
+
+        return True
 
     def call_update(self, silent=False):
         """
@@ -342,20 +385,6 @@ class Scanner:
 
             return
 
-        if self.session.use_proxy:
-            e_args = [
-                'proxychains4',
-                '-f',
-                self.session.proxy_conf,
-                './' + self.exec_path]
-        else:
-            e_args = ['./' + self.exec_path]
-
-        # add custom arguments for different exploits
-        e_args += self.custom_args
-        # the last argument is target host
-        e_args += ['-t']
-
         try:
             target_list = open(self.session.ip_list)
         except BaseException as exc:
@@ -369,9 +398,6 @@ class Scanner:
         except FileNotFoundError:
             console.print_error("[-] Can't chdir to " + self.work_path)
             console.debug_except()
-        console.print_warning(
-            '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd() +
-            f"\nWait {self.sleep_seconds} seconds before each exploit")
 
         # you might want to cancel the scan to correct some errors
 
@@ -408,6 +434,24 @@ class Scanner:
             count = len(procs)
 
             try:
+                if self.session.use_proxy:
+                    if not self.session.dynamic_proxy(target_ip):
+                        console.print_error(
+                            "[-] Cannot get proxy from proxy_pool")
+                        return
+                    e_args = [
+                        'proxychains4',
+                        '-f',
+                        f'/dev/shm/{target_ip}.conf',
+                        './' + self.exec_path]
+                else:
+                    e_args = ['./' + self.exec_path]
+
+                # add custom arguments for different exploits
+                e_args += self.custom_args
+                # the last argument is target host
+                e_args += ['-t']
+
                 # start and display current process
                 e_args += [target_ip]
 
@@ -451,6 +495,10 @@ class Scanner:
                         if proc.poll() is not None:
                             pool.remove(proc)
                             pbar.update(1)
+                            if self.session.use_proxy:
+                                # delete proxy config file
+                                os.remove(f"/dev/shm/{target_ip}.conf")
+
                 except BaseException:
                     logfile.write("[-] Exception: " +
                                   traceback.format_exc() + "\n")

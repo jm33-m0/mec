@@ -96,10 +96,10 @@ def run_set(**kwargs):
                 continue
             new_config_lines.append(line)
 
-    new_setting = f"{opt}:{val}"
+    new_setting = f"{opt}: {val}"
 
     if len(new_config_lines) == 0:
-        new_setting = f"{opt}:{val}\n"
+        new_setting = f"{opt}: {val}\n"
     new_config_lines.append(new_setting)
     futil.write_file(text='\n'.join(new_config_lines),
                      filepath=session.config_file, append=True)
@@ -121,8 +121,11 @@ def run_info(**kwargs):
     # update via user config file
     session.read_config()
 
-    if session.shadowsocks.is_usable():
+    # check pool
+    if session.dynamic_proxy('test'):
         session.proxy_status = "OK"
+    else:
+        session.proxy_status = "DISCONNECTED"
 
     colors.colored_print(
         f'''
@@ -138,9 +141,8 @@ session
 proxy
 -----
 
-[*] Shadowsocks config: {session.shadowsocks.ss_url}
-[*] Shadowsocks local port: {session.shadowsocks.local_port}
-[*] Shadowsocks connectivity: {session.proxy_status}
+[*] proxy_pool API: {session.proxy_pool_api}
+[*] pool connectivity: {session.proxy_status}
 ''',
         colors.CYAN)
 
