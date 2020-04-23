@@ -139,8 +139,7 @@ class Session:
             return False
         proxy_host = proxy_addr.split(':')[0]
         proxy_port = proxy_addr.split(':')[1]
-        template = f'''
-strict_chain
+        template = f'''strict_chain
 quiet_mode
 proxy_dns
 remote_dns_subnet 224
@@ -148,8 +147,7 @@ tcp_read_time_out 15000
 tcp_connect_time_out 8000
 [ProxyList]
 socks4  127.0.0.1 9050
-http  {proxy_host} {proxy_port}
-        '''
+http  {proxy_host} {proxy_port}\n'''
         try:
             with open(f"/dev/shm/{target_ip}.conf", "w+") as conff:
                 conff.write(template)
