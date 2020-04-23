@@ -7,6 +7,8 @@ handles user commands
 import os
 import sys
 
+import requests
+
 from lib.cli import colors, console, futil
 from lib.tools import baidu, censys, scan, zoomeye
 
@@ -110,6 +112,21 @@ def run_info(**kwargs):
     """
     mec status
     """
+    def check_tor():
+        # also check tor
+        try:
+            requests.get("http://ifconfig.me", timeout=10,
+                         proxies=dict(http=f'socks5://127.0.0.1:9050',
+                                      https=f'socks5://127.0.0.1:9050'))
+        except BaseException:
+            return False
+
+        return True
+
+    tor_status = "DISCONNECTED"
+    if check_tor():
+        tor_status = "OK"
+
     session = kwargs.get("session", None)
 
     if session is None:
@@ -143,6 +160,7 @@ proxy
 
 [*] proxy_pool API: {session.proxy_pool_api}
 [*] pool connectivity: {session.proxy_status}
+[*] tor connectivity: {tor_status}
 ''',
         colors.CYAN)
 
