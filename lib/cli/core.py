@@ -229,20 +229,20 @@ class Session:
 
                 return
             cmd.cmd_handler(self, "proxy")
+
+        # sleep between two subprocess open
+        sleep_seconds = console.input_check("\n[?] Wait how many seconds" +
+                                            " before each process launch?\n" +
+                                            " (Set it to 0 when you want to use 100% CPU" +
+                                            " / bandwidth\nRecommened value: 0.1)\n" +
+                                            "\n[=] Your input: ",
+                                            check_type=float)
         answ = console.input_check(
             '\n[?] Do you wish to use\
             \n\n    [1] built-in exploits\
             \n    [2] or launch your own manually?\
             \n\n[=] Your choice: ',
             choices=['1', '2', 'built-in', 'manually'])
-
-        # sleep between two subprocess open
-        sleep_seconds = console.input_check("\n[?] Wait how many seconds" +
-                                            " before each process launch?\n" +
-                                            " (Set it to 0 when you want to use 100% CPU" +
-                                            " / bandwidth.Recommened value: 0.1)\n" +
-                                            "\n[=] Your input: ",
-                                            check_type=float)
 
         if answ in ['1', 'built-in']:
             print(
@@ -259,10 +259,11 @@ class Session:
 
             try:
                 scanner_instance = exploit_exec.EXPLOIT_DICT.get(module)(self)
-                scanner_instance.sleep_seconds = sleep_seconds
 
                 if scanner_instance is None:
                     return
+
+                scanner_instance.sleep_seconds = sleep_seconds
                 scanner_instance.scan()
 
                 return
@@ -369,7 +370,8 @@ class Scanner:
             console.print_error("[-] Can't chdir to " + self.work_path)
             console.debug_except()
         console.print_warning(
-            '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd())
+            '\n[!] DEBUG: ' + str(e_args) + '\nWorking in ' + os.getcwd() +
+            f"\nWait {self.sleep_seconds} seconds before each exploit")
 
         # you might want to cancel the scan to correct some errors
 
