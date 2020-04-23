@@ -421,7 +421,7 @@ class Scanner:
                 e_args.remove(target_ip)
 
                 # sleep sleep_seconds
-                time.sleep(self.sleep_seconds)
+                time.sleep(float(self.sleep_seconds))
 
                 # process pool
 
