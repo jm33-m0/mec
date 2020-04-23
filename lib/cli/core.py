@@ -121,6 +121,10 @@ class Session:
 
             return False
 
+        if shutil.which("proxychains4") is None:
+            console.print_error("[-] proxychains4 not found")
+            return False
+
         try:
             resp = requests.get(
                 self.proxy_pool_api, timeout=10)
@@ -162,9 +166,13 @@ http  {proxy_host} {proxy_port}
         if not self.dynamic_proxy("test"):
             return False
 
+        if shutil.which("curl") is None:
+            console.print_error("[-] curl not found")
+            return False
+
         try:
             out = subprocess.check_output(
-                args=["proxychains4", "-f", "/dev/shm/test.conf", "http://google.cn"])
+                args=["proxychains4", "-f", "/dev/shm/test.conf", "curl", "http://google.cn"])
         except BaseException:
             return False
 
