@@ -152,10 +152,6 @@ http  {proxy_host} {proxy_port}\n'''
             with open(f"/dev/shm/{target_ip}.conf", "w+") as conff:
                 conff.write(template)
                 conff.close()
-            # test our http proxy
-            requests.get("http://google.cn",
-                         proxies=dict(http=f'http://{proxy_addr}'),
-                         timeout=10)
         except BaseException:
             return False
 
@@ -172,11 +168,26 @@ http  {proxy_host} {proxy_port}\n'''
             console.print_error("[-] curl not found")
             return False
 
+        # read HTTP proxy
+        proxy_addr = ""
+        with open("/dev/shm/test.conf") as testf:
+            lines = testf.readlines()
+            for line in lines:
+                line_split = line.split()
+                if line_split[0] == "http":
+                    proxy_addr = f"{line_split[1]}:{line_split[2]}"
+        if proxy_addr == "":
+            return False
         try:
             out = subprocess.check_output(
                 args=["proxychains4", "-f", "/dev/shm/test.conf",
                       "curl", "http://google.cn"],
                 stderr=subprocess.STDOUT, timeout=20)
+
+            # test our http proxy
+            requests.get("http://google.cn",
+                         proxies=dict(http=f'http://{proxy_addr}'),
+                         timeout=10)
         except BaseException:
             return False
 
