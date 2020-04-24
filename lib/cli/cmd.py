@@ -137,17 +137,10 @@ def run_info(**kwargs):
     # update via user config file
     session.read_config()
 
-    # check pool
-
-    if session.dynamic_proxy('test'):
-        session.proxy_status = "OK"
-    else:
-        session.proxy_status = "DISCONNECTED"
-
-    # proxychain status
-    proxychain_status = "DISCONNECTED"
+    # check proxy chain
+    session.proxy_status = "DISCONNECTED"
     if session.test_proxy():
-        proxychain_status = "OK"
+        session.proxy_status = "OK"
 
     colors.colored_print(
         f'''
@@ -164,9 +157,8 @@ proxy
 -----
 
 [*] proxy_pool API: {session.proxy_pool_api}
-[*] proxychain connectivity: {proxychain_status}
-[*] pool connectivity: {session.proxy_status}
 [*] tor connectivity: {tor_status}
+[*] proxy chain connectivity: {session.proxy_status}
 ''',
         colors.CYAN)
 

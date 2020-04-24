@@ -152,6 +152,10 @@ http  {proxy_host} {proxy_port}\n'''
             with open(f"/dev/shm/{target_ip}.conf", "w+") as conff:
                 conff.write(template)
                 conff.close()
+            # test our http proxy
+            requests.get("http://google.cn",
+                         proxies=dict(http=f'http://{proxy_addr}'),
+                         timeout=10)
         except BaseException:
             return False
 
@@ -302,7 +306,7 @@ http  {proxy_host} {proxy_port}\n'''
 
                 return
             if not self.test_proxy():
-                console.print_error("[-] proxychain doesn't work")
+                console.print_error("[-] proxy chain doesn't work")
                 return
 
         # sleep between two subprocess open
