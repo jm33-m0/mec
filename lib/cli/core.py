@@ -321,13 +321,6 @@ socks4  {proxy_host} {proxy_port}\n'''
 
                 return
 
-            colors.colored_print("[*] Checking proxy chain...", colors.BLUE)
-
-            if not self.test_proxy():
-                console.print_error("[-] proxy chain doesn't work")
-
-                return
-
         # sleep between two subprocess open
         sleep_seconds = console.input_check("\n[?] Wait how many seconds" +
                                             " before each process launch?\n" +
@@ -553,7 +546,10 @@ class Scanner:
 
                             if self.session.use_proxy:
                                 # delete proxy config file
-                                os.remove(f"/dev/shm/{target_ip}.conf")
+                                try:
+                                    os.remove(f"/dev/shm/{target_ip}.conf")
+                                except BaseException:
+                                    pass
 
                 except BaseException:
                     logfile.write("[-] Exception: " +
