@@ -137,6 +137,7 @@ class Session:
             console.print_warning(f"[-] Error: cannot read proxy: {resp.text}")
 
             return False
+        proxy_addr = proxy_addr.split('://')[-1]
         proxy_host = proxy_addr.split(':')[0]
         proxy_port = proxy_addr.split(':')[1]
         template = f'''strict_chain
@@ -147,7 +148,7 @@ tcp_read_time_out 15000
 tcp_connect_time_out 8000
 [ProxyList]
 socks4  127.0.0.1 9050
-http  {proxy_host} {proxy_port}\n'''
+socks4  {proxy_host} {proxy_port}\n'''
         try:
             with open(f"/dev/shm/{target_ip}.conf", "w+") as conff:
                 conff.write(template)
@@ -186,7 +187,7 @@ http  {proxy_host} {proxy_port}\n'''
 
             # test our http proxy
             requests.get("http://google.cn",
-                         proxies=dict(http=f'http://{proxy_addr}'),
+                         proxies=dict(http=f'socks4://{proxy_addr}'),
                          timeout=10)
         except BaseException:
             return False
