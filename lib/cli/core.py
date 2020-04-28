@@ -123,6 +123,7 @@ class Session:
 
         if shutil.which("proxychains4") is None:
             console.print_error("[-] proxychains4 not found")
+
             return False
 
         try:
@@ -133,8 +134,8 @@ class Session:
             console.print_warning(f"[-] Error: {exc}")
 
             return False
-        except KeyError:
-            console.print_warning(f"[-] Error: cannot read proxy: {resp.text}")
+        except BaseException as exc:
+            console.print_warning(f"[-] Error: cannot read proxy: {resp.text}\nException: {exc}")
 
             return False
         proxy_addr = proxy_addr.split('://')[-1]
@@ -162,21 +163,26 @@ socks4  {proxy_host} {proxy_port}\n'''
         """
         test the proxychain
         """
+
         if not self.dynamic_proxy("test"):
             return False
 
         if shutil.which("curl") is None:
             console.print_error("[-] curl not found")
+
             return False
 
         # read HTTP proxy
         proxy_addr = ""
         with open("/dev/shm/test.conf") as testf:
             lines = testf.readlines()
+
             for line in lines:
                 line_split = line.split()
+
                 if line_split[0] == "socks4":
                     proxy_addr = f"{line_split[1]}:{line_split[2]}"
+
         if proxy_addr == "":
             return False
         try:
@@ -261,6 +267,7 @@ socks4  {proxy_host} {proxy_port}\n'''
             return
 
         # update in child process
+
         if silent:
             res = {}
             update_job = Process(target=update, args=(res,))
@@ -315,8 +322,10 @@ socks4  {proxy_host} {proxy_port}\n'''
                 return
 
             colors.colored_print("[*] Checking proxy chain...", colors.BLUE)
+
             if not self.test_proxy():
                 console.print_error("[-] proxy chain doesn't work")
+
                 return
 
         # sleep between two subprocess open
@@ -485,6 +494,7 @@ class Scanner:
                     if not self.session.dynamic_proxy(target_ip):
                         console.print_error(
                             "[-] Cannot get proxy from proxy_pool")
+
                         return
                     e_args = [
                         'proxychains4',
@@ -540,6 +550,7 @@ class Scanner:
                         if proc.poll() is not None:
                             pool.remove(proc)
                             pbar.update(1)
+
                             if self.session.use_proxy:
                                 # delete proxy config file
                                 os.remove(f"/dev/shm/{target_ip}.conf")
