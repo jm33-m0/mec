@@ -491,6 +491,7 @@ class Scanner:
                         return
                     e_args = [
                         'proxychains4',
+                        '-q',
                         '-f',
                         f'/dev/shm/{target_ip}.conf',
                         './' + self.exec_path]
