@@ -6,7 +6,7 @@ handles user commands
 '''
 import os
 import sys
-from multiprocessing import Process
+from multiprocessing import Process, Manager
 
 import requests
 
@@ -123,16 +123,16 @@ def run_info(**kwargs):
         # also check tor
         try:
             requests.get("http://ifconfig.me", timeout=10,
-                         proxies=dict(http=f'socks5://127.0.0.1:9050',
-                                      https=f'socks5://127.0.0.1:9050'))
+                         proxies=dict(http='socks5://127.0.0.1:9050',
+                                      https='socks5://127.0.0.1:9050'))
         except BaseException:
             return False
 
         return True
 
-    def run_check(session, tor_status):
+    def run_check(res):
         if check_tor():
-            tor_status = "OK"
+            res['tor_status'] = "OK"
 
         if session is None:
             console.print_error("[-] info: session not exist")
@@ -140,17 +140,22 @@ def run_info(**kwargs):
             return
 
         # check proxy chain
-        session.proxy_status = "DISCONNECTED"
+        res['proxy_status'] = "DISCONNECTED"
 
         if session.test_proxy():
-            session.proxy_status = "OK"
+            res['proxy_status'] = "OK"
 
-    proc = Process(target=run_check, args=(session, tor_status))
-    proc.start()
-    console.print_status(
-        "[*] please wait while checking proxy chain connectivity...",
-        proc
-    )
+    if session.proxy_pool_api != '':
+        res = Manager().dict()
+        proc = Process(target=run_check, args=(res,))
+        proc.start()
+        console.print_status(
+            "[*] please wait while checking proxy chain connectivity...",
+            proc
+        )
+        proc.join()
+        tor_status = res['tor_status']
+        session.proxy_status = res['proxy_status']
 
     colors.colored_print(
         f'''
