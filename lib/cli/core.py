@@ -313,6 +313,8 @@ socks4  {proxy_host} {proxy_port}\n'''
                 console.print_error("proxychains4 not found")
 
                 return
+
+            colors.colored_print("[*] Checking proxy chain...", colors.BLUE)
             if not self.test_proxy():
                 console.print_error("[-] proxy chain doesn't work")
                 return
@@ -477,6 +479,7 @@ class Scanner:
             # mark this loop as done
             count = len(procs)
 
+            e_args = ['./' + self.exec_path]  # dynamic exp args
             try:
                 if self.session.use_proxy:
                     if not self.session.dynamic_proxy(target_ip):
@@ -488,8 +491,6 @@ class Scanner:
                         '-f',
                         f'/dev/shm/{target_ip}.conf',
                         './' + self.exec_path]
-                else:
-                    e_args = ['./' + self.exec_path]
 
                 # add custom arguments for different exploits
                 e_args += self.custom_args
