@@ -6,6 +6,7 @@ handles user commands
 '''
 import os
 import sys
+from multiprocessing import Process
 
 import requests
 
@@ -112,6 +113,12 @@ def run_info(**kwargs):
     """
     mec status
     """
+    session = kwargs.get("session", None)
+    # update via user config file
+    session.read_config()
+    # check tor
+    tor_status = "DISCONNECTED"
+
     def check_tor():
         # also check tor
         try:
@@ -123,24 +130,27 @@ def run_info(**kwargs):
 
         return True
 
-    tor_status = "DISCONNECTED"
-    if check_tor():
-        tor_status = "OK"
+    def run_check(session, tor_status):
+        if check_tor():
+            tor_status = "OK"
 
-    session = kwargs.get("session", None)
+        if session is None:
+            console.print_error("[-] info: session not exist")
 
-    if session is None:
-        console.print_error("[-] info: session not exist")
+            return
 
-        return
+        # check proxy chain
+        session.proxy_status = "DISCONNECTED"
 
-    # update via user config file
-    session.read_config()
+        if session.test_proxy():
+            session.proxy_status = "OK"
 
-    # check proxy chain
-    session.proxy_status = "DISCONNECTED"
-    if session.test_proxy():
-        session.proxy_status = "OK"
+    proc = Process(target=run_check, args=(session, tor_status))
+    proc.start()
+    console.print_status(
+        "[*] please wait while checking proxy chain connectivity...",
+        proc
+    )
 
     colors.colored_print(
         f'''

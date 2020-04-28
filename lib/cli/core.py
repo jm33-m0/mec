@@ -147,7 +147,7 @@ remote_dns_subnet 224
 tcp_read_time_out 15000
 tcp_connect_time_out 8000
 [ProxyList]
-socks4  127.0.0.1 9050
+socks5  127.0.0.1 9050
 socks4  {proxy_host} {proxy_port}\n'''
         try:
             with open(f"/dev/shm/{target_ip}.conf", "w+") as conff:
@@ -175,24 +175,20 @@ socks4  {proxy_host} {proxy_port}\n'''
             lines = testf.readlines()
             for line in lines:
                 line_split = line.split()
-                if line_split[0] == "http":
+                if line_split[0] == "socks4":
                     proxy_addr = f"{line_split[1]}:{line_split[2]}"
         if proxy_addr == "":
             return False
         try:
             out = subprocess.check_output(
                 args=["proxychains4", "-f", "/dev/shm/test.conf",
-                      "curl", "http://google.cn"],
+                      "curl", "https://baidu.com"],
                 stderr=subprocess.STDOUT, timeout=20)
 
-            # test our http proxy
-            requests.get("http://google.cn",
-                         proxies=dict(http=f'socks4://{proxy_addr}'),
-                         timeout=10)
         except BaseException:
             return False
 
-        if "HTML" in out.decode('utf-8'):
+        if "<html>" in out.decode('utf-8').lower():
             return True
 
         return False
