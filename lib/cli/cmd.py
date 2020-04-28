@@ -6,7 +6,7 @@ handles user commands
 '''
 import os
 import sys
-from multiprocessing import Process, Manager
+from multiprocessing import Manager, Process
 
 import requests
 
@@ -117,7 +117,7 @@ def run_info(**kwargs):
     # update via user config file
     session.read_config()
     # check tor
-    tor_status = "DISCONNECTED"
+    tor_status = "Unknown"
 
     def check_tor():
         # also check tor
@@ -131,6 +131,8 @@ def run_info(**kwargs):
         return True
 
     def run_check(res):
+        res['tor_status'] = "DISCONNECTED"
+
         if check_tor():
             res['tor_status'] = "OK"
 
@@ -145,7 +147,9 @@ def run_info(**kwargs):
         if session.test_proxy():
             res['proxy_status'] = "OK"
 
-    if session.proxy_pool_api != '':
+    if session.proxy_pool_api == '':
+        console.print_warning("[!] proxy_pool_api not configured")
+    else:
         res = Manager().dict()
         proc = Process(target=run_check, args=(res,))
         proc.start()
