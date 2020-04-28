@@ -142,7 +142,7 @@ class Session:
         proxy_port = proxy_addr.split(':')[1]
         template = f'''strict_chain
 quiet_mode
-proxy_dns
+# proxy_dns
 remote_dns_subnet 224
 tcp_read_time_out 15000
 tcp_connect_time_out 8000
