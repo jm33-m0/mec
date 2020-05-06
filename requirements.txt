@@ -1,5 +1,4 @@
 distro
-readline
 prompt_toolkit
 requests
 pysocks
