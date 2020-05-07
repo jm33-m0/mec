@@ -135,7 +135,8 @@ class Session:
 
             return False
         except BaseException as exc:
-            console.print_warning(f"[-] Error: cannot read proxy: {resp.text}\nException: {exc}")
+            console.print_warning(
+                f"[-] Error: cannot read proxy: {resp.text}\nException: {exc}")
 
             return False
         proxy_addr = proxy_addr.split('://')[-1]
@@ -222,9 +223,9 @@ socks4  {proxy_host} {proxy_port}\n'''
 
             os.chdir(MECROOT)
 
-            # refresh local git repo
+            # pull all tags
             try:
-                check = "git remote -v update"
+                check = "git pull --tags"
                 out = subprocess.check_output(
                     ["/bin/sh", "-c", check],
                     stderr=subprocess.STDOUT, timeout=30)
@@ -236,14 +237,14 @@ socks4  {proxy_host} {proxy_port}\n'''
 
                 return
 
-            if "[up to date]" in check_res:
+            if "Already up to date" in check_res:
 
                 res['status'] = "[+] already up to date"
 
                 return
 
             # pull if needed
-            pull = "git pull --depth=1 --tags"
+            pull = "git pull"
             try:
                 out = subprocess.check_output(
                     ["/bin/sh", "-c", pull],
@@ -593,8 +594,6 @@ def get_version():
         out = subprocess.check_output(
             ["/bin/sh", "-c", check],
             stderr=subprocess.STDOUT, timeout=3)
-
-        return ""
 
     return out.decode("utf-8")
 
