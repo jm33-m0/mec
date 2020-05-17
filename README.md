@@ -1,5 +1,5 @@
 # mec (MassExploitConsole)
-for concurrent exploiting
+for mass exploiting
 
 ## getting started
 
