@@ -134,6 +134,8 @@ class Session:
             console.print_warning(f"[-] Error: {exc}")
 
             return False
+        except KeyError:
+            return False
         except BaseException as exc:
             console.print_warning(
                 f"[-] Error: cannot read proxy: {resp.text}\nException: {exc}")
@@ -477,8 +479,10 @@ class Scanner:
         pbar = tqdm.tqdm(total=total, ncols=80, desc="[*] Processing targets")
 
         # set `proxy.conf`, in case `target_ip.conf` fails
+
         if not self.session.dynamic_proxy("proxy"):
             console.print_error("[-] Cannot get proxy from proxy_pool")
+
             return
 
         for line in target_list:
