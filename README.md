@@ -10,7 +10,7 @@ please read the [wiki](https://github.com/jm33-m0/mec/wiki)
 - [x] an easy-to-use cli ui
 - [x] execute any adpated exploits with **process-level concurrency**
 - [x] some built-in exploits (automated)
-- [x] hide your ip addr using `proxychains4` and `ss-proxy` (built-in)
+- [x] hide your ip addr using [proxychains4](https://github.com/jm33-m0/proxy_pool) and [proxy_pool](https://github.com/jm33-m0/mec)
 - [x] zoomeye host scan (10 threads)
 - [x] a simple baidu crawler (multi-threaded)
 - [x] censys host scan
