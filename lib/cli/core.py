@@ -476,8 +476,14 @@ class Scanner:
             iplistf.close()
         pbar = tqdm.tqdm(total=total, ncols=80, desc="[*] Processing targets")
 
+        # set `proxy.conf`, in case `target_ip.conf` fails
+        if not self.session.dynamic_proxy("proxy"):
+            console.print_error("[-] Cannot get proxy from proxy_pool")
+            return
+
         for line in target_list:
             target_ip = line.strip()
+            proxyconf = f"{target_ip}.conf"
 
             # mark this loop as done
             count = len(procs)
@@ -486,15 +492,13 @@ class Scanner:
             try:
                 if self.session.use_proxy:
                     if not self.session.dynamic_proxy(target_ip):
-                        console.print_error(
-                            "[-] Cannot get proxy from proxy_pool")
+                        proxyconf = "proxy.conf"
 
-                        return
                     e_args = [
                         'proxychains4',
                         '-q',
                         '-f',
-                        f'/dev/shm/{target_ip}.conf',
+                        f'/dev/shm/{proxyconf}',
                         './' + self.exec_path]
 
                 # add custom arguments for different exploits
