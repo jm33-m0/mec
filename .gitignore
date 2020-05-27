@@ -94,3 +94,5 @@ conf/
 
 # ignore mec data dir
 data/
+
+.DS_Store
