@@ -191,13 +191,13 @@ socks4  {proxy_host} {proxy_port}\n'''
         try:
             out = subprocess.check_output(
                 args=["proxychains4", "-f", "/dev/shm/test.conf",
-                      "curl", "https://1.1.1.1"],
+                      "curl", "-w", '"%{http_code}\n"', "-o", "/dev/null", "https://1.1.1.1"],
                 stderr=subprocess.STDOUT, timeout=20)
 
         except BaseException:
             return False
 
-        if "<html>" in out.decode('utf-8').lower():
+        if "200" in out.decode('utf-8').lower():
             return True
 
         return False
