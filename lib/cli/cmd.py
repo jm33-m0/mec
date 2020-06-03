@@ -392,7 +392,7 @@ def cmds_init(session):
     COMMANDS.update({"masscan": masscan_cmd})
 
     # check_proxy_pool
-    check_proxy_pool_cmd = Command(names=["check_proxy_pool", "check", "test_proxy"],
+    check_proxy_pool_cmd = Command(names=["check_proxy_pool"],
                                    doc="Check if proxy_pool is usable",
                                    session=session,
                                    helper=run_check_proxy_pool)
