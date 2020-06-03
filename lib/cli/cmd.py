@@ -109,9 +109,9 @@ def run_set(**kwargs):
     console.print_success(f"[+] {opt} has been set to {val}")
 
 
-def run_info(**kwargs):
+def run_check_proxy_pool(**kwargs):
     """
-    mec status
+    check if proxy_pool is usable
     """
     session = kwargs.get("session", None)
     # update via user config file
@@ -160,9 +160,25 @@ def run_info(**kwargs):
         proc.join()
         tor_status = res['tor_status']
         session.proxy_status = res['proxy_status']
+        colors.colored_print(f"""
+proxy
+-----
 
-    colors.colored_print(
-        f'''
+[*] proxy_pool API: {session.proxy_pool_api}
+[*] tor connectivity: {tor_status}
+[*] proxy chain connectivity: {session.proxy_status}
+""", colors.CYAN)
+
+
+def run_info(**kwargs):
+    """
+    mec status
+    """
+    session = kwargs.get("session", None)
+    # update via user config file
+    session.read_config()
+
+    colors.colored_print(f'''
 session
 -------
 
@@ -171,20 +187,11 @@ session
 [*] Root directory: {session.init_dir}
 [*] Log file: {session.logfile}
 [*] Target: {session.ip_list}
-
-proxy
------
-
-[*] proxy_pool API: {session.proxy_pool_api}
-[*] tor connectivity: {tor_status}
-[*] proxy chain connectivity: {session.proxy_status}
-''',
-        colors.CYAN)
+''', colors.CYAN)
 
 
 def run_init(**kwargs):
     """
-
     Return to init directory
     """
     session = kwargs.get("session")
@@ -383,6 +390,13 @@ def cmds_init(session):
                           session=session,
                           helper=run_masscan)
     COMMANDS.update({"masscan": masscan_cmd})
+
+    # check_proxy_pool
+    check_proxy_pool_cmd = Command(names=["check_proxy_pool", "check", "test_proxy"],
+                                   doc="Current mec settings, and proxy status",
+                                   session=session,
+                                   helper=run_check_proxy_pool)
+    COMMANDS.update({"check_proxy_pool": check_proxy_pool_cmd})
 
     # info
     info_cmd = Command(names=["info", "i"],

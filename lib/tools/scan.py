@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 '''
-collecting vulnerable hosts using masscan and xmir
+a masscan wrapper
 '''
 
 import subprocess
@@ -21,12 +21,6 @@ def masscan(ports):
         '--exclude',
         '255.255.255.255',
         '--rate',
-        '300000',
-        '-oX',
+        '30000',
+        '-oG',
         '/tmp/masscan.result'])
-
-
-def xmir():
-    '''
-    select hackable targets from masscan result
-    '''
