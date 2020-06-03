@@ -197,7 +197,7 @@ socks4  {proxy_host} {proxy_port}\n'''
         except BaseException:
             return False
 
-        if "200" in out.decode('utf-8').lower():
+        if "301" in out.decode('utf-8'):
             return True
 
         return False
