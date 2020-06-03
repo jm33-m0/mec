@@ -191,7 +191,7 @@ socks4  {proxy_host} {proxy_port}\n'''
         try:
             out = subprocess.check_output(
                 args=["proxychains4", "-f", "/dev/shm/test.conf",
-                      "curl", "https://baidu.com"],
+                      "curl", "https://8.8.8.8"],
                 stderr=subprocess.STDOUT, timeout=20)
 
         except BaseException:
