@@ -393,14 +393,14 @@ def cmds_init(session):
 
     # check_proxy_pool
     check_proxy_pool_cmd = Command(names=["check_proxy_pool", "check", "test_proxy"],
-                                   doc="Current mec settings, and proxy status",
+                                   doc="Check if proxy_pool is usable",
                                    session=session,
                                    helper=run_check_proxy_pool)
     COMMANDS.update({"check_proxy_pool": check_proxy_pool_cmd})
 
     # info
     info_cmd = Command(names=["info", "i"],
-                       doc="Current mec settings, and proxy status",
+                       doc="Current mec settings",
                        session=session,
                        helper=run_info)
     COMMANDS.update({"info": info_cmd})
