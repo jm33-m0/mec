@@ -190,15 +190,24 @@ socks4  {proxy_host} {proxy_port}\n'''
             return False
         try:
             out = subprocess.check_output(
-                args=["proxychains4", "-f", "/dev/shm/test.conf",
-                      "curl", "-w", '"%{http_code}\n"', "-o", "/dev/null", "https://1.1.1.1"],
+                args=["proxychains4", "-q", "-f", "/dev/shm/test.conf",
+                      "curl", "-w", '%{http_code}', "-o", "/dev/null", "http://1.1.1.1", "-s"],
                 stderr=subprocess.STDOUT, timeout=20)
+
+        except subprocess.CalledProcessError:
+            return False
 
         except BaseException:
             return False
 
-        if "301" in out.decode('utf-8'):
-            return True
+        status_code = out.decode("utf-8").strip()
+
+        try:
+            int(status_code)
+            if status_code != '000':
+                return True
+        except ValueError:
+            pass
 
         return False
 
