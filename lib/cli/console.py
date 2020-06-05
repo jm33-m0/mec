@@ -142,7 +142,7 @@ def input_check(prompt_info, allow_blank=True,
     while True:
 
         try:
-            input_ps = ANSI(colors.BLUE + prompt_info + colors.END)
+            input_ps = ANSI(colors.CYAN + prompt_info + colors.END)
             user_input = prompt(
                 message=input_ps,
                 complete_in_thread=True,

@@ -325,7 +325,7 @@ socks4  {proxy_host} {proxy_port}\n'''
         handles attack command
         '''
         self.use_proxy = console.yes_no(
-            '[?] Do you wish to use proxychains?')
+            '[?] Do you wish to use proxy_pool/proxychains?')
 
         if self.use_proxy:
             if shutil.which("proxychains4") is None:
