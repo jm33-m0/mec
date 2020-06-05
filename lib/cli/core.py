@@ -204,6 +204,7 @@ socks4  {proxy_host} {proxy_port}\n'''
 
         try:
             int(status_code)
+
             if status_code != '000':
                 return True
         except ValueError:
@@ -489,8 +490,9 @@ class Scanner:
 
         # set `proxy.conf`, in case `target_ip.conf` fails
 
-        if not self.session.dynamic_proxy("proxy"):
-            console.print_error("[-] Cannot get proxy from proxy_pool")
+        if self.session.use_proxy:
+            if not self.session.dynamic_proxy("proxy"):
+                console.print_error("[-] Cannot get proxy from proxy_pool")
 
             return
 
