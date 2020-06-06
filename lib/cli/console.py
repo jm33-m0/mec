@@ -40,7 +40,7 @@ def print_banner(ver, exp_cnt):
     version: {ver}
 
     {exp_cnt} exploits
-''' + colors.END + colors.GREEN + f'''
+''' + colors.END + colors.GREEN + '''
 
     by jm33_m0
     https://github.com/jm33-m0/mec
@@ -147,7 +147,7 @@ def input_check(prompt_info, allow_blank=True,
                 message=input_ps,
                 complete_in_thread=True,
                 complete_while_typing=True,
-                completer=choice_completer).strip().lower()
+                completer=choice_completer).strip()
 
             if not allow_blank and user_input == '':
                 continue

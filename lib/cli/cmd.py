@@ -237,7 +237,7 @@ def run_target(**kwargs):
         return
 
     if target not in os.listdir(session.init_dir + '/data'):
-        console.print_error("[-] Target list file not found")
+        console.print_error(f"[-] Target list file '{target}' not found")
 
         return
     colors.colored_print(
@@ -508,7 +508,7 @@ def cmd_handler(session, user_cmd):
 
     # parse user_cmd
     try:
-        split_cmd = str(user_cmd).lower().strip().split()
+        split_cmd = str(user_cmd).strip().split()
         user_cmd = split_cmd[0]
         args = split_cmd[1:]
     except IndexError:
