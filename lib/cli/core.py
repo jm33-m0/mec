@@ -494,7 +494,7 @@ class Scanner:
             if not self.session.dynamic_proxy("proxy"):
                 console.print_error("[-] Cannot get proxy from proxy_pool")
 
-            return
+                return
 
         for line in target_list:
             target_ip = line.strip()
