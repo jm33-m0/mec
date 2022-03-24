@@ -25,6 +25,9 @@ from lib.cli import futil
 # mec root directory
 MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
 
+# version string, see https://github.com/googleapis/release-please/blob/f398bdffdae69772c61a82cd7158cca3478c2110/src/updaters/generic.ts#L30
+VERSION = "v2.3.3"  # x-release-please-version
+
 
 class Session:
 
@@ -600,21 +603,8 @@ def get_version():
     '''
     print current version
     '''
-    try:
-        os.chdir(MECROOT)
-        check = "git describe --tags"
-        out = subprocess.check_output(
-            ["/bin/sh", "-c", check],
-            stderr=subprocess.STDOUT, timeout=3)
-    except KeyboardInterrupt:
-        return ""
-    except BaseException:
-        check = "git describe --always"
-        out = subprocess.check_output(
-            ["/bin/sh", "-c", check],
-            stderr=subprocess.STDOUT, timeout=3)
 
-    return out.decode("utf-8")
+    return VERSION
 
 
 def actions(act="start"):
