@@ -57,6 +57,9 @@ def run():
     '''
     try:
         os.system('clear')
+
+        if not os.path.isdir(core.MECROOT):
+            os.mkdir(core.MECROOT)
         os.chdir(core.MECROOT)
         console.print_banner(ver=core.get_version(),
                              exp_cnt=len(futil.list_exp()))
