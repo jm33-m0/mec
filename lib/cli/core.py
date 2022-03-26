@@ -17,7 +17,6 @@ from multiprocessing import Manager, Process
 import psutil
 import requests
 import tqdm
-
 from lib.cli import cmd, colors, console
 from lib.cli import exploits as exploit_exec
 from lib.cli import futil
@@ -96,10 +95,7 @@ class Session:
         except (FileNotFoundError, IndexError):
             self.auto_update = False
         finally:
-            try:
-                self.version = get_version()
-            except BaseException:
-                self.version = "UNKNOWN"
+            self.version = get_version()
 
             if self.auto_update:
                 self.call_update(silent=True)
