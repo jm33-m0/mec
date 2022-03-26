@@ -7,6 +7,7 @@ by jm33-ng
 '''
 
 import os
+import shutil
 import sys
 
 from lib.cli import cmd, colors, console, core, futil, rlinit
@@ -59,7 +60,14 @@ def run():
         os.system('clear')
 
         if not os.path.isdir(core.MECROOT):
-            os.mkdir(core.MECROOT)
+            try:
+                # copy mec data from /usr/share, if installed via BlackArch package
+                shutil.copytree("/usr/share/massexpconsole", core.MECROOT)
+            except FileNotFoundError:
+                pass
+            except BaseException:
+                console.debug_except()
+
         os.chdir(core.MECROOT)
         console.print_banner(ver=core.get_version(),
                              exp_cnt=len(futil.list_exp()))
@@ -68,7 +76,6 @@ def run():
         console.print_error('[-] Exiting...')
     except FileNotFoundError:
         console.debug_except()
-        console.print_error("[-] Please run install.py first")
         sys.exit(1)
     except BaseException:
         console.print_error(
