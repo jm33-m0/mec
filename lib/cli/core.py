@@ -25,7 +25,7 @@ from lib.cli import futil
 MECROOT = os.path.join(os.path.expanduser("~"), ".mec")
 
 # version string, see https://github.com/googleapis/release-please/blob/f398bdffdae69772c61a82cd7158cca3478c2110/src/updaters/generic.ts#L30
-VERSION = "v2.3.4"  # x-release-please-version
+VERSION = "v2.3.5"  # x-release-please-version
 
 
 class Session:
