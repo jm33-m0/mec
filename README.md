@@ -1,38 +1,33 @@
 # mec (MassExploitConsole)
-for mass exploiting
+Intended for mass exploiting
 
-## getting started
+**Follow the [wiki](https://github.com/jm33-m0/mec/wiki) to get started**
 
-please read the [wiki](https://github.com/jm33-m0/mec/wiki)
+## Features
+- [x] Easy-to-use CLI UI
+- [x] Execute adpated exploits with process-level concurrency
+- [x] Built-in exploits (automated)
+- [x] Hide your IP using [proxychains4](https://github.com/jm33-m0/proxy_pool) and [proxy_pool](https://github.com/jm33-m0/mec)
+- [x] ZoomEye host scan (10 threads)
+- [x] Simple Baidu crawler (multi-threaded)
+- [x] Censys host scan
+- [x] Built-in SSH Brute-Forcer
 
-## features
+## Disclaimer
+- Use this tool only on **authorized systems**. I am not responsible for any damages caused to users who ignore the warning.
+- Exploits are adapted from other sources. Please refer to their authors info.
+- Due to limited programming experience (my first Python project), expect a few silly bugs.
 
-- [x] an easy-to-use cli ui
-- [x] execute any adpated exploits with **process-level concurrency**
-- [x] some built-in exploits (automated)
-- [x] hide your ip addr using [proxychains4](https://github.com/jm33-m0/proxy_pool) and [proxy_pool](https://github.com/jm33-m0/mec)
-- [x] zoomeye host scan (10 threads)
-- [x] a simple baidu crawler (multi-threaded)
-- [x] censys host scan
-- [x] built-in ssh bruteforcer
+## Screencasts
 
-## disclaimer
-
-- please use this tool only on **authorized systems**, im not responsible for any damage caused by users who ignore my warning
-- exploits are adapted from other sources, please refer to their author info
-- please note, due to my limited programming experience (it's my first Python project), you can expect some silly bugs
-
-## screencasts
-
-### zoomeye host search
+### ZoomEye Host Search
 
 <p>
     <img width="600" src="/screenshot/zoomeye.svg">
 </p>
 
-### mass exploiting
+### Mass Exploiting
 
 <p>
     <img width="600" src="/screenshot/mec.svg">
 </p>
-
